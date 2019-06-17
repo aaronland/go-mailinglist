@@ -17,11 +17,14 @@ func main() {
 	host := flag.String("host", "localhost", "...")
 	port := flag.Int("port", 8080, "...")
 
-	subscribe := flag.Bool("subscribe", true, "...")
-	unsubscribe := flag.Bool("unsubscribe", true, "...")
+	subscribe_handler := flag.Bool("subscribe", true, "...")
+	unsubscribe_handler := flag.Bool("unsubscribe", true, "...")
+	confirm_handler := flag.Bool("confirm-handler", true, "...")
 
 	path_subscribe := flag.String("path-unsubscribe", "/subscribe", "...")
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
+	path_confirm := flag.String("path-confirm", "/confirm", "...")
+
 	path_ping := flag.String("path-ping", "/ping", "...")
 
 	flag.Parse()
@@ -42,26 +45,37 @@ func main() {
 
 	mux.Handle(*path_ping, ping_handler)
 
-	if *subscribe {
+	if *subscribe_handler {
 
-		subscribe_handler, err := http.SubscribeHandler(db)
+		h, err := http.SubscribeHandler(db)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_subscribe, subscribe_handler)
+		mux.Handle(*path_subscribe, h)
 	}
 
-	if *unsubscribe {
+	if *unsubscribe_handler {
 
-		unsubscribe_handler, err := http.UnsubscribeHandler(db)
+		h, err := http.UnsubscribeHandler(db)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_unsubscribe, unsubscribe_handler)
+		mux.Handle(*path_unsubscribe, h)
+	}
+
+	if *confirm_handler {
+
+		h, err := http.ConfirmHandler(db)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mux.Handle(*path_confirm, h)
 	}
 
 	s, err := server.NewServer(*protocol, *host, *port)
