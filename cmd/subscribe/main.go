@@ -15,7 +15,7 @@ func main() {
 
 	flag.Parse()
 
-	db, err := mailinglist.NewSubscriberDatabaseFromDSN(*dsn)
+	db, err := mailinglist.NewSubscriptionDatabaseFromDSN(*dsn)
 
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +29,7 @@ func main() {
 
 	sub.Confirmed = *confirmed
 
-	err = db.AddSubscriber(sub)
+	err = db.AddSubscription(sub)
 
 	if err != nil {
 		log.Fatal(err)

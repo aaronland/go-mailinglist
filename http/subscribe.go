@@ -5,7 +5,7 @@ import (
 	gohttp "net/http"
 )
 
-func SubscribeHandler(subscriber_db mailinglist.SubscriberDatabase) (gohttp.Handler, error) {
+func SubscribeHandler(subscriber_db mailinglist.SubscriptionDatabase) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 		rsp.Header().Set("Content-Type", "text/plain")

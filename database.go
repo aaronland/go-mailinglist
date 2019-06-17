@@ -4,13 +4,13 @@ import (
 	"errors"
 )
 
-type SubscriberDatabase interface {
-	AddSubscriber(*Subscriber) error
-	RemoveSubscriber(*Subscriber) error
-	GetSubscribers(func(*Subscriber) error) error
+type SubscriptionDatabase interface {
+	AddSubscription(*Subscriber) error
+	RemoveSubscription(*Subscriber) error
+	Subscriptions(func(*Subscriber) error) error
 }
 
-func NewSubscriberDatabaseFromDSN(str_dsn string) (SubscriberDatabase, error) {
+func NewSubscriptionDatabaseFromDSN(str_dsn string) (SubscriptionDatabase, error) {
 
 	return nil, errors.New("Please write me")
 }

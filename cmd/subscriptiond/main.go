@@ -26,7 +26,7 @@ func main() {
 
 	flag.Parse()
 
-	db, err := mailinglist.NewSubscriberDatabaseFromDSN(*dsn)
+	db, err := mailinglist.NewSubscriptionDatabaseFromDSN(*dsn)
 
 	if err != nil {
 		log.Fatal(err)
