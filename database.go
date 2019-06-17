@@ -7,6 +7,7 @@ import (
 type SubscriptionDatabase interface {
 	AddSubscription(*Subscriber) error
 	RemoveSubscription(*Subscriber) error
+	UpdateSubscription(*Subscriber) error
 	ConfirmedSubscriptions(func(*Subscriber) error) error
 	UnconfirmedSubscriptions(func(*Subscriber) error) error
 }
