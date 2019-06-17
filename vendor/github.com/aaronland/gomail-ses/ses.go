@@ -1,4 +1,4 @@
-package sender
+package ses
 
 // https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/ses-example-send-email.html
 // https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses-procedure.html
@@ -18,8 +18,8 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"github.com/aws/aws-sdk-go/service/ses"
-	"github.com/go-gomail/gomail"
+	"github.com/aaronland/gomail"
+	aws_ses "github.com/aws/aws-sdk-go/service/ses"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
 	"io"
 	_ "log"
@@ -27,7 +27,7 @@ import (
 
 type SESSender struct {
 	gomail.Sender
-	service *ses.SES
+	service *aws_ses.SES
 }
 
 func NewSESSender(dsn string) (gomail.Sender, error) {
@@ -38,7 +38,7 @@ func NewSESSender(dsn string) (gomail.Sender, error) {
 		return nil, err
 	}
 
-	svc := ses.New(sess)
+	svc := aws_ses.New(sess)
 
 	s := SESSender{
 		service: svc,
@@ -62,7 +62,7 @@ func (s *SESSender) Send(from string, to []string, msg io.WriterTo) error {
 
 	wr.Flush()
 
-	raw_msg := &ses.RawMessage{
+	raw_msg := &aws_ses.RawMessage{
 		Data: buf.Bytes(),
 	}
 
@@ -83,7 +83,7 @@ func (s *SESSender) Send(from string, to []string, msg io.WriterTo) error {
 	return nil
 }
 
-func (s *SESSender) sendMessage(ctx context.Context, sender string, recipient string, msg *ses.RawMessage) error {
+func (s *SESSender) sendMessage(ctx context.Context, sender string, recipient string, msg *aws_ses.RawMessage) error {
 
 	// throttle send here... (see quota stuff above)
 
@@ -94,7 +94,7 @@ func (s *SESSender) sendMessage(ctx context.Context, sender string, recipient st
 		// pass
 	}
 
-	req := &ses.SendRawEmailInput{
+	req := &aws_ses.SendRawEmailInput{
 		RawMessage: msg,
 	}
 

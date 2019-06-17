@@ -2,6 +2,8 @@
 github.com/aaronland/go-string/dsn
 # github.com/aaronland/gomail v2.0.1+incompatible
 github.com/aaronland/gomail
+# github.com/aaronland/gomail-ses v0.0.2
+github.com/aaronland/gomail-ses
 # github.com/aws/aws-lambda-go v1.10.0
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
@@ -40,8 +42,6 @@ github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
 github.com/aws/aws-sdk-go/aws/ec2metadata
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
-# github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
-github.com/go-gomail/gomail
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
 # github.com/whosonfirst/algnhsa v0.1.0

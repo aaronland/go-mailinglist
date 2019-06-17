@@ -2,13 +2,6 @@ github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/gomail v2.0.1+incompatible h1:qCaawLvpmMWSbaBfLvUUcuWMXiksfZINc7WQjqjGKXo=
 github.com/aaronland/gomail v2.0.1+incompatible/go.mod h1:SDeus8DT9zwd3QCYkE+rIViYlR6narNZwKqVD/VJOPA=
-github.com/aaronland/gomail-ses v0.0.2 h1:ZNfqD5X4SGbu/PWPl2tdLTGgxoJgnWUpfqnbKR6O3Uc=
-github.com/aaronland/gomail-ses v0.0.2/go.mod h1:S8jmXqbtd93MqOMsrq0qkc4IsGv9w1xPgvdaHa87tPU=
-github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7 h1:IAPakbB8XIYLWMATOpgH9Nbz7nsR2aRHHXoMHxduXSc=
-github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7/go.mod h1:HhzjNA0EjUWcwHTUMwqrpeAdIF3gRmpH0HpWx1hYJSc=
-github.com/aws/aws-lambda-go v1.9.0/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPOG+ouzmE1A=
-github.com/aws/aws-lambda-go v1.10.0 h1:uafgdfYGQD0UeT7d2uKdyWW8j/ZYRifRPIdmeqLzLCk=
-github.com/aws/aws-lambda-go v1.10.0/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPOG+ouzmE1A=
 github.com/aws/aws-sdk-go v1.19.31/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.20.1 h1:p9ETyEP9iBPTLul2PHJblv5Iw0PKP10YK6DC5nMTzYM=
 github.com/aws/aws-sdk-go v1.20.1/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
@@ -26,8 +19,6 @@ github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a/go.mod h1:s
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
-github.com/whosonfirst/algnhsa v0.1.0 h1:8wVksKaz1qor2Y6+fiLEPEPxsEEvUQgSdtSTQLMrnlA=
-github.com/whosonfirst/algnhsa v0.1.0/go.mod h1:swLBXxaVTv3s6dJLhekdQCuCTshUew+xHjptRC21RG0=
 github.com/whosonfirst/go-whosonfirst-aws v0.1.1 h1:jfXm3BhELVVd/wV2aN3sxv+nUQ9WlQN7w+KVyM7BapU=
 github.com/whosonfirst/go-whosonfirst-aws v0.1.1/go.mod h1:fLBhkQw9FyC9/tW0Yo7aCkSHdYz69D4Cnwdit9sW1Gw=
 github.com/whosonfirst/go-whosonfirst-cli v0.1.0/go.mod h1:Edy+amD+fMq1QS1yxB3u8maA8I93q/LG7JRNh+fsdfc=
