@@ -1,5 +1,8 @@
 module github.com/aaronland/go-mailinglist
 
-go 1.12
+require (
+	github.com/aaronland/gomail v2.0.1+incompatible
+	github.com/whosonfirst/algnhsa v0.1.0
+)
 
-require github.com/whosonfirst/algnhsa v0.1.0
+go 1.12

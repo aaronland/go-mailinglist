@@ -17,7 +17,11 @@ func main() {
 	host := flag.String("host", "localhost", "...")
 	port := flag.Int("port", 8080, "...")
 
-	path_signup := flag.String("path-signup", "/signup", "...")
+	subscribe := flag.Bool("subscribe", true, "...")
+	unsubscribe := flag.Bool("unsubscribe", true, "...")
+
+	path_subscribe := flag.String("path-unsubscribe", "/subscribe", "...")
+	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
 	path_ping := flag.String("path-ping", "/ping", "...")
 
 	flag.Parse()
@@ -28,11 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	signup_handler, err := http.SignupHandler(db)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	mux := gohttp.NewServeMux()
 
 	ping_handler, err := http.PingHandler()
 
@@ -40,9 +40,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mux := gohttp.NewServeMux()
-	mux.Handle(*path_signup, signup_handler)
 	mux.Handle(*path_ping, ping_handler)
+
+	if *subscribe {
+
+		subscribe_handler, err := http.SubscribeHandler(db)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mux.Handle(*path_subscribe, subscribe_handler)
+	}
+
+	if *unsubscribe {
+
+		unsubscribe_handler, err := http.UnsubscribeHandler(db)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mux.Handle(*path_unsubscribe, unsubscribe_handler)
+	}
 
 	s, err := server.NewServer(*protocol, *host, *port)
 
