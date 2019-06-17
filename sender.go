@@ -11,5 +11,5 @@ func SendMailToList(sender gomail.Sender, subs SubscriptionDatabase, msg *gomail
 		return gomail.Send(sender, msg)
 	}
 
-	return subs.Subscriptions(cb)
+	return subs.ConfirmedSubscriptions(cb)
 }

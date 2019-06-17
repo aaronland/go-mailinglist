@@ -7,7 +7,8 @@ import (
 type SubscriptionDatabase interface {
 	AddSubscription(*Subscriber) error
 	RemoveSubscription(*Subscriber) error
-	Subscriptions(func(*Subscriber) error) error
+	ConfirmedSubscriptions(func(*Subscriber) error) error
+	UnconfirmedSubscriptions(func(*Subscriber) error) error
 }
 
 func NewSubscriptionDatabaseFromDSN(str_dsn string) (SubscriptionDatabase, error) {
