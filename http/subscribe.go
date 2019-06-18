@@ -5,6 +5,7 @@ import (
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/aaronland/gomail"
 	"html/template"
 	_ "log"
 	gohttp "net/http"
@@ -18,6 +19,7 @@ type SubscribeTemplateVars struct {
 type SubscribeHandlerOptions struct {
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
+	Sender        gomail.Sender
 }
 
 func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {

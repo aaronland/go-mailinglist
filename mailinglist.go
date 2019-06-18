@@ -5,11 +5,39 @@ import (
 	"errors"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/database/fs"
+	"github.com/aaronland/go-mailinglist/sender"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/gomail"
 	"strings"
 )
+
+func NewSenderFromDSN(str_dsn string) (gomail.Sender, error) {
+
+	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "sender")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var s gomail.Sender
+
+	switch strings.ToUpper(dsn_map["sender"]) {
+	case "STDOUT":
+
+		s, err = sender.NewStdoutSender()
+
+	default:
+		err = errors.New("Invalid sender")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
+
+}
 
 func NewSubscriptionsDatabaseFromDSN(str_dsn string) (database.SubscriptionsDatabase, error) {
 

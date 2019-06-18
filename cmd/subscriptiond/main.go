@@ -72,7 +72,7 @@ func main() {
 		opts := &http.SubscribeHandlerOptions{
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
-			// Sender: sender,
+			Sender:        sender,
 		}
 
 		h, err := http.SubscribeHandler(opts)
@@ -91,7 +91,7 @@ func main() {
 		opts := &http.UnsubscribeHandlerOptions{
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
-			// Sender: sender,
+			Sender:        sender,
 		}
 
 		h, err := http.UnsubscribeHandler(opts)
@@ -110,7 +110,6 @@ func main() {
 		opts := &http.ConfirmHandlerOptions{
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
-			// Sender: sender,
 		}
 
 		h, err := http.ConfirmHandler(opts)

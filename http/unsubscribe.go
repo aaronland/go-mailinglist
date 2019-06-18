@@ -4,6 +4,7 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/gomail"
 	"html/template"
 	gohttp "net/http"
 	"net/mail"
@@ -16,6 +17,7 @@ type UnsubscribeTemplateVars struct {
 type UnsubscribeHandlerOptions struct {
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
+	Sender        gomail.Sender
 }
 
 func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error) {
