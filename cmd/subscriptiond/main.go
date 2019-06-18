@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
@@ -43,6 +44,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	crumb_cfg := crumb.CrumbConfig{
+		Extra:     "",
+		Separator: ":",
+		Secret:    "fixme",
+		TTL:       300,
+	}
+
 	mux.Handle(*path_ping, ping_handler)
 
 	if *subscribe_handler {
@@ -53,7 +61,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_subscribe, h)
+		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
+
+		mux.Handle(*path_subscribe, cr)
 	}
 
 	if *unsubscribe_handler {
@@ -64,7 +74,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_unsubscribe, h)
+		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
+
+		mux.Handle(*path_unsubscribe, cr)
 	}
 
 	if *confirm_handler {
@@ -75,7 +87,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_confirm, h)
+		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
+
+		mux.Handle(*path_confirm, cr)
 	}
 
 	s, err := server.NewServer(*protocol, *host, *port)

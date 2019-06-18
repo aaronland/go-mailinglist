@@ -1,3 +1,7 @@
+# github.com/aaronland/go-http-crumb v0.0.1
+github.com/aaronland/go-http-crumb
+# github.com/aaronland/go-http-rewrite v0.0.1
+github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-string v0.1.0
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
@@ -13,5 +17,8 @@ github.com/aws/aws-lambda-go/lambdacontext
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73
 github.com/whosonfirst/walk
+# golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
+golang.org/x/net/html
+golang.org/x/net/html/atom
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 gopkg.in/alexcesaro/quotedprintable.v3
