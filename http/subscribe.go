@@ -4,7 +4,7 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/message"	
+	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
@@ -39,7 +39,13 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 </form>
 </body></html>`)
 
-	email_t := template.New("confirm")
+	confirm_t := template.New("confirm")
+	confirm_t, err = confirm_t.Parse(`<html><head><title>Signup</title></head>
+<body>
+We've sent a confirmation email.
+</body></html>`)
+
+	email_t := template.New("email")
 	email_t, err = email_t.Parse(`<a href="#">{{ .Code }}</a>`)
 
 	if err != nil {
@@ -142,14 +148,14 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			from_addr, _ := mail.ParseAddress("fixme@localhost")
 			to_addr, _ := mail.ParseAddress(sub.Address)
-			
+
 			msg_opts := &message.SendMessageOptions{
-				Sender: opts.Sender,
-				Subject: "Your subscription...",				
-				From: from_addr,
-				To: to_addr,
+				Sender:  opts.Sender,
+				Subject: "Your subscription...",
+				From:    from_addr,
+				To:      to_addr,
 			}
-			
+
 			err = message.SendMessage(msg, msg_opts)
 
 			if err != nil {
@@ -157,7 +163,12 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			rsp.Write([]byte(conf.Code))
+			err = confirm_t.Execute(rsp, nil)
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+			}
+
 			return
 
 		default:

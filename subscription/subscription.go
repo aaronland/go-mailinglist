@@ -8,7 +8,7 @@ import (
 type Subscription struct {
 	Address   string `json:"address"`
 	Created   int64  `json:"created"`
-	Confirmed int64  `json:"created"`
+	Confirmed int64  `json:"confirmed"`
 }
 
 func NewSubscription(str_addr string) (*Subscription, error) {

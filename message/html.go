@@ -11,12 +11,14 @@ func NewMessageFromHTMLTemplate(t *html_template.Template, vars interface{}) (*g
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
-	
+
 	err := t.Execute(wr, vars)
 
 	if err != nil {
 		return nil, err
 	}
+
+	wr.Flush()
 
 	m := gomail.NewMessage()
 	m.SetBody("text/html", buf.String())

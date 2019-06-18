@@ -7,6 +7,7 @@ import (
 	"github.com/aaronland/go-mailinglist/sender"
 	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/gomail"
+	_ "log"
 	"strings"
 )
 
