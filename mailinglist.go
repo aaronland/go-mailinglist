@@ -3,7 +3,7 @@ package mailinglist
 import (
 	"context"
 	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/gomail"	
+	"github.com/aaronland/gomail"
 )
 
 func SendMailToList(sender gomail.Sender, subs database.SubscriptionDatabase, msg *gomail.Message) error {
@@ -23,4 +23,3 @@ func SendMailToListWithContext(ctx context.Context, sender gomail.Sender, subs d
 
 	return subs.ConfirmedSubscriptions(ctx, cb)
 }
-

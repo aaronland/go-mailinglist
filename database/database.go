@@ -3,18 +3,29 @@ package database
 import (
 	"context"
 	"errors"
-	"github.com/aaronland/go-string/dsn"	
+	"github.com/aaronland/go-mailinglist/confirmation"	
 	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/aaronland/go-string/dsn"
 	"strings"
 )
+
+type ListSubscriptionsFunc func(*subscription.Subscription) error
+type ListConfirmationsFunc func(*confirmation.Confirmation) error
 
 type SubscriptionDatabase interface {
 	AddSubscription(*subscription.Subscription) error
 	RemoveSubscription(*subscription.Subscription) error
 	UpdateSubscription(*subscription.Subscription) error
 	GetSubscriptionWithAddress(string) (*subscription.Subscription, error)
-	ConfirmedSubscriptions(context.Context, func(*subscription.Subscription) error) error
-	UnconfirmedSubscriptions(context.Context, func(*subscription.Subscription) error) error
+	ConfirmedSubscriptions(context.Context, ListSubscriptionsFunc) error
+	UnconfirmedSubscriptions(context.Context, ListSubscriptionsFunc) error
+}
+
+type ConfirmationDatabase interface {
+	AddConfirmation(*confirmation.Confirmation) error
+	RemoveConfirmation(*confirmation.Confirmation) error
+	GetConfirmationWithCode(string) (*confirmation.Confirmation, error)
+	ListConfirmations(context.Context, ListConfirmationsFunc) error
 }
 
 func NewSubscriptionDatabaseFromDSN(str_dsn string) (SubscriptionDatabase, error) {
@@ -39,7 +50,7 @@ func NewSubscriptionDatabaseFromDSN(str_dsn string) (SubscriptionDatabase, error
 		}
 
 	default:
-		err = errors.New("Invalid sender")
+		err = errors.New("Invalid database")
 	}
 
 	if err != nil {
