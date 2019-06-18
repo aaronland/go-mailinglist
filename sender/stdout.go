@@ -3,6 +3,7 @@ package sender
 import (
 	"github.com/aaronland/gomail"
 	"io"
+	_ "log"
 	"os"
 )
 

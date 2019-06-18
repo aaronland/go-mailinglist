@@ -1,12 +1,10 @@
 package mailinglist
 
 import (
-	"context"
 	"errors"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/database/fs"
 	"github.com/aaronland/go-mailinglist/sender"
-	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/gomail"
 	"strings"
@@ -101,22 +99,4 @@ func NewConfirmationsDatabaseFromDSN(str_dsn string) (database.ConfirmationsData
 	}
 
 	return db, nil
-}
-
-func SendMailToList(sender gomail.Sender, db database.SubscriptionsDatabase, msg *gomail.Message) error {
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	return SendMailToListWithContext(ctx, sender, db, msg)
-}
-
-func SendMailToListWithContext(ctx context.Context, sender gomail.Sender, db database.SubscriptionsDatabase, msg *gomail.Message) error {
-
-	cb := func(sub *subscription.Subscription) error {
-		msg.SetHeader("To", sub.Address)
-		return gomail.Send(sender, msg)
-	}
-
-	return db.ListSubscriptionsConfirmed(ctx, cb)
 }
