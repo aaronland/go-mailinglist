@@ -163,7 +163,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsConfirmed(ctx context.Contex
 			// pass
 		}
 
-		if !sub.Confirmed {
+		if !sub.IsConfirmed() {
 			return nil
 		}
 
@@ -184,7 +184,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsUnconfirmed(ctx context.Cont
 			// pass
 		}
 
-		if sub.Confirmed {
+		if sub.IsConfirmed() {
 			return nil
 		}
 

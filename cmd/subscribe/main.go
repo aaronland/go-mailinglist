@@ -5,6 +5,7 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"log"
+	"time"
 )
 
 func main() {
@@ -28,7 +29,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sub.Confirmed = *confirmed
+	if *confirmed {
+		now := time.Now()
+		sub.Confirmed = now.Unix()
+	}
 
 	err = db.AddSubscription(sub)
 
@@ -36,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if sub.Confirmed == false {
+	if !sub.IsConfirmed() {
 		// send confirmation code...
 	}
 }

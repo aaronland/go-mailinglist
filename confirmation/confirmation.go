@@ -16,7 +16,7 @@ type Confirmation struct {
 
 func NewConfirmationForSubscription(sub *subscription.Subscription, action string) (*Confirmation, error) {
 
-	if sub.Confirmed {
+	if sub.Confirmed > 0 {
 		return nil, errors.New("Already confirmed")
 	}
 

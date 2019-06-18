@@ -8,8 +8,7 @@ import (
 type Subscription struct {
 	Address   string `json:"address"`
 	Created   int64  `json:"created"`
-	Confirmed bool   `json:"confirmed"`
-	// Status int `json:"status"`
+	Confirmed int64  `json:"created"`
 }
 
 func NewSubscription(str_addr string) (*Subscription, error) {
@@ -25,8 +24,17 @@ func NewSubscription(str_addr string) (*Subscription, error) {
 	sub := &Subscription{
 		Address:   addr.Address,
 		Created:   now.Unix(),
-		Confirmed: false,
+		Confirmed: 0,
 	}
 
 	return sub, nil
+}
+
+func (s *Subscription) IsConfirmed() bool {
+
+	if s.Confirmed > 0 {
+		return true
+	}
+
+	return false
 }

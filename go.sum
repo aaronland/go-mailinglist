@@ -2,8 +2,12 @@ github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 h1:FSsoaa1q4jAa
 github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718/go.mod h1:VVwKsx9Dc8rNG55BWqogoJzGubjKnRoXdUvpGbWqeCc=
 github.com/aaronland/go-http-crumb v0.0.2 h1:H/AADOvIchsr0Qen1R92Vpr0DXU1z7DliUDXrNvv0u0=
 github.com/aaronland/go-http-crumb v0.0.2/go.mod h1:E5TgG3BADDjmXUlhiQFubusWROeGOTCj2tL5ooWsM2I=
+github.com/aaronland/go-http-crumb v0.0.3 h1:OWxjvFRQqKXckfqaFZwbxqQd+uX40H/8a9QKYMFZqGI=
+github.com/aaronland/go-http-crumb v0.0.3/go.mod h1:ctEyW8gwewZmT05jWRBm/HWNiwVw6jMyaddgndNs00Q=
 github.com/aaronland/go-http-rewrite v0.0.1 h1:nQ4qqtOC0QHpEhQeFpRRwdXAEwuhHhgsxQaV3hDT8iw=
 github.com/aaronland/go-http-rewrite v0.0.1/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
+github.com/aaronland/go-http-sanitize v0.0.1 h1:35rmeJh9Kx9mphGJXitQ6dOsC2fEPdn9sJa6JpYPd/c=
+github.com/aaronland/go-http-sanitize v0.0.1/go.mod h1:qUi4rzUPcpMntpUFnHK00yQI5vd/Q7x9MFYwX91/ygI=
 github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8yzpk=
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/gomail v2.0.1+incompatible h1:qCaawLvpmMWSbaBfLvUUcuWMXiksfZINc7WQjqjGKXo=
@@ -22,6 +26,8 @@ github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/whosonfirst/algnhsa v0.1.0 h1:8wVksKaz1qor2Y6+fiLEPEPxsEEvUQgSdtSTQLMrnlA=
 github.com/whosonfirst/algnhsa v0.1.0/go.mod h1:swLBXxaVTv3s6dJLhekdQCuCTshUew+xHjptRC21RG0=
+github.com/whosonfirst/go-sanitize v0.1.0 h1:ygSqCnakwdzH/m8UEa15zXGDsoo5/JJeRkgmAjXZrBU=
+github.com/whosonfirst/go-sanitize v0.1.0/go.mod h1:p/emgbafMM0p5iVAz2XWwecYPl06Tw4Jos9rhTKIrt8=
 github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73 h1:/43peH8y6Wg+dAgQ97swaPN8c3/M6hi8lawr1vDblzs=
 github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73/go.mod h1:U/1VXxlMzNZbyylg18AzEeHkGi1RXiBCMKpaM2XR+tQ=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
