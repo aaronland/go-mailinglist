@@ -1,12 +1,12 @@
 package http
 
 import (
-	"github.com/aaronland/go-http-sanitize"	
+	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
-	"html/template"	
+	"html/template"
 	gohttp "net/http"
-	"net/mail"	
+	"net/mail"
 )
 
 type UnsubscribeTemplateVars struct {

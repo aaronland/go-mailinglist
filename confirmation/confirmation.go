@@ -48,3 +48,16 @@ func NewConfirmationForSubscription(sub *subscription.Subscription, action strin
 
 	return c, nil
 }
+
+func (c *Confirmation) IsExpired() bool {
+
+	now := time.Now()
+
+	// PLEASE MAKE THIS CONFIGURABLE...
+
+	if now.Unix() - c.Created > 3600 {
+		return true
+	}
+
+	return false
+}
