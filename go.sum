@@ -1,7 +1,7 @@
 github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 h1:FSsoaa1q4jAaeiAUxf9H0PgFP7eA/UL6c3PdJH+nMN4=
 github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718/go.mod h1:VVwKsx9Dc8rNG55BWqogoJzGubjKnRoXdUvpGbWqeCc=
-github.com/aaronland/go-http-crumb v0.0.1 h1:ps2H4h+Js3mMWb8vCTQd+oONBf9fKTS0E1dWIoor4Gc=
-github.com/aaronland/go-http-crumb v0.0.1/go.mod h1:E5TgG3BADDjmXUlhiQFubusWROeGOTCj2tL5ooWsM2I=
+github.com/aaronland/go-http-crumb v0.0.2 h1:H/AADOvIchsr0Qen1R92Vpr0DXU1z7DliUDXrNvv0u0=
+github.com/aaronland/go-http-crumb v0.0.2/go.mod h1:E5TgG3BADDjmXUlhiQFubusWROeGOTCj2tL5ooWsM2I=
 github.com/aaronland/go-http-rewrite v0.0.1 h1:nQ4qqtOC0QHpEhQeFpRRwdXAEwuhHhgsxQaV3hDT8iw=
 github.com/aaronland/go-http-rewrite v0.0.1/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
 github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8yzpk=
