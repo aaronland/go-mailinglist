@@ -1,5 +1,6 @@
 # github.com/aaronland/go-string v0.1.0
 github.com/aaronland/go-string/dsn
+github.com/aaronland/go-string/random
 # github.com/aaronland/gomail v2.0.1+incompatible
 github.com/aaronland/gomail
 # github.com/aaronland/gomail-ses v0.0.2
