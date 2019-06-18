@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
 	"log"
@@ -29,7 +30,7 @@ func main() {
 
 	flag.Parse()
 
-	db, err := mailinglist.NewSubscriptionDatabaseFromDSN(*dsn)
+	db, err := database.NewSubscriptionDatabaseFromDSN(*dsn)
 
 	if err != nil {
 		log.Fatal(err)

@@ -1,18 +1,18 @@
-package mailinglist
+package subsciption
 
 import (
 	"net/mail"
 	"time"
 )
 
-type Subscriber struct {
+type Subsciption struct {
 	Address   string `json:"address"`
 	Created   int64  `json:"created"`
 	Confirmed bool   `json:"confirmed"`
 	// Status int `json:"status"`
 }
 
-func NewSubscriber(str_addr string) (*Subscriber, error) {
+func NewSubsciption(str_addr string) (*Subsciption, error) {
 
 	addr, err := mail.ParseAddress(str_addr)
 
@@ -22,7 +22,7 @@ func NewSubscriber(str_addr string) (*Subscriber, error) {
 
 	now := time.Now()
 
-	sub := &Subscriber{
+	sub := &Subsciption{
 		Address:   addr.Address,
 		Created:   now.Unix(),
 		Confirmed: false,

@@ -49,5 +49,7 @@ github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-whosonfirst-aws v0.1.1
 github.com/whosonfirst/go-whosonfirst-aws/session
 github.com/whosonfirst/go-whosonfirst-aws/config
+# github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73
+github.com/whosonfirst/walk
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 gopkg.in/alexcesaro/quotedprintable.v3

@@ -1,4 +1,4 @@
-package mailinglist
+package sender
 
 import (
 	"errors"
@@ -30,14 +30,4 @@ func NewSenderFromDSN(str_dsn string) (gomail.Sender, error) {
 	}
 
 	return sender, nil
-}
-
-func SendMailToList(sender gomail.Sender, subs SubscriptionDatabase, msg *gomail.Message) error {
-
-	cb := func(sub *Subscriber) error {
-		msg.SetHeader("To", sub.Address)
-		return gomail.Send(sender, msg)
-	}
-
-	return subs.ConfirmedSubscriptions(cb)
 }

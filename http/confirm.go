@@ -1,11 +1,11 @@
 package http
 
 import (
-	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/database"
 	gohttp "net/http"
 )
 
-func ConfirmHandler(subscriber_db mailinglist.SubscriptionDatabase) (gohttp.Handler, error) {
+func ConfirmHandler(db database.SubscriptionDatabase) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 		rsp.Header().Set("Content-Type", "text/plain")

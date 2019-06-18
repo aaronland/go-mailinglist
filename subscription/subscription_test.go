@@ -1,24 +1,24 @@
-package mailinglist
+package subsciption
 
 import (
 	"fmt"
 	"testing"
 )
 
-func TextNewSubscriber(t *testing.T) {
+func TextNewSubsciption(t *testing.T) {
 
 	ok_addr := "alice@example.com"
 	ok_email := fmt.Sprintf("Alice <%s>", ok_addr)
 
 	bunk_email := "dev/null"
 
-	_, err := NewSubscriber(bunk_email)
+	_, err := NewSubsciption(bunk_email)
 
 	if err == nil {
 		t.Error("Bunk address passed muster (when it shouldn't")
 	}
 
-	sub, err := NewSubscriber(ok_email)
+	sub, err := NewSubsciption(ok_email)
 
 	if err != nil {
 		t.Error(err)
