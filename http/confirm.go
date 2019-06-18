@@ -5,7 +5,12 @@ import (
 	gohttp "net/http"
 )
 
-func ConfirmHandler(db database.SubscriptionsDatabase) (gohttp.Handler, error) {
+type ConfirmHandlerOptions struct {
+	Subscriptions database.SubscriptionsDatabase
+	Confirmations database.ConfirmationsDatabase
+}
+
+func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 		rsp.Header().Set("Content-Type", "text/plain")

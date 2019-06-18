@@ -62,7 +62,13 @@ func main() {
 
 	if *subscribe_handler {
 
-		h, err := http.SubscribeHandler(subs_db, conf_db)
+		opts := &http.SubscribeHandlerOptions{
+			Subscriptions: subs_db,
+			Confirmations: conf_db,
+			// Sender: sender,
+		}
+
+		h, err := http.SubscribeHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
@@ -75,7 +81,13 @@ func main() {
 
 	if *unsubscribe_handler {
 
-		h, err := http.UnsubscribeHandler(subs_db)
+		opts := &http.UnsubscribeHandlerOptions{
+			Subscriptions: subs_db,
+			Confirmations: conf_db,
+			// Sender: sender,
+		}
+
+		h, err := http.UnsubscribeHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
@@ -88,7 +100,13 @@ func main() {
 
 	if *confirm_handler {
 
-		h, err := http.ConfirmHandler(subs_db)
+		opts := &http.ConfirmHandlerOptions{
+			Subscriptions: subs_db,
+			Confirmations: conf_db,
+			// Sender: sender,
+		}
+
+		h, err := http.ConfirmHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)

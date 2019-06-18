@@ -5,7 +5,12 @@ import (
 	gohttp "net/http"
 )
 
-func UnsubscribeHandler(db database.SubscriptionsDatabase) (gohttp.Handler, error) {
+type UnsubscribeHandlerOptions struct {
+	Subscriptions database.SubscriptionsDatabase
+	Confirmations database.ConfirmationsDatabase
+}
+
+func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 		rsp.Header().Set("Content-Type", "text/plain")

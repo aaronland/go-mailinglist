@@ -11,11 +11,16 @@ import (
 	"net/mail"
 )
 
-type SubscribeVars struct {
+type SubscribeTemplateVars struct {
 	URL string
 }
 
-func SubscribeHandler(subs_db database.SubscriptionsDatabase, conf_db database.ConfirmationsDatabase) (gohttp.Handler, error) {
+type SubscribeHandlerOptions struct {
+	Subscriptions database.SubscriptionsDatabase
+	Confirmations database.ConfirmationsDatabase
+}
+
+func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 	subscribe_t := template.New("subscribe")
 
@@ -37,7 +42,7 @@ func SubscribeHandler(subs_db database.SubscriptionsDatabase, conf_db database.C
 
 		case "GET":
 
-			vars := SubscribeVars{
+			vars := SubscribeTemplateVars{
 				URL: req.URL.Path,
 			}
 
@@ -50,6 +55,9 @@ func SubscribeHandler(subs_db database.SubscriptionsDatabase, conf_db database.C
 			return
 
 		case "POST":
+
+			subs_db := opts.Subscriptions
+			conf_db := opts.Confirmations
 
 			str_addr, err := sanitize.PostString(req, "address")
 
@@ -106,7 +114,7 @@ func SubscribeHandler(subs_db database.SubscriptionsDatabase, conf_db database.C
 			if err != nil {
 
 				go subs_db.RemoveSubscription(sub)
-				
+
 				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
 				return
 			}
