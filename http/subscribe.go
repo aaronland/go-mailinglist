@@ -4,6 +4,7 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/message"	
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
@@ -14,6 +15,10 @@ import (
 
 type SubscribeTemplateVars struct {
 	URL string
+}
+
+type ConfirmationEmailTemplateVars struct {
+	Code string
 }
 
 type SubscribeHandlerOptions struct {
@@ -33,6 +38,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 <button type="submit">Sign up</button>
 </form>
 </body></html>`)
+
+	email_t := template.New("confirm")
+	email_t, err = email_t.Parse(`<a href="#">{{ .Code }}</a>`)
 
 	if err != nil {
 		return nil, err
@@ -121,7 +129,33 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			// SEND CONFIRMATION CODE HERE...
+			email_vars := ConfirmationEmailTemplateVars{
+				Code: conf.Code,
+			}
+
+			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				return
+			}
+
+			from_addr, _ := mail.ParseAddress("fixme@localhost")
+			to_addr, _ := mail.ParseAddress(sub.Address)
+			
+			msg_opts := &message.SendMessageOptions{
+				Sender: opts.Sender,
+				Subject: "Your subscription...",				
+				From: from_addr,
+				To: to_addr,
+			}
+			
+			err = message.SendMessage(msg, msg_opts)
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				return
+			}
 
 			rsp.Write([]byte(conf.Code))
 			return
