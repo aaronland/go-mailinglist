@@ -3,7 +3,9 @@ package database
 import (
 	"context"
 	"errors"
+	"github.com/aaronland/go-string/dsn"	
 	"github.com/aaronland/go-mailinglist/subscription"
+	"strings"
 )
 
 type SubscriptionDatabase interface {
@@ -31,7 +33,7 @@ func NewSubscriptionDatabaseFromDSN(str_dsn string) (SubscriptionDatabase, error
 		root, ok := dsn_map["root"]
 
 		if ok {
-			db, err = NewFSSubscriptionDatabase(str_dsn)
+			db, err = NewFSSubscriptionDatabase(root)
 		} else {
 			err = errors.New("Missing 'root' DSN string")
 		}

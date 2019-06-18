@@ -14,7 +14,7 @@ import (
 )
 
 type FSSubscriptionDatabase struct {
-	database.SubscriptionDatabase
+	SubscriptionDatabase
 	root string
 }
 
@@ -36,10 +36,12 @@ func NewFSSubscriptionDatabase(root string) (SubscriptionDatabase, error) {
 		return nil, errors.New("Root is not a directory")
 	}
 
-	if info.Mode() != 0600 {
-		return nil, errors.New("Root permissions must be 0600")
+	/*
+	if info.Mode() != 0700 {
+		return nil, errors.New("Root permissions must be 0700")
 	}
-
+	*/
+	
 	db := FSSubscriptionDatabase{
 		root: abs_root,
 	}

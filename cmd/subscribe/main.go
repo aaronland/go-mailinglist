@@ -22,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sub, err := subscription.NewSubscrioption(*addr)
+	sub, err := subscription.NewSubscription(*addr)
 
 	if err != nil {
 		log.Fatal(err)
