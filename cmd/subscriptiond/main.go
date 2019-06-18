@@ -14,6 +14,7 @@ func main() {
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	conf_dsn := flag.String("confirmations-dsn", "", "...")
+	sender_dsn := flag.String("sender-dsn", "", "...")
 	crumb_dsn := flag.String("crumb-dsn", "", "...")
 
 	protocol := flag.String("protocol", "http", "...")
@@ -39,6 +40,12 @@ func main() {
 	}
 
 	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sender, err := mailinglist.NewSenderFromDSN(*sender_dsn)
 
 	if err != nil {
 		log.Fatal(err)

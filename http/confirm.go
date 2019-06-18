@@ -18,7 +18,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 		subs_db := opts.Subscriptions
 		conf_db := opts.Confirmations
-		
+
 		switch req.Method {
 
 		case "GET":

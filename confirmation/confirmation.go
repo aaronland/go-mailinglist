@@ -55,7 +55,7 @@ func (c *Confirmation) IsExpired() bool {
 
 	// PLEASE MAKE THIS CONFIGURABLE...
 
-	if now.Unix() - c.Created > 3600 {
+	if now.Unix()-c.Created > 3600 {
 		return true
 	}
 
