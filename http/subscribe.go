@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"html/template"
@@ -14,7 +15,7 @@ type SubscribeVars struct {
 	URL string
 }
 
-func SubscribeHandler(subs_db database.SubscriptionsDatabase) (gohttp.Handler, error) {
+func SubscribeHandler(subs_db database.SubscriptionsDatabase, conf_db database.ConfirmationsDatabase) (gohttp.Handler, error) {
 
 	subscribe_t := template.New("subscribe")
 
@@ -86,7 +87,33 @@ func SubscribeHandler(subs_db database.SubscriptionsDatabase) (gohttp.Handler, e
 				return
 			}
 
-			rsp.Write([]byte(sub.Address))
+			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				return
+			}
+
+			err = subs_db.AddSubscription(sub)
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				return
+			}
+
+			err = conf_db.AddConfirmation(conf)
+
+			if err != nil {
+
+				go subs_db.RemoveSubscription(sub)
+				
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				return
+			}
+
+			// SEND CONFIRMATION CODE HERE...
+
+			rsp.Write([]byte(conf.Code))
 			return
 
 		default:

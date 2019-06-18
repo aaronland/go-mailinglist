@@ -13,7 +13,7 @@ import (
 func main() {
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
-	// conf_dsn := flag.String("confirmations-dsn", "", "...")
+	conf_dsn := flag.String("confirmations-dsn", "", "...")
 	crumb_dsn := flag.String("crumb-dsn", "", "...")
 
 	protocol := flag.String("protocol", "http", "...")
@@ -38,6 +38,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	mux := gohttp.NewServeMux()
 
 	ping_handler, err := http.PingHandler()
@@ -56,7 +62,7 @@ func main() {
 
 	if *subscribe_handler {
 
-		h, err := http.SubscribeHandler(subs_db)
+		h, err := http.SubscribeHandler(subs_db, conf_db)
 
 		if err != nil {
 			log.Fatal(err)
