@@ -6,6 +6,22 @@ import (
 	"github.com/aaronland/go-mailinglist/subscription"
 )
 
+type NoRecordError string
+
+func (err NoRecordError) Error() string {
+	return "Database record does not exist"
+}
+
+func IsNotExist(err error) bool {
+
+	switch err.(type) {
+	case *NoRecordError, NoRecordError:
+		return true
+	default:
+		return false
+	}
+}
+
 type ListSubscriptionsFunc func(*subscription.Subscription) error
 type ListConfirmationsFunc func(*confirmation.Confirmation) error
 

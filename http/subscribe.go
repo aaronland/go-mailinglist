@@ -66,11 +66,12 @@ func SubscribeHandler(subs_db database.SubscriptionsDatabase) (gohttp.Handler, e
 
 			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
 
-			// check is not exist here...
-
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
-				return
+
+				if !database.IsNotExist(err) {
+					gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+					return
+				}
 			}
 
 			if sub != nil {

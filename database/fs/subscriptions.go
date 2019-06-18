@@ -101,6 +101,11 @@ func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(addr string) (*sub
 	_, err := os.Stat(path)
 
 	if err != nil {
+
+		if os.IsNotExist(err) {
+			return nil, new(database.NoRecordError)
+		}
+
 		return nil, err
 	}
 
