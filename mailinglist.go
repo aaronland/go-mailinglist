@@ -22,10 +22,10 @@ func NewSenderFromDSN(str_dsn string) (gomail.Sender, error) {
 	var s gomail.Sender
 
 	switch strings.ToUpper(dsn_map["sender"]) {
+	case "SMTP":
+		s, err = sender.NewSMTPSenderFromDSN(str_dsn)
 	case "STDOUT":
-
 		s, err = sender.NewStdoutSender()
-
 	default:
 		err = errors.New("Invalid sender")
 	}
