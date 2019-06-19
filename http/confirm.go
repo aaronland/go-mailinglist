@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/database"
+	"html/template"
 	gohttp "net/http"
 	"time"
 )
@@ -12,7 +13,25 @@ type ConfirmHandlerOptions struct {
 	Confirmations database.ConfirmationsDatabase
 }
 
+type ConfirmTemplateVars struct {
+	Code string
+}
+
 func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
+
+	confirm_t := template.New("confirm")
+	confirm_t, err := confirm_t.Parse(`<p>Are you sure...</p>`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	update_t := template.New("update")
+	update_t, err = update_t.Parse(`<p>Okay</p>`)
+
+	if err != nil {
+		return nil, err
+	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
@@ -49,7 +68,17 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			// CONFIRM TEMPLATE HERE...
+			confirm_vars := ConfirmTemplateVars{
+				Code: code,
+			}
+
+			err = confirm_t.Execute(rsp, confirm_vars)
+
+			if err != nil {
+				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+			}
+
+			return
 
 		case "POST":
 
@@ -93,23 +122,37 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				now := time.Now()
 				sub.Confirmed = now.Unix()
 
-				err := subs_db.UpdateSubscription(sub)
+				err = subs_db.UpdateSubscription(sub)
 
 				if err != nil {
 					gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)
 					return
 				}
 
-				// OKAY TEMPLATE HERE
+				err = update_t.Execute(rsp, nil)
+
+				if err != nil {
+					gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				}
+
+				return
 
 			case "unsubscribe":
 
-				err := subs_db.RemoveSubscription(sub)
+				err = subs_db.RemoveSubscription(sub)
 
 				if err != nil {
 					gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)
 					return
 				}
+
+				err = update_t.Execute(rsp, nil)
+
+				if err != nil {
+					gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				}
+
+				return
 
 			default:
 				gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)

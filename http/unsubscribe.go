@@ -4,7 +4,7 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/message"	
+	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail"
 	"html/template"
 	gohttp "net/http"
