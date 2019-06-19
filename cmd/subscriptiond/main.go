@@ -21,10 +21,12 @@ func main() {
 	host := flag.String("host", "localhost", "...")
 	port := flag.Int("port", 8080, "...")
 
+	index_handler := flag.Bool("index-handler", true, "...")
 	subscribe_handler := flag.Bool("subscribe-handler", true, "...")
 	unsubscribe_handler := flag.Bool("unsubscribe-handler", true, "...")
 	confirm_handler := flag.Bool("confirm-handler", true, "...")
 
+	path_index := flag.String("path-subscribe", "/index", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
@@ -66,6 +68,21 @@ func main() {
 	}
 
 	mux.Handle(*path_ping, ping_handler)
+
+	if *index_handler {
+
+		opts := &http.IndexHandlerOptions{
+			// paths for other things
+		}
+
+		h, err := http.IndexHandler(opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mux.Handle(*path_index, h)
+	}
 
 	if *subscribe_handler {
 
