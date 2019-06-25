@@ -1,7 +1,11 @@
 package fs
 
 import (
+	"errors"
 	"encoding/json"
+	"github.com/aaronland/go-mailinglist/confirmation"
+	"github.com/aaronland/go-mailinglist/eventlog"
+	"github.com/aaronland/go-mailinglist/subscription"	
 	"io/ioutil"
 	"os"
 	_ "path/filepath"
@@ -9,7 +13,7 @@ import (
 
 func marshalData(data interface{}, path string) error {
 
-	enc, err := json.Marshal(sub)
+	enc, err := json.Marshal(data)
 
 	if err != nil {
 		return err
@@ -80,7 +84,7 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 		}
 
 	default:
-		err = errors.new("Unsupported data type")
+		err = errors.New("Unsupported data type")
 	}
 
 	return data, err
