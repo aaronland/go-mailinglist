@@ -141,20 +141,7 @@ func (db *FSSubscriptionsDatabase) readSubscription(path string) (*subscription.
 
 func (db *FSSubscriptionsDatabase) writeSubscription(sub *subscription.Subscription, path string) error {
 
-	enc, err := json.Marshal(sub)
-
-	if err != nil {
-		return err
-	}
-
-	fh, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0600)
-
-	if err != nil {
-		return err
-	}
-
-	fh.Write(enc)
-	return fh.Close()
+	return marshalData(sub, path)
 }
 
 func (db *FSSubscriptionsDatabase) ListSubscriptionsConfirmed(ctx context.Context, cb database.ListSubscriptionsFunc) error {

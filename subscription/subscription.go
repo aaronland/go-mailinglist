@@ -1,7 +1,7 @@
 package subscription
 
 import (
-       "errors"
+	"errors"
 	"net/mail"
 	"time"
 )
@@ -50,7 +50,7 @@ func (s *Subscription) Enable() error {
 		return errors.New("Subscriber is blocked and needs to be unblocked first")
 	}
 
-	if !s.IsConfirmed(){
+	if !s.IsConfirmed() {
 		return errors.New("Subscriber is not confirmed yet")
 	}
 
