@@ -3,7 +3,7 @@ package fs
 import (
 	"errors"
 	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/eventlog"	
+	"github.com/aaronland/go-mailinglist/eventlog"
 	"os"
 	"path/filepath"
 )

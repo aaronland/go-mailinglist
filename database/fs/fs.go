@@ -1,14 +1,17 @@
 package fs
 
 import (
-	"errors"
+	"context"
 	"encoding/json"
+	"errors"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/eventlog"
-	"github.com/aaronland/go-mailinglist/subscription"	
+	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/whosonfirst/walk"
 	"io/ioutil"
 	"os"
 	_ "path/filepath"
+	"strings"
 )
 
 func marshalData(data interface{}, path string) error {
@@ -88,4 +91,33 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 	}
 
 	return data, err
+}
+
+func crawlDatabase(ctx context.Context, root string, cb func(context.Context, string) error) error {
+
+	walker := func(path string, info os.FileInfo, err error) error {
+
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
+		}
+
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		if !strings.HasSuffix(path, ".json") {
+			return nil
+		}
+
+		return cb(ctx, path)
+	}
+
+	return walk.Walk(root, walker)
 }

@@ -2,16 +2,12 @@ package fs
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/whosonfirst/walk"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type FSSubscriptionsDatabase struct {
@@ -114,29 +110,13 @@ func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(addr string) (*sub
 
 func (db *FSSubscriptionsDatabase) readSubscription(path string) (*subscription.Subscription, error) {
 
-	fh, err := os.Open(path)
+	sub, err := unmarshalData(path, "subscription")
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer fh.Close()
-
-	body, err := ioutil.ReadAll(fh)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var sub *subscription.Subscription
-
-	err = json.Unmarshal(body, &sub)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return sub, nil
+	return sub.(*subscription.Subscription), nil
 }
 
 func (db *FSSubscriptionsDatabase) writeSubscription(sub *subscription.Subscription, path string) error {
@@ -188,26 +168,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsUnconfirmed(ctx context.Cont
 
 func (db *FSSubscriptionsDatabase) crawlSubscriptions(ctx context.Context, cb func(ctx context.Context, sub *subscription.Subscription) error) error {
 
-	walker := func(path string, info os.FileInfo, err error) error {
-
-		select {
-		case <-ctx.Done():
-			return nil
-		default:
-			// pass
-		}
-
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		if !strings.HasSuffix(path, ".json") {
-			return nil
-		}
+	local_cb := func(ctx context.Context, path string) error {
 
 		sub, err := db.readSubscription(path)
 
@@ -218,7 +179,7 @@ func (db *FSSubscriptionsDatabase) crawlSubscriptions(ctx context.Context, cb fu
 		return cb(ctx, sub)
 	}
 
-	return walk.Walk(db.root, walker)
+	return crawlDatabase(ctx, db.root, local_cb)
 }
 
 func (db *FSSubscriptionsDatabase) pathForSubscription(sub *subscription.Subscription) string {
