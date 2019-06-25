@@ -4,15 +4,43 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/whosonfirst/walk"
 	"io/ioutil"
 	"os"
-	_ "path/filepath"
+	"path/filepath"
 	"strings"
 )
+
+func ensureRoot(root string) (string, error) {
+
+	abs_root, err := filepath.Abs(root)
+
+	if err != nil {
+		return "", err
+	}
+
+	info, err := os.Stat(abs_root)
+
+	if err != nil {
+		return "", err
+	}
+
+	if !info.IsDir() {
+		return "", errors.New("Root is not a directory")
+	}
+
+	/*
+		if info.Mode() != 0700 {
+			return "", errors.New("Root permissions must be 0700")
+		}
+	*/
+
+	return abs_root, nil
+}
 
 func marshalData(data interface{}, path string) error {
 
@@ -120,4 +148,9 @@ func crawlDatabase(ctx context.Context, root string, cb func(context.Context, st
 	}
 
 	return walk.Walk(root, walker)
+}
+
+func pathForAddress(root string, addr string) string {
+	fname := fmt.Sprintf("%s.json", addr)
+	return filepath.Join(root, fname)
 }

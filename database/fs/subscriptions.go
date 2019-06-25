@@ -2,12 +2,9 @@ package fs
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"os"
-	"path/filepath"
 )
 
 type FSSubscriptionsDatabase struct {
@@ -17,27 +14,11 @@ type FSSubscriptionsDatabase struct {
 
 func NewFSSubscriptionsDatabase(root string) (database.SubscriptionsDatabase, error) {
 
-	abs_root, err := filepath.Abs(root)
+	abs_root, err := ensureRoot(root)
 
 	if err != nil {
 		return nil, err
 	}
-
-	info, err := os.Stat(abs_root)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !info.IsDir() {
-		return nil, errors.New("Root is not a directory")
-	}
-
-	/*
-		if info.Mode() != 0700 {
-			return nil, errors.New("Root permissions must be 0700")
-		}
-	*/
 
 	db := FSSubscriptionsDatabase{
 		root: abs_root,
@@ -92,7 +73,7 @@ func (db *FSSubscriptionsDatabase) UpdateSubscription(sub *subscription.Subscrip
 
 func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(addr string) (*subscription.Subscription, error) {
 
-	path := db.pathForAddress(addr)
+	path := pathForAddress(db.root, addr)
 
 	_, err := os.Stat(path)
 
@@ -183,10 +164,5 @@ func (db *FSSubscriptionsDatabase) crawlSubscriptions(ctx context.Context, cb fu
 }
 
 func (db *FSSubscriptionsDatabase) pathForSubscription(sub *subscription.Subscription) string {
-	return db.pathForAddress(sub.Address)
-}
-
-func (db *FSSubscriptionsDatabase) pathForAddress(addr string) string {
-	fname := fmt.Sprintf("%s.json", addr)
-	return filepath.Join(db.root, fname)
+	return pathForAddress(db.root, sub.Address)
 }

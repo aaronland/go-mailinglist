@@ -3,15 +3,10 @@ package fs
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
-	"github.com/whosonfirst/walk"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 type FSConfirmationsDatabase struct {
@@ -21,27 +16,11 @@ type FSConfirmationsDatabase struct {
 
 func NewFSConfirmationsDatabase(root string) (database.ConfirmationsDatabase, error) {
 
-	abs_root, err := filepath.Abs(root)
+	abs_root, err := ensureRoot(root)
 
 	if err != nil {
 		return nil, err
 	}
-
-	info, err := os.Stat(abs_root)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !info.IsDir() {
-		return nil, errors.New("Root is not a directory")
-	}
-
-	/*
-		if info.Mode() != 0700 {
-			return nil, errors.New("Root permissions must be 0700")
-		}
-	*/
 
 	db := FSConfirmationsDatabase{
 		root: abs_root,
@@ -83,7 +62,7 @@ func (db *FSConfirmationsDatabase) RemoveConfirmation(conf *confirmation.Confirm
 
 func (db *FSConfirmationsDatabase) GetConfirmationWithAddress(code string) (*confirmation.Confirmation, error) {
 
-	path := db.pathForCode(code)
+	path := pathForAddress(db.root, code)
 
 	_, err := os.Stat(path)
 
@@ -141,26 +120,7 @@ func (db *FSConfirmationsDatabase) writeConfirmation(conf *confirmation.Confirma
 
 func (db *FSConfirmationsDatabase) crawlConfirmations(ctx context.Context, cb database.ListConfirmationsFunc) error {
 
-	walker := func(path string, info os.FileInfo, err error) error {
-
-		select {
-		case <-ctx.Done():
-			return nil
-		default:
-			// pass
-		}
-
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		if !strings.HasSuffix(path, ".json") {
-			return nil
-		}
+	local_cb := func(ctx context.Context, path string) error {
 
 		conf, err := db.readConfirmation(path)
 
@@ -171,14 +131,9 @@ func (db *FSConfirmationsDatabase) crawlConfirmations(ctx context.Context, cb da
 		return cb(conf)
 	}
 
-	return walk.Walk(db.root, walker)
+	return crawlDatabase(ctx, db.root, local_cb)
 }
 
 func (db *FSConfirmationsDatabase) pathForConfirmation(conf *confirmation.Confirmation) string {
-	return db.pathForCode(conf.Code)
-}
-
-func (db *FSConfirmationsDatabase) pathForCode(code string) string {
-	fname := fmt.Sprintf("%s.json", code)
-	return filepath.Join(db.root, fname)
+	return pathForAddress(db.root, conf.Code)
 }
