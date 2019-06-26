@@ -44,6 +44,11 @@ func (s *Subscription) Confirm() error {
 	return nil
 }
 
+func (s *Subscription) Unconfirm() error {
+	s.Confirmed = 0
+	return nil
+}
+
 func (s *Subscription) Enable() error {
 
 	if s.IsBlocked() {
@@ -63,12 +68,12 @@ func (s *Subscription) Disable() error {
 	return nil
 }
 
-func (s *Subscription) Blocked() error {
+func (s *Subscription) Block() error {
 	s.Status = SUBSCRIPTION_STATUS_BLOCKED
 	return nil
 }
 
-func (s *Subscription) UNBLOCK() error {
+func (s *Subscription) Unblock() error {
 	s.Status = SUBSCRIPTION_STATUS_PENDING
 	return nil
 }
