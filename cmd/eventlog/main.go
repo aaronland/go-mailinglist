@@ -12,17 +12,11 @@ func main() {
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	logs_dsn := flag.String("eventlogs-dsn", "", "...")
-
-	event := flag.String("event", "", "...")
 	message := flag.String("message", "", "...")
 
 	addr := flag.String("address", "", "...")
 
 	flag.Parse()
-
-	if *event == "" {
-		log.Fatal("Invalid -event parameter")
-	}
 
 	if *message == "" {
 		log.Fatal("Invalid -message parameter")
@@ -46,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	event_log, err := eventlog.NewEventLogWithSubscription(sub, *event, *message)
+	event_log, err := eventlog.NewEventLogWithSubscription(sub, eventlog.EVENTLOG_CUSTOM_EVENT, *message)
 
 	if err != nil {
 		log.Fatal(err)
