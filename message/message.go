@@ -17,8 +17,11 @@ type SendMessageOptions struct {
 
 func SendMessage(msg *gomail.Message, opts *SendMessageOptions) error {
 
-	msg.SetHeader("From", opts.From.Address)
-	msg.SetHeader("To", opts.To.Address)
+	from := opts.From.String()
+	to := opts.To.String()
+
+	msg.SetHeader("From", from)
+	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", opts.Subject)
 
 	return gomail.Send(opts.Sender, msg)
@@ -54,5 +57,5 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 		return SendMessage(msg, local_opts)
 	}
 
-	return subs_db.ListSubscriptionsConfirmed(ctx, cb)
+	return subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
 }

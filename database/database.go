@@ -32,8 +32,8 @@ type SubscriptionsDatabase interface {
 	RemoveSubscription(*subscription.Subscription) error
 	UpdateSubscription(*subscription.Subscription) error
 	GetSubscriptionWithAddress(string) (*subscription.Subscription, error)
-	ListSubscriptionsConfirmed(context.Context, ListSubscriptionsFunc) error
-	ListSubscriptionsUnconfirmed(context.Context, ListSubscriptionsFunc) error
+	ListSubscriptions(context.Context, ListSubscriptionsFunc) error
+	ListSubscriptionsWithStatus(context.Context, ListSubscriptionsFunc, ...int) error
 }
 
 type ConfirmationsDatabase interface {
