@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"context"
 	"fmt"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
@@ -37,7 +38,7 @@ func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
 
 	if err != nil {
 
-		if !os.IsNotExist(err){
+		if !os.IsNotExist(err) {
 			return err
 		}
 
@@ -47,7 +48,7 @@ func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
 			return err
 		}
 	}
-	
+
 	fname := fmt.Sprintf("%d-%s.json", ev.Created, ev.Event)
 	path := filepath.Join(root, fname)
 
@@ -58,4 +59,48 @@ func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
 	}
 
 	return marshalData(ev, path)
+}
+
+func (db *FSEventLogsDatabase) ListEventLogs(ctx context.Context, callback database.ListEventLogsFunc) error {
+
+	local_cb := func(ctx context.Context, ev *eventlog.EventLog) error {
+
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
+		}
+
+		return callback(ev)
+	}
+
+	return db.crawlEventLogs(ctx, local_cb)
+}
+
+func (db *FSEventLogsDatabase) crawlEventLogs(ctx context.Context, cb func(ctx context.Context, ev *eventlog.EventLog) error) error {
+
+	local_cb := func(ctx context.Context, path string) error {
+
+		sub, err := db.readEventLog(path)
+
+		if err != nil {
+			return err
+		}
+
+		return cb(ctx, sub)
+	}
+
+	return crawlDatabase(ctx, db.root, local_cb)
+}
+
+func (db *FSEventLogsDatabase) readEventLog(path string) (*eventlog.EventLog, error) {
+
+	ev, err := unmarshalData(path, "eventlog")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ev.(*eventlog.EventLog), nil
 }
