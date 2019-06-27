@@ -157,7 +157,7 @@ func (db *FSSubscriptionsDatabase) writeSubscription(sub *subscription.Subscript
 	return fh.Close()
 }
 
-func (db *FSSubscriptionsDatabase) ListSubscriptionsConfirmed(ctx context.Context, cb database.ListSubscriptionsFunc) error {
+func (db *FSSubscriptionsDatabase) ListSubscriptions(ctx context.Context, cb database.ListSubscriptionsFunc) error {
 
 	local_cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
@@ -166,10 +166,6 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsConfirmed(ctx context.Contex
 			return nil
 		default:
 			// pass
-		}
-
-		if !sub.IsConfirmed() {
-			return nil
 		}
 
 		return cb(sub)
@@ -178,7 +174,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsConfirmed(ctx context.Contex
 	return db.crawlSubscriptions(ctx, local_cb)
 }
 
-func (db *FSSubscriptionsDatabase) ListSubscriptionsUnconfirmed(ctx context.Context, cb database.ListSubscriptionsFunc) error {
+func (db *FSSubscriptionsDatabase) ListSubscriptionsWithStatus(ctx context.Context, cb database.ListSubscriptionsFunc, status ...int) error {
 
 	local_cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
@@ -189,7 +185,16 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsUnconfirmed(ctx context.Cont
 			// pass
 		}
 
-		if sub.IsConfirmed() {
+		match := false
+
+		for _, s := range status {
+			if sub.Status == s {
+				match = true
+				break
+			}
+		}
+
+		if !match {
 			return nil
 		}
 

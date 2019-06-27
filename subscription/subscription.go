@@ -1,7 +1,7 @@
 package subscription
 
 import (
-       "errors"
+	"errors"
 	"net/mail"
 	"time"
 )
@@ -12,10 +12,11 @@ const SUBSCRIPTION_STATUS_DISABLED int = 2
 const SUBSCRIPTION_STATUS_BLOCKED int = 3
 
 type Subscription struct {
-	Address   string `json:"address"`
-	Created   int64  `json:"created"`
-	Confirmed int64  `json:"confirmed"`
-	Status    int    `json:"status"`
+	Address      string `json:"address"`
+	Created      int64  `json:"created"`
+	Confirmed    int64  `json:"confirmed"`
+	LastModified int64  `json:"lastmodified"`
+	Status       int    `json:"status"`
 }
 
 func NewSubscription(str_addr string) (*Subscription, error) {
@@ -27,12 +28,14 @@ func NewSubscription(str_addr string) (*Subscription, error) {
 	}
 
 	now := time.Now()
+	ts := now.Unix()
 
 	sub := &Subscription{
-		Address:   addr.Address,
-		Created:   now.Unix(),
-		Confirmed: 0,
-		Status:    SUBSCRIPTION_STATUS_PENDING,
+		Address:      addr.Address,
+		Created:      ts,
+		LastModified: ts,
+		Confirmed:    0,
+		Status:       SUBSCRIPTION_STATUS_PENDING,
 	}
 
 	return sub, nil
@@ -41,11 +44,18 @@ func NewSubscription(str_addr string) (*Subscription, error) {
 func (s *Subscription) Confirm() error {
 	now := time.Now()
 	s.Confirmed = now.Unix()
+
+	s.Status = SUBSCRIPTION_STATUS_ENABLED
+
+	s.setLastModified()
 	return nil
 }
 
 func (s *Subscription) Unconfirm() error {
 	s.Confirmed = 0
+	s.Status = SUBSCRIPTION_STATUS_PENDING
+
+	s.setLastModified()
 	return nil
 }
 
@@ -55,27 +65,36 @@ func (s *Subscription) Enable() error {
 		return errors.New("Subscriber is blocked and needs to be unblocked first")
 	}
 
-	if !s.IsConfirmed(){
-		return errors.New("Subscriber is not confirmed yet")
-	}
-
 	s.Status = SUBSCRIPTION_STATUS_ENABLED
+
+	s.setLastModified()
 	return nil
 }
 
 func (s *Subscription) Disable() error {
 	s.Status = SUBSCRIPTION_STATUS_DISABLED
+
+	s.setLastModified()
 	return nil
 }
 
 func (s *Subscription) Block() error {
 	s.Status = SUBSCRIPTION_STATUS_BLOCKED
+
+	s.setLastModified()
 	return nil
 }
 
 func (s *Subscription) Unblock() error {
 	s.Status = SUBSCRIPTION_STATUS_PENDING
+
+	s.setLastModified()
 	return nil
+}
+
+func (s *Subscription) setLastModified() {
+	now := time.Now()
+	s.LastModified = now.Unix()
 }
 
 func (s *Subscription) IsBlocked() bool {

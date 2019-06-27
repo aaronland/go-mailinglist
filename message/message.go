@@ -54,5 +54,5 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 		return SendMessage(msg, local_opts)
 	}
 
-	return subs_db.ListSubscriptionsConfirmed(ctx, cb)
+	return subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
 }
