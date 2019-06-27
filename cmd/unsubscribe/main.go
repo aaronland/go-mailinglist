@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AddSubscription(sub)
+	err = db.RemoveSubscription(sub)
 
 	if err != nil {
 		log.Fatal(err)

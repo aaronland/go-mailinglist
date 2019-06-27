@@ -44,6 +44,6 @@ type ConfirmationsDatabase interface {
 }
 
 type EventLogsDatabase interface {
-	AddEvent(*eventlog.EventLog) error
-	ListEvents(context.Context, ListEventLogsFunc, ...interface{}) error
+	AddEventLog(*eventlog.EventLog) error
+	ListEventLogs(context.Context, ListEventLogsFunc, ...interface{}) error
 }

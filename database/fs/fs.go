@@ -63,7 +63,7 @@ func marshalData(data interface{}, path string) error {
 func unmarshalData(path string, data_type string) (interface{}, error) {
 
 	switch data_type {
-	case "confirmations", "eventlogs", "subscriptions":
+	case "confirmation", "eventlog", "subscription":
 		// pass
 	default:
 		return nil, errors.New("Unsupported interface")
@@ -87,7 +87,7 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 
 	switch data_type {
 
-	case "confirmations":
+	case "confirmation":
 
 		var conf *confirmation.Confirmation
 		err = json.Unmarshal(body, &conf)
@@ -96,7 +96,7 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 			data = conf
 		}
 
-	case "eventlogs":
+	case "eventlog":
 
 		var log *eventlog.EventLog
 		err = json.Unmarshal(body, &log)
@@ -105,7 +105,7 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 			data = log
 		}
 
-	case "subscriptions":
+	case "subscription":
 
 		var sub *subscription.Subscription
 		err = json.Unmarshal(body, &sub)

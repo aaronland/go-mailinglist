@@ -101,3 +101,35 @@ func NewConfirmationsDatabaseFromDSN(str_dsn string) (database.ConfirmationsData
 
 	return db, nil
 }
+
+func NewEventLogsDatabaseFromDSN(str_dsn string) (database.EventLogsDatabase, error) {
+
+	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "database")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var db database.EventLogsDatabase
+
+	switch strings.ToUpper(dsn_map["database"]) {
+	case "FS":
+
+		root, ok := dsn_map["root"]
+
+		if ok {
+			db, err = fs.NewFSEventLogsDatabase(root)
+		} else {
+			err = errors.New("Missing 'root' DSN string")
+		}
+
+	default:
+		err = errors.New("Invalid database")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
