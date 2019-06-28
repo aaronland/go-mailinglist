@@ -7,6 +7,7 @@ import (
 	"github.com/aaronland/gomail"
 	"log"
 	"net/mail"
+	"sync"
 	"time"
 )
 
@@ -46,14 +47,22 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 		log.Printf("Time to send message to list %v\n", time.Since(t1))
 	}()
 
-	// please for to be making this part of SendMessageOptions
-	// for today we'll just say 10 per second
-	// (20190628/thisisaaronland)
+	// please for to be making throttles part of SendMessageOptions - for
+	// today we'll just say 10 per second (20190628/thisisaaronland)
 
 	rate := time.Second / 10
 	throttle := time.Tick(rate)
 
+	wg := new(sync.WaitGroup)
+
 	cb := func(sub *subscription.Subscription) error {
+
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
+		}
 
 		to, err := mail.ParseAddress(sub.Address)
 
@@ -70,12 +79,22 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		<-throttle
 
-		go func(msg *gomail.Message, local_opts *SendMessageOptions) {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
+		}
+
+		wg.Add(1)
+
+		go func(wg *sync.WaitGroup, msg *gomail.Message, local_opts *SendMessageOptions) {
 
 			t1 := time.Now()
 
 			defer func() {
 				log.Printf("Time to send message to %s %v\n", local_opts.To, time.Since(t1))
+				wg.Done()
 			}()
 
 			err := SendMessage(msg, local_opts)
@@ -84,10 +103,17 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 				log.Printf("Failed to send message to %s (%s)\n", to, err)
 			}
 
-		}(msg, local_opts)
+		}(wg, msg, local_opts)
 
 		return nil
 	}
 
-	return subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
+	err := subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
+
+	if err != nil {
+		return err
+	}
+
+	wg.Wait()
+	return nil
 }
