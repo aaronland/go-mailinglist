@@ -5,7 +5,9 @@ import (
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
+	"log"
 	"net/mail"
+	"time"
 )
 
 type SendMessageOptions struct {
@@ -13,6 +15,7 @@ type SendMessageOptions struct {
 	Subject string
 	From    *mail.Address
 	To      *mail.Address
+	// Throttle	<-chan time.Time
 }
 
 func SendMessage(msg *gomail.Message, opts *SendMessageOptions) error {
@@ -37,9 +40,20 @@ func SendMessageToList(subs_db database.SubscriptionsDatabase, msg *gomail.Messa
 
 func SendMailToListWithContext(ctx context.Context, subs_db database.SubscriptionsDatabase, msg *gomail.Message, opts *SendMessageOptions) error {
 
-	cb := func(sub *subscription.Subscription) error {
+	t1 := time.Now()
 
-		// throttles and goroutines and stuff
+	defer func() {
+		log.Printf("Time to send message to list %v\n", time.Since(t1))
+	}()
+
+	// please for to be making this part of SendMessageOptions
+	// for today we'll just say 10 per second
+	// (20190628/thisisaaronland)
+
+	rate := time.Second / 10
+	throttle := time.Tick(rate)
+
+	cb := func(sub *subscription.Subscription) error {
 
 		to, err := mail.ParseAddress(sub.Address)
 
@@ -54,7 +68,25 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 			To:      to,
 		}
 
-		return SendMessage(msg, local_opts)
+		<-throttle
+
+		go func(msg *gomail.Message, local_opts *SendMessageOptions) {
+
+			t1 := time.Now()
+
+			defer func() {
+				log.Printf("Time to send message to %s %v\n", local_opts.To, time.Since(t1))
+			}()
+
+			err := SendMessage(msg, local_opts)
+
+			if err != nil {
+				log.Printf("Failed to send message to %s (%s)\n", to, err)
+			}
+
+		}(msg, local_opts)
+
+		return nil
 	}
 
 	return subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
