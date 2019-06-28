@@ -90,10 +90,10 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		go func(wg *sync.WaitGroup, msg *gomail.Message, local_opts *SendMessageOptions) {
 
-			t1 := time.Now()
+			t2 := time.Now()
 
 			defer func() {
-				log.Printf("Time to send message to %s %v\n", local_opts.To, time.Since(t1))
+				log.Printf("Time to send message to %s %v\n", local_opts.To, time.Since(t2))
 				wg.Done()
 			}()
 
