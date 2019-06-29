@@ -11,11 +11,14 @@ import (
 	"time"
 )
 
+type SendMessageFilterFunc func(msg *gomail.Message, to *mail.Address) (bool, error) // true to send mail, false to skip
+
 type SendMessageOptions struct {
 	Sender  gomail.Sender
 	Subject string
 	From    *mail.Address
 	To      *mail.Address
+	FilterFunc  SendMessageFilterFunc
 	// Throttle	<-chan time.Time
 }
 
@@ -68,6 +71,19 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		if err != nil {
 			return err
+		}
+
+		if opts.FilterFunc != nil {
+
+			ok, err := opts.FilterFunc(msg, to)
+
+			if err != nil {
+				return err
+			}
+
+			if !ok {
+				return nil
+			}
 		}
 
 		local_opts := &SendMessageOptions{
