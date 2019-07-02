@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-type SendMessageFilterFunc func(msg *gomail.Message, to *mail.Address) (bool, error) // true to send mail, false to skip
+type PreSendMessageFilterFunc func(msg *gomail.Message, to *mail.Address) (bool, error) // true to send mail, false to skip
+
+type PostSendMessageFunc func(msg *gomail.Message, to *mail.Address) error
 
 type SendMessageOptions struct {
-	Sender  gomail.Sender
-	Subject string
-	From    *mail.Address
-	To      *mail.Address
-	FilterFunc  SendMessageFilterFunc
+	Sender            gomail.Sender
+	Subject           string
+	From              *mail.Address
+	To                *mail.Address
+	PreSendFilterFunc PreSendMessageFilterFunc
+	PostSendFunc      PostSendMessageFunc
 	// Throttle	<-chan time.Time
 }
 
@@ -73,15 +76,15 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 			return err
 		}
 
-		if opts.FilterFunc != nil {
+		if opts.PreSendFilterFunc != nil {
 
-			ok, err := opts.FilterFunc(msg, to)
+			include, err := opts.PreSendFilterFunc(msg, to)
 
 			if err != nil {
 				return err
 			}
 
-			if !ok {
+			if !include {
 				return nil
 			}
 		}
@@ -91,6 +94,10 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 			Subject: opts.Subject,
 			From:    opts.From,
 			To:      to,
+		}
+
+		if opts.PostSendFunc != nil {
+			local_opts.PostSendFunc = opts.PostSendFunc
 		}
 
 		<-throttle
@@ -117,6 +124,15 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 			if err != nil {
 				log.Printf("Failed to send message to %s (%s)\n", to, err)
+			}
+
+			if local_opts.PostSendFunc != nil {
+
+				err = local_opts.PostSendFunc(msg, local_opts.To)
+
+				if err != nil {
+					log.Printf("Failed to complete post send message func for %s (%s)\n", to, err)
+				}
 			}
 
 		}(wg, msg, local_opts)
