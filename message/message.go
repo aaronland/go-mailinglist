@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-type PreSendMessageFilterFunc func(msg *gomail.Message, to *mail.Address) (bool, error) // true to send mail, false to skip
+type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip
 
-type PostSendMessageFunc func(msg *gomail.Message, to *mail.Address) error
+type PostSendMessageFunc func(*gomail.Message, *mail.Address, error) error
 
 type SendMessageOptions struct {
 	Sender            gomail.Sender
@@ -128,10 +128,10 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 			if local_opts.PostSendFunc != nil {
 
-				err = local_opts.PostSendFunc(msg, local_opts.To)
+				post_err := local_opts.PostSendFunc(msg, local_opts.To, err)
 
-				if err != nil {
-					log.Printf("Failed to complete post send message func for %s (%s)\n", to, err)
+				if post_err != nil {
+					log.Printf("Failed to complete post send message func for %s (%s)\n", to, post_err)
 				}
 			}
 
