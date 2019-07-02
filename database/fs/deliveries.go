@@ -61,7 +61,7 @@ func (db *FSDeliveriesDatabase) AddDelivery(d *delivery.Delivery) error {
 	return marshalData(d, path)
 }
 
-func (db *FSDeliveriesDatabase) GetDeliveryWithMessageIdAndAddress(ctx context.Context, message_id string, address string) (*delivery.Delivery, error) {
+func (db *FSDeliveriesDatabase) GetDeliveryWithAddressAndMessageId(address string, message_id string) (*delivery.Delivery, error) {
 
 	root := filepath.Join(db.root, message_id)
 

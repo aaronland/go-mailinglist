@@ -53,5 +53,5 @@ type EventLogsDatabase interface {
 type DeliveriesDatabase interface {
 	AddDelivery(*delivery.Delivery) error
 	ListDeliveries(context.Context, ListDeliveriesFunc) error
-	GetDeliveryWithMessageIdAndAddress(context.Context, string, string) (*delivery.Delivery, error)
+	GetDeliveryWithAddressAndMessageId(string, string) (*delivery.Delivery, error)
 }
