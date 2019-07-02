@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"github.com/aaronland/go-mailinglist/confirmation"
+	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/subscription"
 )
@@ -26,6 +27,7 @@ func IsNotExist(err error) bool {
 type ListSubscriptionsFunc func(*subscription.Subscription) error
 type ListConfirmationsFunc func(*confirmation.Confirmation) error
 type ListEventLogsFunc func(*eventlog.EventLog) error
+type ListDeliveriesFunc func(*delivery.Delivery) error
 
 type SubscriptionsDatabase interface {
 	AddSubscription(*subscription.Subscription) error
@@ -46,4 +48,10 @@ type ConfirmationsDatabase interface {
 type EventLogsDatabase interface {
 	AddEventLog(*eventlog.EventLog) error
 	ListEventLogs(context.Context, ListEventLogsFunc) error
+}
+
+type DeliveriesDatabase interface {
+	AddDelivery(*delivery.Delivery) error
+	ListDeliveries(context.Context, ListDeliveriesFunc) error
+	GetDeliveryWithMessageIdAndAddress(context.Context, string, string) (*delivery.Delivery, error)
 }

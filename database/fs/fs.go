@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aaronland/go-mailinglist/confirmation"
+	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/whosonfirst/walk"
@@ -94,6 +95,15 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 
 		if err == nil {
 			data = conf
+		}
+
+	case "delivery":
+
+		var d *delivery.Delivery
+		err = json.Unmarshal(body, &d)
+
+		if err == nil {
+			data = d
 		}
 
 	case "eventlog":
