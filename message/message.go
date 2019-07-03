@@ -13,7 +13,7 @@ import (
 
 type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip
 
-type PostSendMessageFunc func(*gomail.Message, *mail.Address, error) error
+type PostSendMessageFunc func(*gomail.Message, *mail.Address, time.Duration, error) error
 
 type SendMessageOptions struct {
 	Sender            gomail.Sender
@@ -113,6 +113,8 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		go func(wg *sync.WaitGroup, msg *gomail.Message, local_opts *SendMessageOptions) {
 
+			t2 := time.Now()
+
 			defer func() {
 				wg.Done()
 			}()
@@ -125,7 +127,9 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 			if local_opts.PostSendFunc != nil {
 
-				post_err := local_opts.PostSendFunc(msg, local_opts.To, err)
+				tts := time.Since(t2)
+
+				post_err := local_opts.PostSendFunc(msg, local_opts.To, tts, err)
 
 				if post_err != nil {
 					log.Printf("Failed to complete post send message func for %s (%s)\n", to, post_err)
