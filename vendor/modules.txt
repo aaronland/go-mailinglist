@@ -1,6 +1,9 @@
+# github.com/aaronland/go-http-bootstrap v0.0.5
+github.com/aaronland/go-http-bootstrap
+github.com/aaronland/go-http-bootstrap/resources
 # github.com/aaronland/go-http-crumb v0.0.3
 github.com/aaronland/go-http-crumb
-# github.com/aaronland/go-http-rewrite v0.0.1
+# github.com/aaronland/go-http-rewrite v0.0.3
 github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.1
 github.com/aaronland/go-http-sanitize
@@ -17,11 +20,13 @@ github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
+# github.com/whosonfirst/go-bindata-assetfs v1.0.1
+github.com/whosonfirst/go-bindata-assetfs
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
 # github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73
 github.com/whosonfirst/walk
-# golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
+# golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 golang.org/x/net/html
 golang.org/x/net/html/atom
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc

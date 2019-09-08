@@ -6,6 +6,7 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
+	"github.com/aaronland/go-http-bootstrap"	
 	"log"
 	gohttp "net/http"
 )
@@ -55,6 +56,14 @@ func main() {
 
 	mux := gohttp.NewServeMux()
 
+	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
+
+	err = bootstrap.AppendAssetHandlers(mux)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	ping_handler, err := http.PingHandler()
 
 	if err != nil {
@@ -75,13 +84,15 @@ func main() {
 			// paths for other things
 		}
 
-		h, err := http.IndexHandler(opts)
+		index_handler, err := http.IndexHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		mux.Handle(*path_index, h)
+		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
+		
+		mux.Handle(*path_index, index_handler)
 	}
 
 	if *subscribe_handler {
@@ -92,15 +103,16 @@ func main() {
 			Sender:        sender,
 		}
 
-		h, err := http.SubscribeHandler(opts)
+		subscribe_handler, err := http.SubscribeHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
-
-		mux.Handle(*path_subscribe, cr)
+		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)				
+		subscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, subscribe_handler)
+		
+		mux.Handle(*path_subscribe, subscribe_handler)
 	}
 
 	if *unsubscribe_handler {
@@ -111,15 +123,16 @@ func main() {
 			Sender:        sender,
 		}
 
-		h, err := http.UnsubscribeHandler(opts)
+		unsubscribe_handler, err := http.UnsubscribeHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
+		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)		
+		unsubscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, unsubscribe_handler)
 
-		mux.Handle(*path_unsubscribe, cr)
+		mux.Handle(*path_unsubscribe, unsubscribe_handler)
 	}
 
 	if *confirm_handler {
@@ -129,15 +142,16 @@ func main() {
 			Confirmations: conf_db,
 		}
 
-		h, err := http.ConfirmHandler(opts)
+		confirm_handler, err := http.ConfirmHandler(opts)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cr := crumb.EnsureCrumbHandler(crumb_cfg, h)
+		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)				
+		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
 
-		mux.Handle(*path_confirm, cr)
+		mux.Handle(*path_confirm, confirm_handler)
 	}
 
 	s, err := server.NewServer(*protocol, *host, *port)
