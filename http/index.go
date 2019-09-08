@@ -6,15 +6,12 @@ import (
 )
 
 type IndexHandlerOptions struct {
+	Templates *template.Template
 }
 
 func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 
-	index_t := template.New("index")
-
-	index_t, err := index_t.Parse(`<html><head><title>Signup</title></head>
-<body>
-</body></html>`)
+	index_t, err := LoadTemplate(opts.Templates, "index")
 
 	if err != nil {
 		return nil, err

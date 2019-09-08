@@ -2,16 +2,16 @@ package main
 
 import (
 	"flag"
+	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/assets/templates"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
-	"github.com/aaronland/go-mailinglist/assets/templates"
-	"github.com/aaronland/go-http-bootstrap"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"		
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"html/template"
 	"log"
 	gohttp "net/http"
-	"html/template"
 	"strings"
 )
 
@@ -40,7 +40,7 @@ func main() {
 
 	var path_templates flags.MultiString
 	flag.Var(&path_templates, "templates", "One or more optional strings for local templates. This is anything that can be read by the 'templates.ParseGlob' method.")
-	
+
 	path_ping := flag.String("path-ping", "/ping", "...")
 
 	flag.Parse()
@@ -63,20 +63,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	t := template.New("subscriptiond").Funcs(template.FuncMap{
-	})
+	t := template.New("subscriptiond").Funcs(template.FuncMap{})
 
 	if len(path_templates) > 0 {
 
 		for _, p := range path_templates {
-			
+
 			t, err = t.ParseGlob(p)
-			
+
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-		
+
 	} else {
 
 		for _, name := range templates.AssetNames() {
@@ -103,7 +102,7 @@ func main() {
 			log.Fatal("Invalid -static-prefix value")
 		}
 	}
-	
+
 	mux := gohttp.NewServeMux()
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
@@ -113,7 +112,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	ping_handler, err := http.PingHandler()
 
 	if err != nil {
@@ -131,7 +130,7 @@ func main() {
 	if *index_handler {
 
 		opts := &http.IndexHandlerOptions{
-			// paths for other things
+			Templates: t,
 		}
 
 		index_handler, err := http.IndexHandler(opts)
@@ -141,7 +140,7 @@ func main() {
 		}
 
 		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
-		
+
 		mux.Handle(*path_index, index_handler)
 	}
 
@@ -159,9 +158,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)				
+		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
 		subscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, subscribe_handler)
-		
+
 		mux.Handle(*path_subscribe, subscribe_handler)
 	}
 
@@ -179,7 +178,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)		
+		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
 		unsubscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, unsubscribe_handler)
 
 		mux.Handle(*path_unsubscribe, unsubscribe_handler)
@@ -198,7 +197,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)				
+		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
 		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
 
 		mux.Handle(*path_confirm, confirm_handler)
