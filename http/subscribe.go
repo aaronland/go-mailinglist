@@ -22,6 +22,7 @@ type ConfirmationEmailTemplateVars struct {
 }
 
 type SubscribeHandlerOptions struct {
+	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 	Sender        gomail.Sender
@@ -29,24 +30,19 @@ type SubscribeHandlerOptions struct {
 
 func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
-	subscribe_t := template.New("subscribe")
+	subscribe_t, err := LoadTemplate(opts.Templates, "subscribe")
 
-	subscribe_t, err := subscribe_t.Parse(`<html><head><title>Signup</title></head>
-<body>
-<form method="POST" action="{{ .URL }}">
-<input type="text" name="address" id="address" placeholder="Enter your email address address" />
-<button type="submit">Sign up</button>
-</form>
-</body></html>`)
+	if err != nil {
+		return nil, err
+	}
 
-	confirm_t := template.New("confirm")
-	confirm_t, err = confirm_t.Parse(`<html><head><title>Signup</title></head>
-<body>
-We've sent a confirmation email.
-</body></html>`)
+	confirm_t, err := LoadTemplate(opts.Templates, "subscribe_confirmation")
 
-	email_t := template.New("email")
-	email_t, err = email_t.Parse(`<a href="#">{{ .Code }}</a>`)
+	if err != nil {
+		return nil, err
+	}
+
+	email_t, err := LoadTemplate(opts.Templates, "email_confirmation")
 
 	if err != nil {
 		return nil, err

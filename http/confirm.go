@@ -9,6 +9,7 @@ import (
 )
 
 type ConfirmHandlerOptions struct {
+	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 }
@@ -19,15 +20,13 @@ type ConfirmTemplateVars struct {
 
 func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
-	confirm_t := template.New("confirm")
-	confirm_t, err := confirm_t.Parse(`<p>Are you sure...</p>`)
+	confirm_t, err := LoadTemplate(opts.Templates, "confirm")
 
 	if err != nil {
 		return nil, err
 	}
 
-	update_t := template.New("update")
-	update_t, err = update_t.Parse(`<p>Okay</p>`)
+	update_t, err := LoadTemplate(opts.Templates, "confirm_update")
 
 	if err != nil {
 		return nil, err

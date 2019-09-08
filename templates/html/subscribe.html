@@ -1,4 +1,10 @@
 {{ define "subscribe_form"}}
 {{template "common_header"}}
+
+<form method="POST" action="{{ .URL }}">
+<input type="text" name="address" id="address" placeholder="Enter your email address address" />
+<button type="submit">Sign up</button>
+</form>
+
 {{template "common_footer"}}
 {{ end }}

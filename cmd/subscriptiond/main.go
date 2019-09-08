@@ -147,6 +147,7 @@ func main() {
 	if *subscribe_handler {
 
 		opts := &http.SubscribeHandlerOptions{
+			Templates:     t,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -167,6 +168,7 @@ func main() {
 	if *unsubscribe_handler {
 
 		opts := &http.UnsubscribeHandlerOptions{
+			Templates:     t,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -187,6 +189,7 @@ func main() {
 	if *confirm_handler {
 
 		opts := &http.ConfirmHandlerOptions{
+			Templates:     t,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 		}
