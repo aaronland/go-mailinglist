@@ -18,12 +18,18 @@ github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
+# github.com/go-ini/ini v1.42.0
+github.com/go-ini/ini
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
+# github.com/whosonfirst/go-bindata v0.1.0
+github.com/whosonfirst/go-bindata
 # github.com/whosonfirst/go-bindata-assetfs v1.0.1
 github.com/whosonfirst/go-bindata-assetfs
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
+# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
+github.com/whosonfirst/go-whosonfirst-cli/flags
 # github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73
 github.com/whosonfirst/walk
 # golang.org/x/net v0.0.0-20190628185345-da137c7871d7

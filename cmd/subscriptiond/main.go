@@ -6,9 +6,13 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
-	"github.com/aaronland/go-http-bootstrap"	
+	"github.com/aaronland/go-mailinglist/assets/templates"
+	"github.com/aaronland/go-http-bootstrap"
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"		
 	"log"
 	gohttp "net/http"
+	"html/template"
+	"strings"
 )
 
 func main() {
@@ -32,6 +36,11 @@ func main() {
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
 
+	static_prefix := flag.String("static-prefix", "", "Prepend this prefix to URLs for static assets.")
+
+	var path_templates flags.MultiString
+	flag.Var(&path_templates, "templates", "One or more optional strings for local templates. This is anything that can be read by the 'templates.ParseGlob' method.")
+	
 	path_ping := flag.String("path-ping", "/ping", "...")
 
 	flag.Parse()
@@ -54,6 +63,47 @@ func main() {
 		log.Fatal(err)
 	}
 
+	t := template.New("subscriptiond").Funcs(template.FuncMap{
+	})
+
+	if len(path_templates) > 0 {
+
+		for _, p := range path_templates {
+			
+			t, err = t.ParseGlob(p)
+			
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		
+	} else {
+
+		for _, name := range templates.AssetNames() {
+
+			body, err := templates.Asset(name)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			t, err = t.Parse(string(body))
+
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	if *static_prefix != "" {
+
+		*static_prefix = strings.TrimRight(*static_prefix, "/")
+
+		if !strings.HasPrefix(*static_prefix, "/") {
+			log.Fatal("Invalid -static-prefix value")
+		}
+	}
+	
 	mux := gohttp.NewServeMux()
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
