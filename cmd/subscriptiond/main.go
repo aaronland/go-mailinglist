@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
@@ -8,7 +9,10 @@ import (
 	"github.com/aaronland/go-mailinglist/assets/templates"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
+	"github.com/aaronland/gocloud-runtimevar-string"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	_ "gocloud.dev/runtimevar/constantvar"
+	_ "gocloud.dev/runtimevar/filevar"	
 	"html/template"
 	"log"
 	gohttp "net/http"
@@ -20,7 +24,7 @@ func main() {
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	conf_dsn := flag.String("confirmations-dsn", "", "...")
 	sender_dsn := flag.String("sender-dsn", "", "...")
-	crumb_dsn := flag.String("crumb-dsn", "", "...")
+	crumb_url := flag.String("crumb-url", "", "...")
 
 	protocol := flag.String("protocol", "http", "...")
 	host := flag.String("host", "localhost", "...")
@@ -119,7 +123,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	crumb_cfg, err := crumb.NewCrumbConfigFromDSN(*crumb_dsn)
+	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	crumb_cfg, err := crumb.NewCrumbConfigFromDSN(crumb_dsn)
 
 	if err != nil {
 		log.Fatal(err)
