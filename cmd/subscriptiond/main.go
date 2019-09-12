@@ -4,6 +4,8 @@ package main
 
 go run -mod vendor cmd/subscriptiond/main.go -confirmations-dsn 'database=fs root=/tmp/subs/confirmations' -subscriptions-dsn 'database=fs root=/tmp/subs/subscriptions' -sender-dsn 'sender=stdout' -crumb-url 'constant://?val=secret=secret+salt=salt+extra=foo+separator=a+ttl=300' -templates 'templates/html/*.html'
 
+TO DO: add a -local flag for setting up these values on the fly...
+
 */
 
 import (
