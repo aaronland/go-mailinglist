@@ -52,19 +52,19 @@ func main() {
 	subs_db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*subs_dsn)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create subscriptions database: %s", err)
 	}
 
 	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create confirmations database:", err)
 	}
 
 	sender, err := mailinglist.NewSenderFromDSN(*sender_dsn)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create mail sender: %s", err)
 	}
 
 	t := template.New("subscriptiond").Funcs(template.FuncMap{})
@@ -76,7 +76,7 @@ func main() {
 			t, err = t.ParseGlob(p)
 
 			if err != nil {
-				log.Fatal(err)
+				log.Fatalf("Failed to parse templates (%s): %s", p, err)
 			}
 		}
 
@@ -93,7 +93,7 @@ func main() {
 			t, err = t.Parse(string(body))
 
 			if err != nil {
-				log.Fatal(err)
+				log.Fatalf("Failed to parse template (%s): %s", name, err)
 			}
 		}
 	}
@@ -107,6 +107,18 @@ func main() {
 		}
 	}
 
+	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)
+
+	if err != nil {
+		log.Fatalf("Failed to open crumb URL: %s", err)
+	}
+
+	crumb_cfg, err := crumb.NewCrumbConfigFromDSN(crumb_dsn)
+
+	if err != nil {
+		log.Fatalf("Failed to create crumb: %s", err)
+	}
+	
 	mux := gohttp.NewServeMux()
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
@@ -120,19 +132,7 @@ func main() {
 	ping_handler, err := http.PingHandler()
 
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	crumb_cfg, err := crumb.NewCrumbConfigFromDSN(crumb_dsn)
-
-	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create ping handler:%s", err)
 	}
 
 	mux.Handle(*path_ping, ping_handler)
@@ -146,7 +146,7 @@ func main() {
 		index_handler, err := http.IndexHandler(opts)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to create index handler: %s", err)
 		}
 
 		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
@@ -166,7 +166,7 @@ func main() {
 		subscribe_handler, err := http.SubscribeHandler(opts)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to create subscribe handler: %s", err)
 		}
 
 		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
@@ -187,7 +187,7 @@ func main() {
 		unsubscribe_handler, err := http.UnsubscribeHandler(opts)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to create unsubscribe handler: %s", err)
 		}
 
 		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
@@ -207,7 +207,7 @@ func main() {
 		confirm_handler, err := http.ConfirmHandler(opts)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to create confirm handler: %s", err)
 		}
 
 		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
@@ -219,7 +219,7 @@ func main() {
 	s, err := server.NewServer(*protocol, *host, *port)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create server: %s", err)
 	}
 
 	log.Printf("Listening on %s\n", s.Address())
