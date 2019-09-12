@@ -7,6 +7,7 @@ import (
 
 type IndexHandlerOptions struct {
 	Templates *template.Template
+	Paths     *PathOptions
 }
 
 func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {

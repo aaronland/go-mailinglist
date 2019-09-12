@@ -23,6 +23,7 @@ type ConfirmationEmailTemplateVars struct {
 
 type SubscribeHandlerOptions struct {
 	Templates     *template.Template
+	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 	Sender        gomail.Sender

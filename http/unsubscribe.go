@@ -17,6 +17,7 @@ type UnsubscribeTemplateVars struct {
 
 type UnsubscribeHandlerOptions struct {
 	Templates     *template.Template
+	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 	Sender        gomail.Sender

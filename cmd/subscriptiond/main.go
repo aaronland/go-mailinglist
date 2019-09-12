@@ -1,5 +1,11 @@
 package main
 
+/*
+
+go run -mod vendor cmd/subscriptiond/main.go -confirmations-dsn 'database=fs root=/tmp/subs/confirmations' -subscriptions-dsn 'database=fs root=/tmp/subs/subscriptions' -sender-dsn 'sender=stdout' -crumb-url 'constant://?val=secret=secret+salt=salt+extra=foo+separator=a+ttl=300' -templates 'templates/html/*.html'
+
+*/
+
 import (
 	"context"
 	"flag"
@@ -12,7 +18,7 @@ import (
 	"github.com/aaronland/gocloud-runtimevar-string"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	_ "gocloud.dev/runtimevar/constantvar"
-	_ "gocloud.dev/runtimevar/filevar"	
+	_ "gocloud.dev/runtimevar/filevar"
 	"html/template"
 	"log"
 	gohttp "net/http"
@@ -35,7 +41,7 @@ func main() {
 	unsubscribe_handler := flag.Bool("unsubscribe-handler", true, "...")
 	confirm_handler := flag.Bool("confirm-handler", true, "...")
 
-	path_index := flag.String("path-index", "/index", "...")
+	path_index := flag.String("path-index", "/", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
@@ -118,7 +124,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create crumb: %s", err)
 	}
-	
+
 	mux := gohttp.NewServeMux()
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
@@ -135,12 +141,20 @@ func main() {
 		log.Fatalf("Failed to create ping handler:%s", err)
 	}
 
+	path_opts := &http.PathOptions{
+		Index:       *path_index,
+		Subscribe:   *path_subscribe,
+		Unsubscribe: *path_unsubscribe,
+		Confirm:     *path_confirm,
+	}
+
 	mux.Handle(*path_ping, ping_handler)
 
 	if *index_handler {
 
 		opts := &http.IndexHandlerOptions{
 			Templates: t,
+			Paths:     path_opts,
 		}
 
 		index_handler, err := http.IndexHandler(opts)
@@ -151,13 +165,14 @@ func main() {
 
 		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
 
-		mux.Handle(*path_index, index_handler)
+		mux.Handle(path_opts.Index, index_handler)
 	}
 
 	if *subscribe_handler {
 
 		opts := &http.SubscribeHandlerOptions{
 			Templates:     t,
+			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -172,13 +187,14 @@ func main() {
 		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
 		subscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, subscribe_handler)
 
-		mux.Handle(*path_subscribe, subscribe_handler)
+		mux.Handle(path_opts.Subscribe, subscribe_handler)
 	}
 
 	if *unsubscribe_handler {
 
 		opts := &http.UnsubscribeHandlerOptions{
 			Templates:     t,
+			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -193,13 +209,14 @@ func main() {
 		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
 		unsubscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, unsubscribe_handler)
 
-		mux.Handle(*path_unsubscribe, unsubscribe_handler)
+		mux.Handle(path_opts.Unsubscribe, unsubscribe_handler)
 	}
 
 	if *confirm_handler {
 
 		opts := &http.ConfirmHandlerOptions{
 			Templates:     t,
+			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 		}
@@ -213,7 +230,7 @@ func main() {
 		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
 		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
 
-		mux.Handle(*path_confirm, confirm_handler)
+		mux.Handle(path_opts.Confirm, confirm_handler)
 	}
 
 	s, err := server.NewServer(*protocol, *host, *port)

@@ -10,6 +10,7 @@ import (
 
 type ConfirmHandlerOptions struct {
 	Templates     *template.Template
+	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 }
