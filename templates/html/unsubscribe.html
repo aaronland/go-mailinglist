@@ -1,5 +1,5 @@
 {{ define "unsubscribe"}}
-{{template "common_header"}}
+{{template "common_header" . }}
 
 <div class="card">
     <h2 class="card-header">Unsubscribe</h2>
@@ -16,7 +16,7 @@
 	    
 	    <div class="form-group">
 		<label for="address">Email address</label>
-		<input type="email" class="form-control" id="address" aria-describedby="emailHelp" placeholder="Your email address">
+		<input type="email" class="form-control" name="address" id="address" aria-describedby="emailHelp" placeholder="Your email address">
 		<small id="emailHelp" class="form-text text-muted">This is the email address you subscribed to the mailing list with.</small>
 	    </div>
 	    

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
@@ -73,6 +74,12 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			if err != nil {
 				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
+				return
+			}
+
+			if str_addr == "" {
+				vars.Error = errors.New("Empty address")
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}

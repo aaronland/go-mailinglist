@@ -60,7 +60,7 @@ func (db *FSConfirmationsDatabase) RemoveConfirmation(conf *confirmation.Confirm
 	return os.Remove(path)
 }
 
-func (db *FSConfirmationsDatabase) GetConfirmationWithAddress(code string) (*confirmation.Confirmation, error) {
+func (db *FSConfirmationsDatabase) GetConfirmationWithCode(code string) (*confirmation.Confirmation, error) {
 
 	path := pathForAddress(db.root, code)
 

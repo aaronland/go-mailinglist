@@ -1,4 +1,31 @@
 {{ define "confirm"}}
-{{template "common_header"}}
+{{template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">Confirm...</h2>
+    <div class="card-body">
+
+	{{ if .Error }}
+
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+	{{ end }}
+	
+	<form class="form" method="POST" action="{{ .URL }}">
+	    
+	<div class="form-group">
+	    <label for="address">Confirmation code</label>
+	    <input type="code" class="form-control" name="code" id="code" placeholder="Your confirmation code">
+
+	</div>
+	
+	<button type="submit" class="btn btn-primary">Submit</button>
+	
+	</form>
+    </div>
+    
+</div>
+
 {{template "common_footer"}}
 {{ end }}

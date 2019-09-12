@@ -1,9 +1,11 @@
 package http
 
 import (
+	"errors"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/database"
 	"html/template"
+	_ "log"
 	gohttp "net/http"
 	"time"
 )
@@ -16,7 +18,10 @@ type ConfirmHandlerOptions struct {
 }
 
 type ConfirmTemplateVars struct {
-	Code string
+	URL   string
+	Code  string
+	Paths *PathOptions
+	Error error
 }
 
 func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
@@ -38,6 +43,11 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 		subs_db := opts.Subscriptions
 		conf_db := opts.Confirmations
 
+		vars := ConfirmTemplateVars{
+			URL:   req.URL.Path,
+			Paths: opts.Paths,
+		}
+
 		switch req.Method {
 
 		case "GET":
@@ -45,38 +55,42 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			code, err := sanitize.GetString(req, "code")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
+
+			if code == "" {
+				RenderTemplate(rsp, confirm_t, vars)
+				return
+			}
+
+			vars.Code = code
 
 			conf, err := conf_db.GetConfirmationWithCode(code)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			if conf.IsExpired() {
-				gohttp.Error(rsp, "EXPIRED", gohttp.StatusBadRequest)
+				vars.Error = errors.New("Confirmation code is expired.")
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			_, err = subs_db.GetSubscriptionWithAddress(conf.Address)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
-			confirm_vars := ConfirmTemplateVars{
-				Code: code,
-			}
-
-			err = confirm_t.Execute(rsp, confirm_vars)
-
-			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-			}
+			vars.Error = err
+			RenderTemplate(rsp, confirm_t, vars)
 
 			return
 
@@ -85,34 +99,40 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			code, err := sanitize.PostString(req, "code")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
+
+			vars.Code = code
 
 			_, err = sanitize.PostString(req, "confirm")
 
 			if err != nil {
-				// FIX ME : REDIRECT TO GET...
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			conf, err := conf_db.GetConfirmationWithCode(code)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			if conf.IsExpired() {
-				gohttp.Error(rsp, "EXPIRED", gohttp.StatusBadRequest)
+				vars.Error = errors.New("Expired")
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			sub, err := subs_db.GetSubscriptionWithAddress(conf.Address)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
@@ -125,16 +145,12 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				err = subs_db.UpdateSubscription(sub)
 
 				if err != nil {
-					gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)
+					vars.Error = err
+					RenderTemplate(rsp, confirm_t, vars)
 					return
 				}
 
-				err = update_t.Execute(rsp, nil)
-
-				if err != nil {
-					gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-				}
-
+				RenderTemplate(rsp, update_t, vars)
 				return
 
 			case "unsubscribe":
@@ -142,20 +158,18 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				err = subs_db.RemoveSubscription(sub)
 
 				if err != nil {
-					gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)
+					vars.Error = err
+					RenderTemplate(rsp, confirm_t, vars)
 					return
 				}
 
-				err = update_t.Execute(rsp, nil)
-
-				if err != nil {
-					gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-				}
-
+				RenderTemplate(rsp, update_t, vars)
 				return
 
 			default:
-				gohttp.Error(rsp, "Invalid action", gohttp.StatusInternalServerError)
+
+				vars.Error = errors.New("Invalid action")
+				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 

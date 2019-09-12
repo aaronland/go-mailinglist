@@ -1,4 +1,26 @@
 {{ define "confirm_update"}}
-{{template "common_header"}}
+{{template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">Confirmation complete</h2>
+    <div class="card-body">
+
+	{{ if .Error }}
+
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+
+	{{ else }}
+
+	<div class="alert alert-success" role="alert">
+	    <p>...</p>
+	</div>
+	
+	{{ end }}
+	
+    </div>
+</div>
+
 {{template "common_footer"}}
 {{ end }}
