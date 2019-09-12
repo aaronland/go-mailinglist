@@ -3,8 +3,17 @@
 
 <div class="card">
     <h2 class="card-header">Subscribe</h2>
-    <form class="card-body" method="POST" action="{{ .URL }}">
+    <div class="card-body">
+
+	{{ if .Error }}
+
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+	{{ end }}
 	
+	<form class="form" method="POST" action="{{ .URL }}">
+	    
 	<div class="form-group">
 	    <label for="address">Email address</label>
 	    <input type="email" class="form-control" id="address" aria-describedby="emailHelp" placeholder="Your email address">
@@ -12,9 +21,10 @@
 	</div>
 	
 	<button type="submit" class="btn btn-primary">Submit</button>
-
-    </form>
-
+	
+	</form>
+    </div>
+    
     <div class="card-footer">
 	<p>If you're looking to <em>unsubscribe</em> to the mailing list then <a href="{{ .Paths.Unsubscribe }}">head on over here</a>.</p>
     </div>

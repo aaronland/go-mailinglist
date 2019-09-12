@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
@@ -67,14 +68,16 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
@@ -83,18 +86,21 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			if err != nil {
 
 				if !database.IsNotExist(err) {
-					gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+					vars.Error = err
+					RenderTemplate(rsp, unsubscribe_t, vars)
 					return
 				}
 
-				gohttp.Error(rsp, "NO SUB", gohttp.StatusBadRequest)
+				vars.Error = errors.New("Invalid subscription")
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "unsubscribe")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
@@ -102,7 +108,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 			if err != nil {
 
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
@@ -113,7 +120,9 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
@@ -130,16 +139,13 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			err = message.SendMessage(msg, msg_opts)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+
+				vars.Error = err
+				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
-			err = confirm_t.Execute(rsp, nil)
-
-			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-			}
-
+			RenderTemplate(rsp, confirm_t, nil)
 			return
 
 		default:

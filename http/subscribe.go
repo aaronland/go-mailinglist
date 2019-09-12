@@ -61,7 +61,6 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 		switch req.Method {
 
 		case "GET":
-
 			RenderTemplate(rsp, subscribe_t, vars)
 			return
 
@@ -73,14 +72,16 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
@@ -89,7 +90,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			if err != nil {
 
 				if !database.IsNotExist(err) {
-					gohttp.Error(rsp, err.Error(), gohttp.StatusBadRequest)
+					vars.Error = err
+					RenderTemplate(rsp, subscribe_t, vars)
 					return
 				}
 			}
@@ -102,21 +104,24 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			sub, err = subscription.NewSubscription(addr.Address)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
 			err = subs_db.AddSubscription(sub)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
@@ -126,7 +131,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 				go subs_db.RemoveSubscription(sub)
 
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
@@ -137,7 +143,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
@@ -154,14 +161,17 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			err = message.SendMessage(msg, msg_opts)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
 			err = confirm_t.Execute(rsp, nil)
 
 			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+
+				vars.Error = err
+				RenderTemplate(rsp, subscribe_t, vars)
 			}
 
 			return
