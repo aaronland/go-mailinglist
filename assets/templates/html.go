@@ -350,16 +350,16 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/html/common_footer.html": templatesHtmlCommon_footerHtml,
-	"templates/html/common_header.html": templatesHtmlCommon_headerHtml,
-	"templates/html/confirm.html": templatesHtmlConfirmHtml,
-	"templates/html/confirm_update.html": templatesHtmlConfirm_updateHtml,
-	"templates/html/email_confirmation.html": templatesHtmlEmail_confirmationHtml,
-	"templates/html/index.html": templatesHtmlIndexHtml,
-	"templates/html/subscribe.html": templatesHtmlSubscribeHtml,
-	"templates/html/subscribe_confirm.html": templatesHtmlSubscribe_confirmHtml,
-	"templates/html/success.html": templatesHtmlSuccessHtml,
-	"templates/html/unsubscribe.html": templatesHtmlUnsubscribeHtml,
+	"templates/html/common_footer.html":       templatesHtmlCommon_footerHtml,
+	"templates/html/common_header.html":       templatesHtmlCommon_headerHtml,
+	"templates/html/confirm.html":             templatesHtmlConfirmHtml,
+	"templates/html/confirm_update.html":      templatesHtmlConfirm_updateHtml,
+	"templates/html/email_confirmation.html":  templatesHtmlEmail_confirmationHtml,
+	"templates/html/index.html":               templatesHtmlIndexHtml,
+	"templates/html/subscribe.html":           templatesHtmlSubscribeHtml,
+	"templates/html/subscribe_confirm.html":   templatesHtmlSubscribe_confirmHtml,
+	"templates/html/success.html":             templatesHtmlSuccessHtml,
+	"templates/html/unsubscribe.html":         templatesHtmlUnsubscribeHtml,
 	"templates/html/unsubscribe_confirm.html": templatesHtmlUnsubscribe_confirmHtml,
 }
 
@@ -402,19 +402,20 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
 		"html": &bintree{nil, map[string]*bintree{
-			"common_footer.html": &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
-			"common_header.html": &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
-			"confirm.html": &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
-			"confirm_update.html": &bintree{templatesHtmlConfirm_updateHtml, map[string]*bintree{}},
-			"email_confirmation.html": &bintree{templatesHtmlEmail_confirmationHtml, map[string]*bintree{}},
-			"index.html": &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
-			"subscribe.html": &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
-			"subscribe_confirm.html": &bintree{templatesHtmlSubscribe_confirmHtml, map[string]*bintree{}},
-			"success.html": &bintree{templatesHtmlSuccessHtml, map[string]*bintree{}},
-			"unsubscribe.html": &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
+			"common_footer.html":       &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
+			"common_header.html":       &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
+			"confirm.html":             &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
+			"confirm_update.html":      &bintree{templatesHtmlConfirm_updateHtml, map[string]*bintree{}},
+			"email_confirmation.html":  &bintree{templatesHtmlEmail_confirmationHtml, map[string]*bintree{}},
+			"index.html":               &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
+			"subscribe.html":           &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
+			"subscribe_confirm.html":   &bintree{templatesHtmlSubscribe_confirmHtml, map[string]*bintree{}},
+			"success.html":             &bintree{templatesHtmlSuccessHtml, map[string]*bintree{}},
+			"unsubscribe.html":         &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
 			"unsubscribe_confirm.html": &bintree{templatesHtmlUnsubscribe_confirmHtml, map[string]*bintree{}},
 		}},
 	}},
@@ -466,4 +467,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

@@ -12,7 +12,9 @@ import (
 )
 
 type UnsubscribeTemplateVars struct {
-	URL string
+	URL   string
+	Paths *PathOptions
+	Error error
 }
 
 type UnsubscribeHandlerOptions struct {
@@ -45,20 +47,16 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
+		vars := UnsubscribeTemplateVars{
+			URL:   req.URL.Path,
+			Paths: opts.Paths,
+		}
+
 		switch req.Method {
 
 		case "GET":
 
-			vars := UnsubscribeTemplateVars{
-				URL: req.URL.Path,
-			}
-
-			err := unsubscribe_t.Execute(rsp, vars)
-
-			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-			}
-
+			RenderTemplate(rsp, unsubscribe_t, vars)
 			return
 
 		case "POST":

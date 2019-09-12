@@ -27,7 +27,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 		vars := IndexTemplateVars{
 			Paths: opts.Paths,
 		}
-		
+
 		err := index_t.Execute(rsp, vars)
 
 		if err != nil {

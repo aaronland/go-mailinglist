@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/aaronland/go-mailinglist/errors"
 	"html/template"
+	gohttp "net/http"
 )
 
 func LoadTemplate(t *template.Template, name string) (*template.Template, error) {
@@ -14,4 +15,13 @@ func LoadTemplate(t *template.Template, name string) (*template.Template, error)
 	}
 
 	return named_t, nil
+}
+
+func RenderTemplate(rsp gohttp.ResponseWriter, t *template.Template, vars interface{}) {
+
+	err := t.Execute(rsp, vars)
+
+	if err != nil {
+		gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
+	}
 }

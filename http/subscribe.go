@@ -14,7 +14,7 @@ import (
 )
 
 type SubscribeTemplateVars struct {
-	URL string
+	URL   string
 	Paths *PathOptions
 	Error error
 }
@@ -53,21 +53,16 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
+		vars := SubscribeTemplateVars{
+			URL:   req.URL.Path,
+			Paths: opts.Paths,
+		}
+
 		switch req.Method {
 
 		case "GET":
 
-			vars := SubscribeTemplateVars{
-				URL: req.URL.Path,
-				Paths: opts.Paths,
-			}
-
-			err := subscribe_t.Execute(rsp, vars)
-
-			if err != nil {
-				gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-			}
-
+			RenderTemplate(rsp, subscribe_t, vars)
 			return
 
 		case "POST":
