@@ -5,6 +5,10 @@ import (
 	gohttp "net/http"
 )
 
+type IndexTemplateVars struct {
+	Paths *PathOptions
+}
+
 type IndexHandlerOptions struct {
 	Templates *template.Template
 	Paths     *PathOptions
@@ -20,7 +24,11 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		err := index_t.Execute(rsp, nil)
+		vars := IndexTemplateVars{
+			Paths: opts.Paths,
+		}
+		
+		err := index_t.Execute(rsp, vars)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

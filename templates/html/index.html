@@ -1,4 +1,12 @@
-{{ define "index"}}
-{{template "common_header"}}
-{{template "common_footer"}}
+{{ define "index" }}
+{{ template "common_header" }}
+
+<ul>
+
+    <li><a href="{{ .Paths.Subscribe }}">Subscribe</a></li>    
+    <li><a href="{{ .Paths.Unsubscribe }}">Unsubscribe</a></li>    
+    
+</ul>
+
+{{ template "common_footer" }}
 {{ end }}

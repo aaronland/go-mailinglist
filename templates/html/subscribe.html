@@ -1,10 +1,20 @@
 {{ define "subscribe"}}
 {{template "common_header"}}
 
-<form method="POST" action="{{ .URL }}">
-<input type="text" name="address" id="address" placeholder="Enter your email address address" />
-<button type="submit">Sign up</button>
-</form>
+<div class="card">
+    <h2 class="card-header">Subscribe</h2>
+    <form class="card-body" method="POST" action="{{ .Paths.Subscribe }}">
+	
+	<div class="form-group">
+	    <label for="address">Email address</label>
+	    <input type="email" class="form-control" id="address" aria-describedby="emailHelp" placeholder="Your email address">
+	    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+	</div>
+	
+	<button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+</div>
 
 {{template "common_footer"}}
 {{ end }}
