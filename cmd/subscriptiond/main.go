@@ -35,7 +35,7 @@ func main() {
 	unsubscribe_handler := flag.Bool("unsubscribe-handler", true, "...")
 	confirm_handler := flag.Bool("confirm-handler", true, "...")
 
-	path_index := flag.String("path-subscribe", "/index", "...")
+	path_index := flag.String("path-index", "/index", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
