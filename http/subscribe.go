@@ -16,9 +16,10 @@ import (
 )
 
 type SubscribeTemplateVars struct {
-	URL   string
-	Paths *mailinglist.PathConfig
-	Error error
+	URL      string
+	SiteName string
+	Paths    *mailinglist.PathConfig
+	Error    error
 }
 
 type ConfirmationEmailTemplateVars struct {
@@ -56,8 +57,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		vars := SubscribeTemplateVars{
-			URL:   req.URL.Path,
-			Paths: opts.Config.Paths,
+			URL:      req.URL.Path,
+			SiteName: opts.Config.Name,
+			Paths:    opts.Config.Paths,
 		}
 
 		switch req.Method {

@@ -94,7 +94,7 @@ func main() {
 		opts := random.DefaultOptions()
 		opts.AlphaNumeric = true
 		opts.Length = 32
-		opts.Chars = 32
+		// opts.Chars = 32
 
 		secret, err := random.String(opts)
 
@@ -113,7 +113,7 @@ func main() {
 
 		*subs_dsn = fmt.Sprintf("database=fs root=%s", subs_dir)
 		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
-		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=devel+separator=a+ttl=300", secret, salt)
+		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=foo+separator=a+ttl=300", secret, salt)
 		*sender_dsn = "sender=stdout"
 
 		*mailinglist_name = "Development"

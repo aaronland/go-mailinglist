@@ -2,7 +2,7 @@
 {{template "common_header" . }}
 
 <div class="card">
-    <h2 class="card-header">Subscribe</h2>
+    <h2 class="card-header">Subscribe to the <code>{{ .SiteName }}</code> mailing list</h2>
     <div class="card-body">
 
 	{{ if .Error }}
@@ -17,7 +17,7 @@
 	<div class="form-group">
 	    <label for="address">Email address</label>
 	    <input type="email" class="form-control" name="address" id="address" aria-describedby="emailHelp" placeholder="Your email address">
-	    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+	    <small id="emailHelp" class="form-text text-muted">We need your email address to send you email. We don't need (or want) your email address for anything else (like giving it to a third party).</small>
 	</div>
 	
 	<button type="submit" class="btn btn-primary">Submit</button>
@@ -26,7 +26,7 @@
     </div>
     
     <div class="card-footer">
-	<p>If you're looking to <em>unsubscribe</em> to the mailing list then <a href="{{ .Paths.Unsubscribe }}">head on over here</a>.</p>
+	<p>If you're looking to <em>unsubscribe</em> from the mailing list then <a href="{{ .Paths.Unsubscribe }}">head on over here</a>.</p>
     </div>
     
 </div>

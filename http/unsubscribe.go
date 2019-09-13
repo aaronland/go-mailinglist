@@ -14,9 +14,10 @@ import (
 )
 
 type UnsubscribeTemplateVars struct {
-	URL   string
-	Paths *mailinglist.PathConfig
-	Error error
+	URL      string
+	SiteName string
+	Paths    *mailinglist.PathConfig
+	Error    error
 }
 
 type UnsubscribeHandlerOptions struct {
@@ -50,8 +51,9 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		vars := UnsubscribeTemplateVars{
-			URL:   req.URL.Path,
-			Paths: opts.Config.Paths,
+			URL:      req.URL.Path,
+			SiteName: opts.Config.Name,
+			Paths:    opts.Config.Paths,
 		}
 
 		switch req.Method {
