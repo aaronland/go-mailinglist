@@ -2,28 +2,31 @@ package main
 
 /*
 
-go run -mod vendor cmd/subscriptiond/main.go -confirmations-dsn 'database=fs root=/tmp/subs/confirmations' -subscriptions-dsn 'database=fs root=/tmp/subs/subscriptions' -sender-dsn 'sender=stdout' -crumb-url 'constant://?val=secret=secret+salt=salt+extra=foo+separator=a+ttl=300' -templates 'templates/html/*.html'
-
-TO DO: add a -local flag for setting up these values on the fly...
+go run -mod vendor cmd/subscriptiond/main.go -devel -templates 'templates/html/*.html'
 
 */
 
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/assets/templates"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/server"
+	"github.com/aaronland/go-string/random"
 	"github.com/aaronland/gocloud-runtimevar-string"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	_ "gocloud.dev/runtimevar/constantvar"
 	_ "gocloud.dev/runtimevar/filevar"
 	"html/template"
+	"io/ioutil"
 	"log"
 	gohttp "net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -55,7 +58,60 @@ func main() {
 
 	path_ping := flag.String("path-ping", "/ping", "...")
 
+	devel := flag.Bool("devel", false, "...")
+
 	flag.Parse()
+
+	if *devel {
+
+		root, err := ioutil.TempDir("", "subscriptiond")
+
+		if err != nil {
+			log.Fatalf("Failed to create temporary subscriptiond directory: %s", err)
+		}
+
+		defer os.RemoveAll(root)
+
+		subs_dir := filepath.Join(root, "subscriptions")
+		conf_dir := filepath.Join(root, "confirmations")
+
+		err = os.Mkdir(subs_dir, 0700)
+
+		if err != nil {
+			log.Fatalf("Failed to create temporary subscriptions directory (%s): %s", subs_dir, err)
+		}
+
+		err = os.Mkdir(conf_dir, 0700)
+
+		if err != nil {
+			log.Fatalf("Failed to create temporary confirmations directory (%s): %s", subs_dir, err)
+		}
+
+		opts := random.DefaultOptions()
+		opts.AlphaNumeric = true
+		opts.Length = 32		
+		opts.Chars = 32
+
+		secret, err := random.String(opts)
+
+		if err != nil {
+			log.Fatalf("Failed to create crumb secret: %s", err)
+		}
+
+		opts.Length = 8
+		opts.Chars = 8
+		
+		salt, err := random.String(opts)
+
+		if err != nil {
+			log.Fatalf("Failed to create crumb salt: %s", err)
+		}
+
+		*subs_dsn = fmt.Sprintf("database=fs root=%s", subs_dir)
+		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
+		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=devel+separator=a+ttl=300", secret, salt)
+		*sender_dsn = "sender=stdout"
+	}
 
 	subs_db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*subs_dsn)
 
