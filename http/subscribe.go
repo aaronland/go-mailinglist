@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
@@ -158,12 +159,14 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			from_addr, _ := mail.ParseAddress("fixme@localhost")
+			from_addr, _ := mail.ParseAddress(opts.Config.Sender)
 			to_addr, _ := mail.ParseAddress(sub.Address)
+
+			subject := fmt.Sprintf("Your subscription to the %s mailing list", opts.Config.Name)
 
 			msg_opts := &message.SendMessageOptions{
 				Sender:  opts.Sender,
-				Subject: "Your subscription...",
+				Subject: subject,
 				From:    from_addr,
 				To:      to_addr,
 			}
