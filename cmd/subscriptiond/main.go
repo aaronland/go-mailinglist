@@ -25,12 +25,16 @@ import (
 	"io/ioutil"
 	"log"
 	gohttp "net/http"
+	"net/mail"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 func main() {
+
+	mailinglist_name := flag.String("mailinglist-name", "", "...")
+	mailinglist_sender := flag.String("mailinglist-sender", "", "...")
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	conf_dsn := flag.String("confirmations-dsn", "", "...")
@@ -89,7 +93,7 @@ func main() {
 
 		opts := random.DefaultOptions()
 		opts.AlphaNumeric = true
-		opts.Length = 32		
+		opts.Length = 32
 		opts.Chars = 32
 
 		secret, err := random.String(opts)
@@ -100,7 +104,7 @@ func main() {
 
 		opts.Length = 8
 		opts.Chars = 8
-		
+
 		salt, err := random.String(opts)
 
 		if err != nil {
@@ -111,6 +115,19 @@ func main() {
 		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
 		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=devel+separator=a+ttl=300", secret, salt)
 		*sender_dsn = "sender=stdout"
+
+		*mailinglist_name = "Development"
+		*mailinglist_sender = "development@localhost"
+	}
+
+	if *mailinglist_name == "" {
+		log.Fatal("Missing -mailinglist-name")
+	}
+
+	_, err := mail.ParseAddress(*mailinglist_sender)
+
+	if err != nil {
+		log.Fatal("Invalid -mailinglist-sender")
 	}
 
 	subs_db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*subs_dsn)
@@ -199,11 +216,17 @@ func main() {
 		log.Fatalf("Failed to create ping handler:%s", err)
 	}
 
-	path_opts := &http.PathOptions{
+	path_cfg := &mailinglist.PathConfig{
 		Index:       *path_index,
 		Subscribe:   *path_subscribe,
 		Unsubscribe: *path_unsubscribe,
 		Confirm:     *path_confirm,
+	}
+
+	list_cfg := &mailinglist.MailingListConfig{
+		Name:   *mailinglist_name,
+		Sender: *mailinglist_sender,
+		Paths:  path_cfg,
 	}
 
 	mux.Handle(*path_ping, ping_handler)
@@ -212,7 +235,7 @@ func main() {
 
 		opts := &http.IndexHandlerOptions{
 			Templates: t,
-			Paths:     path_opts,
+			Config:    list_cfg,
 		}
 
 		index_handler, err := http.IndexHandler(opts)
@@ -223,14 +246,14 @@ func main() {
 
 		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
 
-		mux.Handle(path_opts.Index, index_handler)
+		mux.Handle(path_cfg.Index, index_handler)
 	}
 
 	if *subscribe_handler {
 
 		opts := &http.SubscribeHandlerOptions{
+			Config:        list_cfg,
 			Templates:     t,
-			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -245,14 +268,14 @@ func main() {
 		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
 		subscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, subscribe_handler)
 
-		mux.Handle(path_opts.Subscribe, subscribe_handler)
+		mux.Handle(path_cfg.Subscribe, subscribe_handler)
 	}
 
 	if *unsubscribe_handler {
 
 		opts := &http.UnsubscribeHandlerOptions{
+			Config:        list_cfg,
 			Templates:     t,
-			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 			Sender:        sender,
@@ -267,14 +290,14 @@ func main() {
 		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
 		unsubscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, unsubscribe_handler)
 
-		mux.Handle(path_opts.Unsubscribe, unsubscribe_handler)
+		mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
 	}
 
 	if *confirm_handler {
 
 		opts := &http.ConfirmHandlerOptions{
+			Config:        list_cfg,
 			Templates:     t,
-			Paths:         path_opts,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
 		}
@@ -288,7 +311,7 @@ func main() {
 		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
 		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
 
-		mux.Handle(path_opts.Confirm, confirm_handler)
+		mux.Handle(path_cfg.Confirm, confirm_handler)
 	}
 
 	s, err := server.NewServer(*protocol, *host, *port)

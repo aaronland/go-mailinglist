@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/message"
@@ -14,13 +15,13 @@ import (
 
 type UnsubscribeTemplateVars struct {
 	URL   string
-	Paths *PathOptions
+	Paths *mailinglist.PathConfig
 	Error error
 }
 
 type UnsubscribeHandlerOptions struct {
+	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
-	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 	Sender        gomail.Sender
@@ -50,7 +51,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 		vars := UnsubscribeTemplateVars{
 			URL:   req.URL.Path,
-			Paths: opts.Paths,
+			Paths: opts.Config.Paths,
 		}
 
 		switch req.Method {

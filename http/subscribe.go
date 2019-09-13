@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/message"
@@ -16,7 +17,7 @@ import (
 
 type SubscribeTemplateVars struct {
 	URL   string
-	Paths *PathOptions
+	Paths *mailinglist.PathConfig
 	Error error
 }
 
@@ -25,8 +26,8 @@ type ConfirmationEmailTemplateVars struct {
 }
 
 type SubscribeHandlerOptions struct {
+	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
-	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 	Sender        gomail.Sender
@@ -56,7 +57,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 		vars := SubscribeTemplateVars{
 			URL:   req.URL.Path,
-			Paths: opts.Paths,
+			Paths: opts.Config.Paths,
 		}
 
 		switch req.Method {

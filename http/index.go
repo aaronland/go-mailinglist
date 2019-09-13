@@ -1,17 +1,18 @@
 package http
 
 import (
+	"github.com/aaronland/go-mailinglist"
 	"html/template"
 	gohttp "net/http"
 )
 
 type IndexTemplateVars struct {
-	Paths *PathOptions
+	Paths *mailinglist.PathConfig
 }
 
 type IndexHandlerOptions struct {
+	Config    *mailinglist.MailingListConfig
 	Templates *template.Template
-	Paths     *PathOptions
 }
 
 func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
@@ -25,7 +26,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		vars := IndexTemplateVars{
-			Paths: opts.Paths,
+			Paths: opts.Config.Paths,
 		}
 
 		err := index_t.Execute(rsp, vars)

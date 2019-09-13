@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
 	"html/template"
 	_ "log"
@@ -11,8 +12,8 @@ import (
 )
 
 type ConfirmHandlerOptions struct {
+	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
-	Paths         *PathOptions
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
 }
@@ -20,7 +21,7 @@ type ConfirmHandlerOptions struct {
 type ConfirmTemplateVars struct {
 	URL   string
 	Code  string
-	Paths *PathOptions
+	Paths *mailinglist.PathConfig
 	Error error
 }
 
@@ -45,7 +46,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 		vars := ConfirmTemplateVars{
 			URL:   req.URL.Path,
-			Paths: opts.Paths,
+			Paths: opts.Config.Paths,
 		}
 
 		switch req.Method {
