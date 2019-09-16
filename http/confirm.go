@@ -6,7 +6,7 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
 	"html/template"
-	_ "log"
+	"log"
 	gohttp "net/http"
 	"time"
 )
@@ -166,6 +166,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					RenderTemplate(rsp, action_t, vars)
 					return
 				}
+
+				log.Println("SUBSCRIBE", err)
 
 				RenderTemplate(rsp, success_t, vars)
 				return

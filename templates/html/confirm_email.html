@@ -1,0 +1,5 @@
+{{ define "email_confirmation" }}
+
+<a href="{{ .URL }}{{ .Paths.Confirm }}?code={{ .Code }}">{{ .Code }}</a>
+
+{{ end }}

@@ -36,7 +36,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 		return nil, err
 	}
 
-	confirm_t, err := LoadTemplate(opts.Templates, "unsubscribe_confirmation")
+	success_t, err := LoadTemplate(opts.Templates, "unsubscribe_success.html")
 
 	if err != nil {
 		return nil, err
@@ -117,7 +117,11 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			}
 
 			email_vars := ConfirmationEmailTemplateVars{
-				Code: conf.Code,
+				Code:     conf.Code,
+				URL:      req.URL.Path,
+				SiteName: opts.Config.Name,
+				Paths:    opts.Config.Paths,
+				Action:   "unsubscribe",
 			}
 
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
@@ -148,7 +152,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			RenderTemplate(rsp, confirm_t, nil)
+			RenderTemplate(rsp, success_t, nil)
 			return
 
 		default:

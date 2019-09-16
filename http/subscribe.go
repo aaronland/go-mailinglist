@@ -23,10 +23,6 @@ type SubscribeTemplateVars struct {
 	Error    error
 }
 
-type ConfirmationEmailTemplateVars struct {
-	Code string
-}
-
 type SubscribeHandlerOptions struct {
 	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
@@ -43,13 +39,13 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 		return nil, err
 	}
 
-	confirm_t, err := LoadTemplate(opts.Templates, "subscribe_confirmation")
+	success_t, err := LoadTemplate(opts.Templates, "subscribe_success")
 
 	if err != nil {
 		return nil, err
 	}
 
-	email_t, err := LoadTemplate(opts.Templates, "email_confirmation")
+	email_t, err := LoadTemplate(opts.Templates, "confirm_email")
 
 	if err != nil {
 		return nil, err
@@ -148,7 +144,11 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			}
 
 			email_vars := ConfirmationEmailTemplateVars{
-				Code: conf.Code,
+				Code:     conf.Code,
+				URL:      req.URL.Path,
+				SiteName: opts.Config.Name,
+				Paths:    opts.Config.Paths,
+				Action:   "subscribe",
 			}
 
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
@@ -179,7 +179,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			err = confirm_t.Execute(rsp, nil)
+			err = success_t.Execute(rsp, nil)
 
 			if err != nil {
 
