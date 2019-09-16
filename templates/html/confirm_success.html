@@ -1,26 +1,43 @@
 {{ define "confirm_success"}}
 {{template "common_header" . }}
 
+{{ if .Error }}
+
 <div class="card">
-    <h2 class="card-header">Confirmation complete</h2>
+    <h2 class="card-header">Hrm, there was a problem completing your request</h2>
     <div class="card-body">
-
-	{{ if .Error }}
-
+	
 	<div class="alert alert-danger" role="alert">
 	    {{ .Error }}
 	</div>
-
-	{{ else }}
-
-	<div class="alert alert-success" role="alert">
-	    <p>...{{ .Action }}</p>
-	</div>
-
-	{{ end }}
-	
     </div>
 </div>
+
+{{ else }}
+
+<div class="card">
+    <h2 class="card-header">
+	{{ if eq .Action "subscribe" }}
+	Subscription complete
+	{{ else }}
+	Unsubscription complete
+	{{ end }}
+    </h2>
+    <div class="card-body">
+
+	<div class="alert alert-success" role="alert">
+
+	    {{ if eq .Action "subscribe" }}
+	    Your subscription complete to the <code>{{ .SiteName }}</code> mailing list is complete.
+	    {{ else }}
+	    You have been unsubscribed from the <code>{{ .SiteName }}</code> mailing list.	    
+	    {{ end }}	    
+	</div>
+
+    </div>
+</div>
+
+{{ end }}
 
 {{template "common_footer"}}
 {{ end }}

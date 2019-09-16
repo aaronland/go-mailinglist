@@ -42,7 +42,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 		return nil, err
 	}
 
-	email_t, err := LoadTemplate(opts.Templates, "email_confirmation")
+	email_t, err := LoadTemplate(opts.Templates, "confirm_email")
 
 	if err != nil {
 		return nil, err
