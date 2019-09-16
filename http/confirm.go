@@ -23,6 +23,7 @@ type ConfirmTemplateVars struct {
 	Paths    *mailinglist.PathConfig
 	URL      string
 	Code     string
+	Action   string
 	Error    error
 }
 
@@ -34,7 +35,13 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 		return nil, err
 	}
 
-	update_t, err := LoadTemplate(opts.Templates, "confirm_update")
+	action_t, err := LoadTemplate(opts.Templates, "confirm_action")
+
+	if err != nil {
+		return nil, err
+	}
+
+	success_t, err := LoadTemplate(opts.Templates, "confirm_success")
 
 	if err != nil {
 		return nil, err
@@ -92,8 +99,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			vars.Error = err
-			RenderTemplate(rsp, confirm_t, vars)
+			vars.Action = conf.Action
+			RenderTemplate(rsp, action_t, vars)
 
 			return
 
@@ -109,11 +116,11 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 			vars.Code = code
 
-			_, err = sanitize.PostString(req, "confirm")
+			confirmed, err := sanitize.PostString(req, "confirm")
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, confirm_t, vars)
+				RenderTemplate(rsp, action_t, vars)
 				return
 			}
 
@@ -121,7 +128,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, confirm_t, vars)
+				RenderTemplate(rsp, action_t, vars)
 				return
 			}
 
@@ -131,11 +138,18 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
+			vars.Action = conf.Action
+
+			if confirmed == "" {
+				RenderTemplate(rsp, action_t, vars)
+				return
+			}
+
 			sub, err := subs_db.GetSubscriptionWithAddress(conf.Address)
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, confirm_t, vars)
+				RenderTemplate(rsp, action_t, vars)
 				return
 			}
 
@@ -149,11 +163,11 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 				if err != nil {
 					vars.Error = err
-					RenderTemplate(rsp, confirm_t, vars)
+					RenderTemplate(rsp, action_t, vars)
 					return
 				}
 
-				RenderTemplate(rsp, update_t, vars)
+				RenderTemplate(rsp, success_t, vars)
 				return
 
 			case "unsubscribe":
@@ -162,11 +176,11 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 				if err != nil {
 					vars.Error = err
-					RenderTemplate(rsp, confirm_t, vars)
+					RenderTemplate(rsp, action_t, vars)
 					return
 				}
 
-				RenderTemplate(rsp, update_t, vars)
+				RenderTemplate(rsp, success_t, vars)
 				return
 
 			default:

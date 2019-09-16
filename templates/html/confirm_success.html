@@ -1,4 +1,4 @@
-{{ define "confirm_update"}}
+{{ define "confirm_success"}}
 {{template "common_header" . }}
 
 <div class="card">
@@ -14,9 +14,10 @@
 	{{ else }}
 
 	<div class="alert alert-success" role="alert">
-	    <p>...</p>
+	    <p>...{{ .Action }}</p>
 	</div>
-	
+
+	{{ else }}
 	{{ end }}
 	
     </div>

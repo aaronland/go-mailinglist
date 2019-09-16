@@ -1,0 +1,45 @@
+{{ define "confirm_action"}}
+{{template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">
+	{{ if eq .Action "subscribe" }}
+	Please confirm that you wish to subscribe to the <code>{{ .SiteName }}</code> mailing list</code>
+	{{ else }}
+	Please confirm that you wish to unsubscribe from the <code>{{ .SiteName }}</code> mailing list</code>
+	{{ end }}
+    </h2>
+    
+    <div class="card-body">
+
+	{{ if .Error }}
+
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+	{{ else }}
+	
+	<form class="form" method="POST" action="{{ .URL }}">
+	    <input type="hidden" name="code" value="{{ .Code }}" />
+
+	    <div class="custom-control custom-checkbox">
+		<input type="checkbox" class="custom-control-input" id="confirm" name="confirm">
+		<label class="custom-control-label" for="confirm">
+		    {{ if eq .Action "subscribe" }}
+		    Please confirm that you wish to subscribe to the <code>{{ .SiteName }}</code> mailing list</code>
+		    {{ else }}
+		    Please confirm that you wish to unsubscribe from the <code>{{ .SiteName }}</code> mailing list</code>
+		    {{ end }}
+		</label>
+	    </div>
+	    	
+	    <button type="submit" class="btn btn-primary">Submit</button>
+	    
+	</form>
+	{{ end }}
+    </div>
+    
+</div>
+
+{{template "common_footer"}}
+{{ end }}
