@@ -179,14 +179,14 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			err = success_t.Execute(rsp, nil)
-
 			if err != nil {
 
 				vars.Error = err
 				RenderTemplate(rsp, subscribe_t, vars)
+				return
 			}
 
+			RenderTemplate(rsp, success_t, nil)			
 			return
 
 		default:

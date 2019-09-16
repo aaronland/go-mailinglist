@@ -1,7 +1,14 @@
 {{ define "unsubscribe_success"}}
 {{ template "common_header"  . }}
 
-<p>We've sent a confirmation email.</p>
+<div class="card">
+    <h2 class="card-header">Success!</h2>
+    <div class="card-body">
+	<div class="alert alert-success" role="alert">
+	    <p>We've sent you a confirmation email that with instructions for completing the unsubscription process.</p>
+	</div>
+    </div>
+</div>
 
 {{template "common_footer"}}
 {{ end }}

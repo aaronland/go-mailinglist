@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
@@ -9,6 +10,7 @@ import (
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail"
 	"html/template"
+	_ "log"
 	gohttp "net/http"
 	"net/mail"
 )
@@ -36,7 +38,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 		return nil, err
 	}
 
-	success_t, err := LoadTemplate(opts.Templates, "unsubscribe_success.html")
+	success_t, err := LoadTemplate(opts.Templates, "unsubscribe_success")
 
 	if err != nil {
 		return nil, err
@@ -133,20 +135,21 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			from_addr, _ := mail.ParseAddress("fixme@localhost")
+			from_addr, _ := mail.ParseAddress(opts.Config.Sender)
 			to_addr, _ := mail.ParseAddress(sub.Address)
+
+			subject := fmt.Sprintf("Your subscription to the %s mailing list", opts.Config.Name)
 
 			msg_opts := &message.SendMessageOptions{
 				Sender:  opts.Sender,
-				Subject: "Your subscription...",
+				Subject: subject,
 				From:    from_addr,
 				To:      to_addr,
 			}
 
 			err = message.SendMessage(msg, msg_opts)
-
+			
 			if err != nil {
-
 				vars.Error = err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return

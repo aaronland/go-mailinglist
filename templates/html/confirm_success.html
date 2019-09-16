@@ -34,6 +34,11 @@
 	    {{ end }}	    
 	</div>
 
+	{{ if eq .Action "subscribe" }}
+	<div class="card-footer">
+	    <p>If you decide you'd like to unsubscribe from the mailing list you can do so <a href="{{ .Paths.Unsubscribe }}">from this page</a>.</p>
+	</div>
+	{{ end }}
     </div>
 </div>
 
