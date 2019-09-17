@@ -145,7 +145,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			email_vars := ConfirmationEmailTemplateVars{
 				Code:     conf.Code,
-				URL:      req.URL.Path,
+				SiteRoot: "fix me",
 				SiteName: opts.Config.Name,
 				Paths:    opts.Config.Paths,
 				Action:   "subscribe",
@@ -186,7 +186,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			RenderTemplate(rsp, success_t, nil)			
+			RenderTemplate(rsp, success_t, nil)
 			return
 
 		default:

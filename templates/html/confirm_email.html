@@ -1,5 +1,26 @@
 {{ define "confirm_email" }}
+<p>Hello,</p>
 
-<a href="{{ .URL }}{{ .Paths.Confirm }}?code={{ .Code }}">{{ .Code }}</a>
+{{ if eq .Action "subscribe" }}
+<p>We've received a notification that you'd like to subscribe to the <code>{{ .SiteName }}</code> mailing list. To confirm your subscription please visit this webpage:</p>
+{{ else }}
+<p>We've received a notification that you'd like to unsubscribe from the <code>{{ .SiteName }}</code> mailing list. To complete the unsubscription process please visit this webpage:</p>
+{{ end}}
+
+<p><code>{{ .URL }}{{ .Paths.Confirm }}</code></p>
+
+<p>And enter this confirmation code:</p>
+
+<p><code>{{ .Code }}</code></p>
+
+<p>We've also provided this handy link to do both in a single click:</p>
+
+<p><a href="{{ .SiteRoot }}{{ .Paths.Confirm }}?code={{ .Code }}">{{ .SiteRoot }}{{ .Paths.Confirm }}?code={{ .Code }}</a></p>
+
+{{ if eq .Action "subscribe" }}
+<p>If you did not ask to subscribe to this mailing list (because, say, someone else signed up using your email address) please disregard this message.</p>
+{{ else }}
+<p>If you did not ask to unsubscribe from this mailing list (because, for example, someone else tried to unsubscribe using your email address) please disregard this message and we apologize for the inconvenience.</p>
+{{ end }}
 
 {{ end }}

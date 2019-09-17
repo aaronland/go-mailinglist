@@ -148,7 +148,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			}
 
 			err = message.SendMessage(msg, msg_opts)
-			
+
 			if err != nil {
 				vars.Error = err
 				RenderTemplate(rsp, unsubscribe_t, vars)
