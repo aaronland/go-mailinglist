@@ -19,7 +19,7 @@
 	</div>
 	{{ else }}
 	
-	<form class="form" method="POST" action="{{ .URL }}">
+	<form class="form" method="POST" action="{{ SiteURL .Paths.Confirm }}">
 	    <input type="hidden" name="code" value="{{ .Code }}" />
 
 	    <div class="custom-control custom-checkbox">

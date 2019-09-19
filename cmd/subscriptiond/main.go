@@ -26,6 +26,7 @@ import (
 	"log"
 	gohttp "net/http"
 	"net/mail"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,7 +34,11 @@ import (
 
 func main() {
 
+	// maybe -mailinglist-config...
+	// mailinglist_dsn := flag.String("mailinglist-dsn", "", "...")
+
 	mailinglist_name := flag.String("mailinglist-name", "", "...")
+	mailinglist_url := flag.String("mailinglist-url", "", "...")
 	mailinglist_sender := flag.String("mailinglist-sender", "", "...")
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
@@ -65,6 +70,22 @@ func main() {
 	devel := flag.Bool("devel", false, "...")
 
 	flag.Parse()
+
+	s, err := server.NewServer(*protocol, *host, *port)
+
+	if err != nil {
+		log.Fatalf("Failed to create server: %s", err)
+	}
+
+	if *mailinglist_url == "" {
+		*mailinglist_url = s.Address()
+	}
+
+	site_url, err := url.Parse(*mailinglist_url)
+
+	if err != nil {
+		log.Fatalf("Failed to parse site URL (%s): %s", *mailinglist_url, err)
+	}
 
 	if *devel {
 
@@ -124,7 +145,7 @@ func main() {
 		log.Fatal("Missing -mailinglist-name")
 	}
 
-	_, err := mail.ParseAddress(*mailinglist_sender)
+	_, err = mail.ParseAddress(*mailinglist_sender)
 
 	if err != nil {
 		log.Fatal("Invalid -mailinglist-sender")
@@ -148,7 +169,13 @@ func main() {
 		log.Fatalf("Failed to create mail sender: %s", err)
 	}
 
-	t := template.New("subscriptiond").Funcs(template.FuncMap{})
+	t := template.New("subscriptiond").Funcs(template.FuncMap{
+		"SiteURL": func(path string) string {
+			u, _ := url.Parse(site_url.String())
+			u.Path = path
+			return u.String()
+		},
+	})
 
 	if len(path_templates) > 0 {
 
@@ -225,6 +252,7 @@ func main() {
 
 	list_cfg := &mailinglist.MailingListConfig{
 		Name:   *mailinglist_name,
+		URL:    site_url,
 		Sender: *mailinglist_sender,
 		Paths:  path_cfg,
 	}
@@ -312,12 +340,6 @@ func main() {
 		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
 
 		mux.Handle(path_cfg.Confirm, confirm_handler)
-	}
-
-	s, err := server.NewServer(*protocol, *host, *port)
-
-	if err != nil {
-		log.Fatalf("Failed to create server: %s", err)
 	}
 
 	log.Printf("Listening on %s\n", s.Address())

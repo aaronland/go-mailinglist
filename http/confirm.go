@@ -21,7 +21,6 @@ type ConfirmHandlerOptions struct {
 type ConfirmTemplateVars struct {
 	SiteName string
 	Paths    *mailinglist.PathConfig
-	URL      string
 	Code     string
 	Action   string
 	Error    error
@@ -53,7 +52,6 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 		conf_db := opts.Confirmations
 
 		vars := ConfirmTemplateVars{
-			URL:      req.URL.Path,
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
 		}

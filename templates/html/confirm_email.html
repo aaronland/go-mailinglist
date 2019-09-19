@@ -7,7 +7,7 @@
 <p>We've received a notification that you'd like to unsubscribe from the <code>{{ .SiteName }}</code> mailing list. To complete the unsubscription process please visit this webpage:</p>
 {{ end}}
 
-<p><code>{{ .URL }}{{ .Paths.Confirm }}</code></p>
+<p><code>{{ SiteURL .Paths.Confirm }}</code></p>
 
 <p>And enter this confirmation code:</p>
 
@@ -15,7 +15,7 @@
 
 <p>We've also provided this handy link to do both in a single click:</p>
 
-<p><a href="{{ .SiteRoot }}{{ .Paths.Confirm }}?code={{ .Code }}">{{ .SiteRoot }}{{ .Paths.Confirm }}?code={{ .Code }}</a></p>
+<p><a href="{{ SiteURL .Paths.Confirm }}?code={{ .Code }}">{{ SiteURL .Paths.Confirm }}?code={{ .Code }}</a></p>
 
 {{ if eq .Action "subscribe" }}
 <p>If you did not ask to subscribe to this mailing list (because, say, someone else signed up using your email address) please disregard this message.</p>

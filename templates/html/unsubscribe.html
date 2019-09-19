@@ -12,7 +12,7 @@
 	</div>
 	{{ end }}
     
-	<form class="form" method="POST" action="{{ .URL }}">
+	<form class="form" method="POST" action="{{ SiteURL .Paths.Unsubscribe }}">
 	    
 	    <div class="form-group">
 		<label for="address">Email address</label>
@@ -26,7 +26,7 @@
     </div>
     
     <div class="card-footer">
-	<p>If you're looking to <em>subscribe</em> to the mailing list then <a href="{{ .Paths.Subscribe }}">head on over here</a>.</p>
+	<p>If you're looking to <em>subscribe</em> to the mailing list then <a href="{{ SiteURL .Paths.Subscribe }}">head on over here</a>.</p>
     </div>
 </div>
 

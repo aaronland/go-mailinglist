@@ -16,7 +16,6 @@ import (
 )
 
 type UnsubscribeTemplateVars struct {
-	URL      string
 	SiteName string
 	Paths    *mailinglist.PathConfig
 	Error    error
@@ -53,7 +52,6 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		vars := UnsubscribeTemplateVars{
-			URL:      req.URL.Path,
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
 		}
@@ -120,7 +118,6 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 			email_vars := ConfirmationEmailTemplateVars{
 				Code:     conf.Code,
-				URL:      req.URL.Path,
 				SiteName: opts.Config.Name,
 				Paths:    opts.Config.Paths,
 				Action:   "unsubscribe",

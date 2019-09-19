@@ -2,7 +2,7 @@
 {{template "common_header" . }}
 
 <div class="card">
-    <h2 class="card-header">Confirm...</h2>
+    <h2 class="card-header"><code>{{ .SiteName }}</code> Confirmation Step</h2>
     <div class="card-body">
 
 	{{ if .Error }}
@@ -12,7 +12,7 @@
 	</div>
 	{{ end }}
 	
-	<form class="form" method="POST" action="{{ .URL }}">
+	<form class="form" method="POST" action="{{ SiteURL .Paths.Confirm }}">
 	    
 	<div class="form-group">
 	    <label for="address">Confirmation code</label>

@@ -17,7 +17,6 @@ import (
 )
 
 type SubscribeTemplateVars struct {
-	URL      string
 	SiteName string
 	Paths    *mailinglist.PathConfig
 	Error    error
@@ -54,7 +53,6 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		vars := SubscribeTemplateVars{
-			URL:      req.URL.Path,
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
 		}

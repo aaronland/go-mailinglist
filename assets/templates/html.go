@@ -350,16 +350,16 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/html/common_footer.html": templatesHtmlCommon_footerHtml,
-	"templates/html/common_header.html": templatesHtmlCommon_headerHtml,
-	"templates/html/confirm.html": templatesHtmlConfirmHtml,
-	"templates/html/confirm_action.html": templatesHtmlConfirm_actionHtml,
-	"templates/html/confirm_email.html": templatesHtmlConfirm_emailHtml,
-	"templates/html/confirm_success.html": templatesHtmlConfirm_successHtml,
-	"templates/html/index.html": templatesHtmlIndexHtml,
-	"templates/html/subscribe.html": templatesHtmlSubscribeHtml,
-	"templates/html/subscribe_success.html": templatesHtmlSubscribe_successHtml,
-	"templates/html/unsubscribe.html": templatesHtmlUnsubscribeHtml,
+	"templates/html/common_footer.html":       templatesHtmlCommon_footerHtml,
+	"templates/html/common_header.html":       templatesHtmlCommon_headerHtml,
+	"templates/html/confirm.html":             templatesHtmlConfirmHtml,
+	"templates/html/confirm_action.html":      templatesHtmlConfirm_actionHtml,
+	"templates/html/confirm_email.html":       templatesHtmlConfirm_emailHtml,
+	"templates/html/confirm_success.html":     templatesHtmlConfirm_successHtml,
+	"templates/html/index.html":               templatesHtmlIndexHtml,
+	"templates/html/subscribe.html":           templatesHtmlSubscribeHtml,
+	"templates/html/subscribe_success.html":   templatesHtmlSubscribe_successHtml,
+	"templates/html/unsubscribe.html":         templatesHtmlUnsubscribeHtml,
 	"templates/html/unsubscribe_success.html": templatesHtmlUnsubscribe_successHtml,
 }
 
@@ -402,19 +402,20 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
 		"html": &bintree{nil, map[string]*bintree{
-			"common_footer.html": &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
-			"common_header.html": &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
-			"confirm.html": &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
-			"confirm_action.html": &bintree{templatesHtmlConfirm_actionHtml, map[string]*bintree{}},
-			"confirm_email.html": &bintree{templatesHtmlConfirm_emailHtml, map[string]*bintree{}},
-			"confirm_success.html": &bintree{templatesHtmlConfirm_successHtml, map[string]*bintree{}},
-			"index.html": &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
-			"subscribe.html": &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
-			"subscribe_success.html": &bintree{templatesHtmlSubscribe_successHtml, map[string]*bintree{}},
-			"unsubscribe.html": &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
+			"common_footer.html":       &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
+			"common_header.html":       &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
+			"confirm.html":             &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
+			"confirm_action.html":      &bintree{templatesHtmlConfirm_actionHtml, map[string]*bintree{}},
+			"confirm_email.html":       &bintree{templatesHtmlConfirm_emailHtml, map[string]*bintree{}},
+			"confirm_success.html":     &bintree{templatesHtmlConfirm_successHtml, map[string]*bintree{}},
+			"index.html":               &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
+			"subscribe.html":           &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
+			"subscribe_success.html":   &bintree{templatesHtmlSubscribe_successHtml, map[string]*bintree{}},
+			"unsubscribe.html":         &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
 			"unsubscribe_success.html": &bintree{templatesHtmlUnsubscribe_successHtml, map[string]*bintree{}},
 		}},
 	}},
@@ -466,4 +467,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
