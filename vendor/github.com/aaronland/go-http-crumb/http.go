@@ -37,23 +37,8 @@ func EnsureCrumbHandler(cfg *CrumbConfig, next_handler go_http.Handler) go_http.
 func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.Handler, error_handler_func ErrorHandlerFunc) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
-
+		
 		switch req.Method {
-
-		case "GET":
-
-			crumb_var, err := GenerateCrumb(cfg, req)
-
-			if err != nil {
-				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
-				err_handler.ServeHTTP(rsp, req)
-				return
-			}
-
-			rewrite_func := NewCrumbRewriteFunc(crumb_var)
-			rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
-
-			rewrite_handler.ServeHTTP(rsp, req)
 
 		case "POST":
 
@@ -65,6 +50,8 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 				return
 			}
 
+			if crumb_var != "" {
+			
 			ok, err := ValidateCrumb(cfg, req, crumb_var)
 
 			if err != nil {
@@ -78,12 +65,25 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 				err_handler.ServeHTTP(rsp, req)
 				return
 			}
-
-			next_handler.ServeHTTP(rsp, req)
-
+			}
+			
 		default:
-			next_handler.ServeHTTP(rsp, req)
+			// pass
 		}
+
+			crumb_var, err := GenerateCrumb(cfg, req)
+
+			if err != nil {
+				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
+				err_handler.ServeHTTP(rsp, req)
+				return
+			}
+
+			rewrite_func := NewCrumbRewriteFunc(crumb_var)
+			rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
+
+			rewrite_handler.ServeHTTP(rsp, req)
+		
 	}
 
 	return go_http.HandlerFunc(fn)

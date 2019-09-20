@@ -5,6 +5,7 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"html/template"
 	gohttp "net/http"
+	"log"
 )
 
 type CrumbErrorHandlerOptions struct {
@@ -28,6 +29,8 @@ func CrumbErrorHandlerFunc(opts *CrumbErrorHandlerOptions) (crumb.ErrorHandlerFu
 
 		handler_fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
+			log.Println("CRUMB ERROR", err)
+			
 			vars := CrumbErrorVars{
 				Error: err,
 			}
