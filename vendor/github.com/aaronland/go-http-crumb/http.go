@@ -42,6 +42,10 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 
 		case "POST":
 
+			// err_handler := error_handler_func(rsp, req, errors.New("TESTING"), go_http.StatusBadRequest)
+			// err_handler.ServeHTTP(rsp, req)
+			// return
+			
 			crumb_var, err := sanitize.PostString(req, "crumb")
 
 			if err != nil {
