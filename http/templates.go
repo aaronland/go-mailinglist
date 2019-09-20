@@ -3,8 +3,8 @@ package http
 import (
 	"github.com/aaronland/go-mailinglist/errors"
 	"html/template"
-	gohttp "net/http"
 	"log"
+	gohttp "net/http"
 )
 
 func LoadTemplate(t *template.Template, name string) (*template.Template, error) {
@@ -21,9 +21,9 @@ func LoadTemplate(t *template.Template, name string) (*template.Template, error)
 func RenderTemplate(rsp gohttp.ResponseWriter, t *template.Template, vars interface{}) {
 
 	err := t.Execute(rsp, vars)
-	
+
 	if err != nil {
-		log.Printf("RENDER ERROR '%s'\n", err)		
+		log.Printf("RENDER ERROR '%s'\n", err)
 		gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
 	}
 }

@@ -15,11 +15,11 @@ type CrumbErrorHandlerOptions struct {
 
 type CrumbErrorVars struct {
 	SiteName string
-	Paths    *mailinglist.PathConfig	
-	Error error
+	Paths    *mailinglist.PathConfig
+	Error    error
 }
 
-func CrumbErrorHandlerFunc(opts *CrumbErrorHandlerOptions) (crumb.ErrorHandlerFunc, error) {
+func CrumbErrorHandler(opts *CrumbErrorHandlerOptions) (gohttp.Handler, error) {
 
 	error_t, err := LoadTemplate(opts.Templates, "crumb_error")
 
@@ -27,22 +27,24 @@ func CrumbErrorHandlerFunc(opts *CrumbErrorHandlerOptions) (crumb.ErrorHandlerFu
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request, err error, http_status int) gohttp.Handler {
-		
-		handler_fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	handler_fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-			vars := CrumbErrorVars{
-				SiteName: opts.Config.Name,
-				Paths:    opts.Config.Paths,				
-				Error: err,
-			}
+		crumb_err, _, err := crumb.ErrorContextValuesFromRequest(req)
 
-			RenderTemplate(rsp, error_t, vars)
+		if err != nil {
+			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
 
-		return gohttp.HandlerFunc(handler_fn)
+		vars := CrumbErrorVars{
+			SiteName: opts.Config.Name,
+			Paths:    opts.Config.Paths,
+			Error:    crumb_err,
+		}
+
+		RenderTemplate(rsp, error_t, vars)
+		return
 	}
 
-	return fn, nil
+	return gohttp.HandlerFunc(handler_fn), nil
 }

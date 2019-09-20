@@ -240,7 +240,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create crumb: %s", err)
 	}
-	
+
 	mux := gohttp.NewServeMux()
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
@@ -256,14 +256,14 @@ func main() {
 		Config:    list_cfg,
 	}
 
-	crumb_error_handler, err := http.CrumbErrorHandlerFunc(crumb_error_opts)
+	crumb_error_handler, err := http.CrumbErrorHandler(crumb_error_opts)
 
 	if err != nil {
 		log.Fatalf("Failed to crete crumb error handler: %s", err)
 	}
 
-	// crumb_error_handler = bootstrap.AppendResourcesHandler(crumb_error_handler, bootstrap_opts)
-	
+	crumb_error_handler = bootstrap.AppendResourcesHandler(crumb_error_handler, bootstrap_opts)
+
 	ping_handler, err := http.PingHandler()
 
 	if err != nil {
