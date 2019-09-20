@@ -29,7 +29,7 @@ func CrumbErrorHandler(opts *CrumbErrorHandlerOptions) (gohttp.Handler, error) {
 
 	handler_fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		crumb_err, _, err := crumb.ErrorContextValuesFromRequest(req)
+		crumb_err, _, err := crumb.GetErrorContextValuesWithRequest(req)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
