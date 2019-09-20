@@ -1,5 +1,9 @@
 package http
 
+// CSRF crumbs are handled by go-http-crumb middleware
+// this package defines a custom go-http-crumb error handler
+// see cmd/subscriptiond/main.go for details
+
 import (
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-mailinglist"

@@ -1,5 +1,9 @@
 package http
 
+// CSRF crumbs are handled by go-http-crumb middleware
+// Bootstrap stuff is handled by go-http-bootstrap middleware
+// see cmd/subscriptiond/main.go for details
+
 import (
 	"errors"
 	"fmt"

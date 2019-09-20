@@ -1,5 +1,8 @@
 package http
 
+// Bootstrap stuff is handled by go-http-bootstrap middleware
+// see cmd/subscriptiond/main.go for details
+
 import (
 	"github.com/aaronland/go-mailinglist"
 	"html/template"
