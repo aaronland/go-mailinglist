@@ -1,0 +1,15 @@
+{{ define "crumb_error"}}
+{{template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">Hrm, there was a problem completing your request</h2>
+    <div class="card-body">
+	
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+    </div>
+</div>
+
+{{template "common_footer"}}
+{{ end }}

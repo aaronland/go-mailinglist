@@ -215,6 +215,20 @@ func main() {
 		}
 	}
 
+	path_cfg := &mailinglist.PathConfig{
+		Index:       *path_index,
+		Subscribe:   *path_subscribe,
+		Unsubscribe: *path_unsubscribe,
+		Confirm:     *path_confirm,
+	}
+
+	list_cfg := &mailinglist.MailingListConfig{
+		Name:   *mailinglist_name,
+		URL:    site_url,
+		Sender: *mailinglist_sender,
+		Paths:  path_cfg,
+	}
+
 	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)
 
 	if err != nil {
@@ -225,6 +239,17 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Failed to create crumb: %s", err)
+	}
+
+	crumb_error_opts := &http.CrumbErrorHandlerOptions{
+		Templates: t,
+		Config:    list_cfg,
+	}
+
+	crumb_error_handler, err := http.CrumbErrorHandlerFunc(crumb_error_opts)
+
+	if err != nil {
+		log.Fatalf("Failed to crete crumb error handler: %s", err)
 	}
 
 	mux := gohttp.NewServeMux()
@@ -241,20 +266,6 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Failed to create ping handler:%s", err)
-	}
-
-	path_cfg := &mailinglist.PathConfig{
-		Index:       *path_index,
-		Subscribe:   *path_subscribe,
-		Unsubscribe: *path_unsubscribe,
-		Confirm:     *path_confirm,
-	}
-
-	list_cfg := &mailinglist.MailingListConfig{
-		Name:   *mailinglist_name,
-		URL:    site_url,
-		Sender: *mailinglist_sender,
-		Paths:  path_cfg,
 	}
 
 	mux.Handle(*path_ping, ping_handler)
@@ -294,7 +305,7 @@ func main() {
 		}
 
 		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
-		subscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, subscribe_handler)
+		subscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, subscribe_handler, crumb_error_handler)
 
 		mux.Handle(path_cfg.Subscribe, subscribe_handler)
 	}
@@ -316,7 +327,7 @@ func main() {
 		}
 
 		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
-		unsubscribe_handler = crumb.EnsureCrumbHandler(crumb_cfg, unsubscribe_handler)
+		unsubscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, unsubscribe_handler, crumb_error_handler)
 
 		mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
 	}
@@ -337,7 +348,7 @@ func main() {
 		}
 
 		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
-		confirm_handler = crumb.EnsureCrumbHandler(crumb_cfg, confirm_handler)
+		confirm_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, confirm_handler, crumb_error_handler)
 
 		mux.Handle(path_cfg.Confirm, confirm_handler)
 	}
