@@ -202,6 +202,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
 			send_event_params.Set("confirmation_code", conf.Code)
+			send_event_params.Set("action", conf.Action)
 
 			send_event_id := eventlog.EVENTLOG_SEND_OK_EVENT
 

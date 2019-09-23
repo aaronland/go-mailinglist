@@ -11,12 +11,15 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail"
 	"html/template"
-	_ "log"
+	"log"
 	gohttp "net/http"
 	"net/mail"
+	"net/url"
+	"time"
 )
 
 type UnsubscribeTemplateVars struct {
@@ -121,6 +124,25 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
+			unsubscribe_event_params := url.Values{}
+			unsubscribe_event_params.Set("remote_addr", req.RemoteAddr)
+			unsubscribe_event_params.Set("confirmation_code", conf.Code)
+
+			unsubscribe_event_message := unsubscribe_event_params.Encode()
+
+			unsubscribe_event := &eventlog.EventLog{
+				Address: addr.Address,
+				Created: time.Now().Unix(),
+				Event:   eventlog.EVENTLOG_UNSUBSCRIBE_EVENT,
+				Message: unsubscribe_event_message,
+			}
+
+			unsubscribe_event_err := opts.EventLogs.AddEventLog(unsubscribe_event)
+
+			if unsubscribe_event_err != nil {
+				log.Println(unsubscribe_event_err)
+			}
+
 			email_vars := ConfirmationEmailTemplateVars{
 				Code:     conf.Code,
 				SiteName: opts.Config.Name,
@@ -149,10 +171,37 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				To:      to_addr,
 			}
 
-			err = message.SendMessage(msg, msg_opts)
+			send_err := message.SendMessage(msg, msg_opts)
 
-			if err != nil {
-				vars.Error = err
+			send_event_params := url.Values{}
+			send_event_params.Set("remote_addr", req.RemoteAddr)
+			send_event_params.Set("confirmation_code", conf.Code)
+			send_event_params.Set("action", conf.Action)
+
+			send_event_id := eventlog.EVENTLOG_SEND_OK_EVENT
+
+			if send_err != nil {
+				send_event_id = eventlog.EVENTLOG_SEND_FAIL_EVENT
+				send_event_params.Set("error", send_err.Error())
+			}
+
+			send_event_message := send_event_params.Encode()
+
+			send_event := &eventlog.EventLog{
+				Address: addr.Address,
+				Created: time.Now().Unix(),
+				Event:   send_event_id,
+				Message: send_event_message,
+			}
+
+			send_event_err := opts.EventLogs.AddEventLog(send_event)
+
+			if send_event_err != nil {
+				log.Println(send_event_err)
+			}
+
+			if send_err != nil {
+				vars.Error = send_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
