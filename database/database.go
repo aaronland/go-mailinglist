@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"github.com/aaronland/go-mailinglist/block"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
@@ -28,6 +29,7 @@ type ListSubscriptionsFunc func(*subscription.Subscription) error
 type ListConfirmationsFunc func(*confirmation.Confirmation) error
 type ListEventLogsFunc func(*eventlog.EventLog) error
 type ListDeliveriesFunc func(*delivery.Delivery) error
+type ListBlockRulesFunc func(*block.Rule) error
 
 type SubscriptionsDatabase interface {
 	AddSubscription(*subscription.Subscription) error
@@ -54,4 +56,11 @@ type DeliveriesDatabase interface {
 	AddDelivery(*delivery.Delivery) error
 	ListDeliveries(context.Context, ListDeliveriesFunc) error
 	GetDeliveryWithAddressAndMessageId(string, string) (*delivery.Delivery, error)
+}
+
+type BlockDatabase interface {
+	AddRule(*block.Rule) error
+	RemoveRule(*block.Rule) error
+	IsBlocked(string, int) (bool, error)
+	ListRules(context.Context, ListBlockRulesFunc)
 }
