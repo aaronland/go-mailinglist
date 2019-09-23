@@ -97,7 +97,7 @@ func main() {
 			log.Fatalf("Failed to create temporary subscriptiond directory: %s", err)
 		}
 
-		log.Println("ROOT", root)
+		log.Printf("Started in -devel mode, all databases are filesystem-based. Database root is '%s' and will be removed when this program exits.\n", root)
 		defer os.RemoveAll(root)
 
 		subs_dir := filepath.Join(root, "subscriptions")

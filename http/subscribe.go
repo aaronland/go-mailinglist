@@ -232,7 +232,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			RenderTemplate(rsp, success_t, nil)
+			RenderTemplate(rsp, success_t, vars)
 			return
 
 		default:
