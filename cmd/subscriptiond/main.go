@@ -43,6 +43,8 @@ func main() {
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	conf_dsn := flag.String("confirmations-dsn", "", "...")
+	logs_dsn := flag.String("eventlogs-dsn", "", "...")
+
 	sender_dsn := flag.String("sender-dsn", "", "...")
 	crumb_url := flag.String("crumb-url", "", "...")
 
@@ -99,6 +101,7 @@ func main() {
 
 		subs_dir := filepath.Join(root, "subscriptions")
 		conf_dir := filepath.Join(root, "confirmations")
+		logs_dir := filepath.Join(root, "eventlogs")
 
 		err = os.Mkdir(subs_dir, 0700)
 
@@ -110,6 +113,12 @@ func main() {
 
 		if err != nil {
 			log.Fatalf("Failed to create temporary confirmations directory (%s): %s", subs_dir, err)
+		}
+
+		err = os.Mkdir(logs_dir, 0700)
+
+		if err != nil {
+			log.Fatalf("Failed to create temporary confirmations directory (%s): %s", logs_dir, err)
 		}
 
 		opts := random.DefaultOptions()
@@ -134,6 +143,8 @@ func main() {
 
 		*subs_dsn = fmt.Sprintf("database=fs root=%s", subs_dir)
 		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
+		*logs_dsn = fmt.Sprintf("database=fs root=%s", logs_dir)
+
 		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=foo+separator=:+ttl=300", secret, salt)
 		*sender_dsn = "sender=stdout"
 
@@ -158,6 +169,12 @@ func main() {
 	}
 
 	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
+
+	if err != nil {
+		log.Fatalf("Failed to create confirmations database:", err)
+	}
+
+	logs_db, err := mailinglist.NewEventLogsDatabaseFromDSN(*logs_dsn)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirmations database:", err)
@@ -297,6 +314,7 @@ func main() {
 			Templates:     t,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
+			EventLogs:     logs_db,
 			Sender:        sender,
 		}
 
@@ -319,6 +337,7 @@ func main() {
 			Templates:     t,
 			Subscriptions: subs_db,
 			Confirmations: conf_db,
+			EventLogs:     logs_db,
 			Sender:        sender,
 		}
 
@@ -340,6 +359,7 @@ func main() {
 			Config:        list_cfg,
 			Templates:     t,
 			Subscriptions: subs_db,
+			EventLogs:     logs_db,
 			Confirmations: conf_db,
 		}
 

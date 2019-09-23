@@ -20,6 +20,7 @@ type ConfirmHandlerOptions struct {
 	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
+	EventLogs     database.EventLogsDatabase
 }
 
 type ConfirmTemplateVars struct {

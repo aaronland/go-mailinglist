@@ -30,6 +30,7 @@ type UnsubscribeHandlerOptions struct {
 	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
 	Confirmations database.ConfirmationsDatabase
+	EventLogs     database.EventLogsDatabase
 	Sender        gomail.Sender
 }
 
