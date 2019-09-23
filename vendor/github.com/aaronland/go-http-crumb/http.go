@@ -22,7 +22,7 @@ func SetErrorContextWithRequest(req *go_http.Request, err error, status_code int
 func SetErrorContextWithContext(ctx context.Context, err error, status_code int) context.Context {
 
 	ctx = context.WithValue(ctx, "Status", status_code)
-	ctx = context.WithValue(ctx, "Error", err)	
+	ctx = context.WithValue(ctx, "Error", err)
 	return ctx
 }
 
@@ -33,18 +33,18 @@ func GetErrorContextValuesWithContext(ctx context.Context) (error, int, error) {
 	if crumb_err == nil {
 		return nil, 0, errors.New("Invalid crumb handler")
 	}
-	
+
 	status_code := ctx.Value("Status")
-	
+
 	if status_code == nil {
-		return nil, 0, errors.New("Invalid crumb handler")		
+		return nil, 0, errors.New("Invalid crumb handler")
 	}
-	
+
 	return crumb_err.(error), status_code.(int), nil
 }
 
 func GetErrorContextValuesWithRequest(req *go_http.Request) (error, int, error) {
-	return GetErrorContextValuesWithContext(req.Context())	
+	return GetErrorContextValuesWithContext(req.Context())
 }
 
 func DefaultErrorHandler() go_http.Handler {
@@ -52,12 +52,12 @@ func DefaultErrorHandler() go_http.Handler {
 	handler_fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
 		crumb_err, status_code, err := GetErrorContextValuesWithRequest(req)
-		
+
 		if err != nil {
-			go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)		
+			go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)
 		}
-		
-		go_http.Error(rsp, crumb_err.Error(), status_code)		
+
+		go_http.Error(rsp, crumb_err.Error(), status_code)
 		return
 	}
 
@@ -73,7 +73,7 @@ func EnsureCrumbHandler(cfg *CrumbConfig, next_handler go_http.Handler) go_http.
 func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.Handler, error_handler go_http.Handler) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
-		
+
 		switch req.Method {
 
 		case "POST":
@@ -81,50 +81,48 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 			crumb_var, err := sanitize.PostString(req, "crumb")
 
 			if err != nil {
-
 				req = SetErrorContextWithRequest(req, err, go_http.StatusBadRequest)
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
 
-			if crumb_var != "" {
-			
+			if crumb_var == "" {
+				req = SetErrorContextWithRequest(req, errors.New("Missing crumb"), go_http.StatusBadRequest)
+				error_handler.ServeHTTP(rsp, req)
+				return
+			}
+
 			ok, err := ValidateCrumb(cfg, req, crumb_var)
 
-				if err != nil {
+			if err != nil {
 				req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
-
-				error_handler.ServeHTTP(rsp, req)
-				return
-				}
-
-		if !ok {
-			req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
-			
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
+
+			if !ok {
+				req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
+				error_handler.ServeHTTP(rsp, req)
+				return
 			}
-			
+
 		default:
 			// pass
 		}
 
-			crumb_var, err := GenerateCrumb(cfg, req)
+		crumb_var, err := GenerateCrumb(cfg, req)
 
-			if err != nil {
+		if err != nil {
+			req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+			error_handler.ServeHTTP(rsp, req)
+			return
+		}
 
-				req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
-				
-				error_handler.ServeHTTP(rsp, req)
-				return
-			}
+		rewrite_func := NewCrumbRewriteFunc(crumb_var)
+		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
 
-			rewrite_func := NewCrumbRewriteFunc(crumb_var)
-			rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
+		rewrite_handler.ServeHTTP(rsp, req)
 
-			rewrite_handler.ServeHTTP(rsp, req)
-		
 	}
 
 	return go_http.HandlerFunc(fn)

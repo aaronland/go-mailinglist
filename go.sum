@@ -28,10 +28,14 @@ github.com/aaronland/go-http-bootstrap v0.0.5 h1:g6PehLzQcQjUiXQdYPrl3ZQuNRYTsR6
 github.com/aaronland/go-http-bootstrap v0.0.5/go.mod h1:r8XhNGVceWoc7iwamnU0IIw5RyNyfMmGvcxLA/lQfek=
 github.com/aaronland/go-http-crumb v0.0.3 h1:OWxjvFRQqKXckfqaFZwbxqQd+uX40H/8a9QKYMFZqGI=
 github.com/aaronland/go-http-crumb v0.0.3/go.mod h1:ctEyW8gwewZmT05jWRBm/HWNiwVw6jMyaddgndNs00Q=
+github.com/aaronland/go-http-crumb v0.0.4 h1:49nHR5HnTZq/D2WnAY1iWCVSHRfOkhm5YVFaDq6sLYQ=
+github.com/aaronland/go-http-crumb v0.0.4/go.mod h1:tzp6zHKE/pojVXQhcS1J5x5qQkhhxOTvJS2N7S1VVuY=
 github.com/aaronland/go-http-rewrite v0.0.1 h1:nQ4qqtOC0QHpEhQeFpRRwdXAEwuhHhgsxQaV3hDT8iw=
 github.com/aaronland/go-http-rewrite v0.0.1/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
 github.com/aaronland/go-http-rewrite v0.0.3 h1:mhRnmKLpv1MiHCXpi1jmgdJujRKQNifctuT/ahv+q0U=
 github.com/aaronland/go-http-rewrite v0.0.3/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
+github.com/aaronland/go-http-rewrite v0.0.4 h1:lI8cDF/nINjuSPrYpwvlJLa1cC32h1nvmBwRRHs9sow=
+github.com/aaronland/go-http-rewrite v0.0.4/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
 github.com/aaronland/go-http-sanitize v0.0.1 h1:35rmeJh9Kx9mphGJXitQ6dOsC2fEPdn9sJa6JpYPd/c=
 github.com/aaronland/go-http-sanitize v0.0.1/go.mod h1:qUi4rzUPcpMntpUFnHK00yQI5vd/Q7x9MFYwX91/ygI=
 github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8yzpk=
