@@ -11,13 +11,16 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
-	_ "log"
+	"log"
 	gohttp "net/http"
 	"net/mail"
+	"net/url"
+	"time"
 )
 
 type SubscribeTemplateVars struct {
@@ -106,6 +109,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				}
 			}
 
+			// PLEASE FIX ME...
+
 			if sub != nil {
 				rsp.Write([]byte("EXISTS"))
 				return
@@ -146,9 +151,27 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
+			subscribe_event_params := url.Values{}
+			subscribe_event_params.Set("remote_addr", req.RemoteAddr)
+			subscribe_event_params.Set("confirmation_code", conf.Code)
+
+			subscribe_event_message := subscribe_event_params.Encode()
+
+			subscribe_event := &eventlog.EventLog{
+				Address: addr.Address,
+				Created: time.Now().Unix(),
+				Event:   eventlog.EVENTLOG_SUBSCRIBE_EVENT,
+				Message: subscribe_event_message,
+			}
+
+			subscribe_event_err := opts.EventLogs.AddEventLog(subscribe_event)
+
+			if subscribe_event_err != nil {
+				log.Println(subscribe_event_err)
+			}
+
 			email_vars := ConfirmationEmailTemplateVars{
 				Code:     conf.Code,
-				SiteRoot: "fix me",
 				SiteName: opts.Config.Name,
 				Paths:    opts.Config.Paths,
 				Action:   "subscribe",
@@ -174,17 +197,36 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				To:      to_addr,
 			}
 
-			err = message.SendMessage(msg, msg_opts)
+			send_err := message.SendMessage(msg, msg_opts)
 
-			if err != nil {
-				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
-				return
+			send_event_params := url.Values{}
+			send_event_params.Set("remote_addr", req.RemoteAddr)
+			send_event_params.Set("confirmation_code", conf.Code)
+
+			send_event_id := eventlog.EVENTLOG_SEND_OK_EVENT
+
+			if send_err != nil {
+				send_event_id = eventlog.EVENTLOG_SEND_FAIL_EVENT
+				send_event_params.Set("error", send_err.Error())
 			}
 
-			if err != nil {
+			send_event_message := send_event_params.Encode()
 
-				vars.Error = err
+			send_event := &eventlog.EventLog{
+				Address: addr.Address,
+				Created: time.Now().Unix(),
+				Event:   send_event_id,
+				Message: send_event_message,
+			}
+
+			send_event_err := opts.EventLogs.AddEventLog(send_event)
+
+			if send_event_err != nil {
+				log.Println(send_event_err)
+			}
+
+			if send_err != nil {
+				vars.Error = send_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}

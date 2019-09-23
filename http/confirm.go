@@ -9,9 +9,11 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/eventlog"
 	"html/template"
-	_ "log"
+	"log"
 	gohttp "net/http"
+	"net/url"
 	"time"
 )
 
@@ -156,6 +158,20 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
+			confirm_event_params := url.Values{}
+			confirm_event_params.Set("remote_addr", req.RemoteAddr)
+			confirm_event_params.Set("action", conf.Action)
+			confirm_event_params.Set("confirmation_code", conf.Code)
+
+			confirm_event_message := confirm_event_params.Encode()
+
+			confirm_event := &eventlog.EventLog{
+				Address: sub.Address,
+				Created: time.Now().Unix(),
+				Event:   eventlog.EVENTLOG_CONFIRM_EVENT,
+				Message: confirm_event_message,
+			}
+
 			switch conf.Action {
 			case "subscribe":
 
@@ -170,6 +186,12 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					return
 				}
 
+				confirm_event_err := opts.EventLogs.AddEventLog(confirm_event)
+
+				if confirm_event_err != nil {
+					log.Println(confirm_event_err)
+				}
+
 				RenderTemplate(rsp, success_t, vars)
 				return
 
@@ -181,6 +203,12 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					vars.Error = err
 					RenderTemplate(rsp, action_t, vars)
 					return
+				}
+
+				confirm_event_err := opts.EventLogs.AddEventLog(confirm_event)
+
+				if confirm_event_err != nil {
+					log.Println(confirm_event_err)
 				}
 
 				RenderTemplate(rsp, success_t, vars)

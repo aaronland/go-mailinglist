@@ -97,6 +97,7 @@ func main() {
 			log.Fatalf("Failed to create temporary subscriptiond directory: %s", err)
 		}
 
+		log.Println("ROOT", root)
 		defer os.RemoveAll(root)
 
 		subs_dir := filepath.Join(root, "subscriptions")

@@ -49,7 +49,7 @@ func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
 		}
 	}
 
-	fname := fmt.Sprintf("%d-%s.json", ev.Created, ev.Event)
+	fname := fmt.Sprintf("%d-%d.json", ev.Created, ev.Event)
 	path := filepath.Join(root, fname)
 
 	_, err = os.Stat(path)

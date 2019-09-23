@@ -14,6 +14,7 @@ const EVENTLOG_BLOCK_EVENT int = 5
 const EVENTLOG_UNBLOCK_EVENT int = 6
 const EVENTLOG_SEND_OK_EVENT int = 7
 const EVENTLOG_SEND_FAIL_EVENT int = 8
+const EVENTLOG_CONFIRM_EVENT int = 8
 
 type EventLog struct {
 	Address string `json:"address"`
