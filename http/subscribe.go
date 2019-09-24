@@ -65,6 +65,22 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			Paths:    opts.Config.Paths,
 		}
 
+		/*
+		is_blocked, err := IsHostBlocked(opts.Block, req)
+
+		if err != nil {
+			vars.Error = err
+			RenderTemplate(rsp, subscribe_t, vars)
+			return
+		}
+
+		if is_blocked {
+			vars.Error = errors.New("Blocked")
+			RenderTemplate(rsp, subscribe_t, vars)
+			return
+		}
+		*/
+		
 		switch req.Method {
 
 		case "GET":
