@@ -5,6 +5,7 @@ import (
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
+	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/subscription"
 )
 
@@ -28,6 +29,7 @@ type ListSubscriptionsFunc func(*subscription.Subscription) error
 type ListConfirmationsFunc func(*confirmation.Confirmation) error
 type ListEventLogsFunc func(*eventlog.EventLog) error
 type ListDeliveriesFunc func(*delivery.Delivery) error
+type ListInvitationsFunc func(*invitation.Invitation) error
 
 type SubscriptionsDatabase interface {
 	AddSubscription(*subscription.Subscription) error
@@ -54,4 +56,14 @@ type DeliveriesDatabase interface {
 	AddDelivery(*delivery.Delivery) error
 	ListDeliveries(context.Context, ListDeliveriesFunc) error
 	GetDeliveryWithAddressAndMessageId(string, string) (*delivery.Delivery, error)
+}
+
+type InvitationsDatabase interface {
+	AddInvitation(*invitation.Invitation) error
+	RemoveInvitation(*invitation.Invitation) error
+	UpdateInvitation(*invitation.Invitation) error
+	GetInvitationWithInvitee(string) (*invitation.Invitation, error)
+	ListInvitations(context.Context, ListInvitationsFunc) error
+	ListInvitationsWithInviter(context.Context, ListInvitationsFunc, string) error
+	// ListInvitationsWithStatus(context.Context, ListInvitationsFunc, ...int) error
 }
