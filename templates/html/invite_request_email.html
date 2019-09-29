@@ -1,0 +1,14 @@
+{{ define "invite_request_email" }}
+<p>Hello,</p>
+
+Here are the invitation codes you requested for the <code>{{ .SiteName }}</code> mailing list.
+
+<ul>
+    {{ range $i, $invite := .Invites }}
+    <li><a href="{{ SiteURL $.Paths.InviteAccept }}?invite_code={{ $invite.Code }}">{{ $invite.Code }}</a></li>
+    {{ end }}
+</ul>
+
+<p>...{{ SiteURL .Paths.InviteAccept }}</p>
+
+{{ end }}

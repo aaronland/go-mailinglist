@@ -20,8 +20,10 @@ type FeatureFlags struct {
 }
 
 type PathConfig struct {
-	Index       string
-	Subscribe   string
-	Unsubscribe string
-	Confirm     string
+	Index         string
+	Subscribe     string
+	Unsubscribe   string
+	Confirm       string
+	InviteRequest string
+	InviteAccept  string
 }

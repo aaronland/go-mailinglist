@@ -61,6 +61,8 @@ func main() {
 	path_index := flag.String("path-index", "/", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
 	path_unsubscribe := flag.String("path-unsubscribe", "/unsubscribe", "...")
+	path_invite_request := flag.String("path-invite-request", "/invite", "...")
+	path_invite_accept := flag.String("path-invite-accept", "/invite/accept", "...")
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
 
 	static_prefix := flag.String("static-prefix", "", "Prepend this prefix to URLs for static assets.")
@@ -256,10 +258,12 @@ func main() {
 	}
 
 	path_cfg := &mailinglist.PathConfig{
-		Index:       *path_index,
-		Subscribe:   *path_subscribe,
-		Unsubscribe: *path_unsubscribe,
-		Confirm:     *path_confirm,
+		Index:         *path_index,
+		Subscribe:     *path_subscribe,
+		Unsubscribe:   *path_unsubscribe,
+		Confirm:       *path_confirm,
+		InviteRequest: *path_invite_request,
+		InviteAccept:  *path_invite_accept,
 	}
 
 	list_cfg := &mailinglist.MailingListConfig{

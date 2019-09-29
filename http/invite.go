@@ -57,7 +57,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 		return nil, err
 	}
 
-	email_t, err := LoadTemplate(opts.Templates, "confirm_email")
+	email_t, err := LoadTemplate(opts.Templates, "invite_request_email")
 
 	if err != nil {
 		return nil, err
@@ -149,6 +149,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
+
+			log.Println("COUNTS", counts)
 
 			now := time.Now()
 			yyyymm := now.Format("200601")

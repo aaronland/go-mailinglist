@@ -73,6 +73,41 @@ func (db *FSInvitationsDatabase) UpdateInvitation(invite *invitation.Invitation)
 	return db.writeInvitation(invite, path)
 }
 
+func (db *FSInvitationsDatabase) GetInvitationWithCode(code string) (*invitation.Invitation, error) {
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var invite *invitation.Invitation
+
+	local_cb := func(ctx context.Context, local_invite *invitation.Invitation) error {
+
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
+		}
+
+		if local_invite.Code != code {
+			return nil
+		}
+
+		defer cancel()
+
+		invite = local_invite
+		return nil
+	}
+
+	err := db.crawlInvitations(ctx, local_cb)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return invite, nil
+}
+
 func (db *FSInvitationsDatabase) GetInvitationWithInvitee(addr string) (*invitation.Invitation, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -179,6 +214,6 @@ func (db *FSInvitationsDatabase) crawlInvitations(ctx context.Context, cb func(c
 }
 
 func (db *FSInvitationsDatabase) pathForInvitation(invite *invitation.Invitation) string {
-	fname := fmt.Sprintf("%s-%d", invite.Inviter, invite.Created) // FIX ME...
+	fname := fmt.Sprintf("%s-%d", invite.Inviter, invite.Code) // FIX ME...
 	return pathForAddress(db.root, fname)
 }
