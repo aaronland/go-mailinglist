@@ -63,7 +63,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			Paths:    opts.Config.Paths,
 		}
 
-		if !opts.FeatureFlags.Subscribe {
+		if !opts.Config.FeatureFlags.Subscribe {
 			vars.Error = errors.New("Disabled")
 			RenderTemplate(rsp, confirm_t, vars)
 			return

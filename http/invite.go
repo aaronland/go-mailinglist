@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/confirmation"
+	// "github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/message"
-	"github.com/aaronland/go-mailinglist/subscription"
+	// "github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
 	"log"
@@ -60,12 +60,12 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		vars := InviteTemplateVars{
+		vars := InviteRequestTemplateVars{
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
 		}
 
-		if !opts.FeatureFlags.Subscribe {
+		if !opts.Config.FeatureFlags.Subscribe {
 			vars.Error = errors.New("Disabled")
 			RenderTemplate(rsp, invite_t, vars)
 			return
@@ -128,7 +128,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			invite_event := &eventlog.EventLog{
 				Address: addr.Address,
 				Created: time.Now().Unix(),
-				Event:   eventlog.EVENTLOG_INVITE_EVENT,
+				Event:   eventlog.EVENTLOG_INVITE_REQUEST_EVENT,
 				Message: invite_event_message,
 			}
 

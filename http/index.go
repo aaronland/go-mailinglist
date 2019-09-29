@@ -33,7 +33,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 		vars := IndexTemplateVars{
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
-			Flags:    opts.Config.Flags,
+			Flags:    opts.Config.FeatureFlags,
 		}
 
 		err := index_t.Execute(rsp, vars)

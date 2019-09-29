@@ -65,7 +65,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			Paths:    opts.Config.Paths,
 		}
 
-		if !opts.FeatureFlags.Subscribe {
+		if !opts.Config.FeatureFlags.Subscribe {
 			vars.Error = errors.New("Disabled")
 			RenderTemplate(rsp, subscribe_t, vars)
 			return
