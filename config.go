@@ -5,10 +5,18 @@ import (
 )
 
 type MailingListConfig struct {
-	URL    *url.URL
-	Name   string
-	Sender string
-	Paths  *PathConfig
+	URL          *url.URL
+	Name         string
+	Sender       string
+	Paths        *PathConfig
+	FeatureFlags *FeatureFlags
+}
+
+type FeatureFlags struct {
+	Subscribe   bool
+	Unsubscribe bool
+	Invite      bool
+	Confirm     bool
 }
 
 type PathConfig struct {

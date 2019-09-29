@@ -1,0 +1,14 @@
+{{ define "invite_request_success"}}
+{{ template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">Success!</h2>
+    <div class="card-body">
+	<div class="alert alert-success" role="alert">
+	    <p>We've sent you an email with instructions for completing the invitation process.</p>
+	</div>
+    </div>
+</div>
+
+{{ template "common_footer"}}
+{{ end }}

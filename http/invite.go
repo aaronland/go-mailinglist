@@ -23,13 +23,13 @@ import (
 	"time"
 )
 
-type SubscribeTemplateVars struct {
+type InviteRequestTemplateVars struct {
 	SiteName string
 	Paths    *mailinglist.PathConfig
 	Error    error
 }
 
-type SubscribeHandlerOptions struct {
+type InviteRequestHandlerOptions struct {
 	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
@@ -38,15 +38,15 @@ type SubscribeHandlerOptions struct {
 	Sender        gomail.Sender
 }
 
-func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
+func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, error) {
 
-	subscribe_t, err := LoadTemplate(opts.Templates, "subscribe")
+	invite_t, err := LoadTemplate(opts.Templates, "invite_request")
 
 	if err != nil {
 		return nil, err
 	}
 
-	success_t, err := LoadTemplate(opts.Templates, "subscribe_success")
+	success_t, err := LoadTemplate(opts.Templates, "invite_request_success")
 
 	if err != nil {
 		return nil, err
@@ -60,21 +60,21 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		vars := SubscribeTemplateVars{
+		vars := InviteTemplateVars{
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
 		}
 
 		if !opts.FeatureFlags.Subscribe {
 			vars.Error = errors.New("Disabled")
-			RenderTemplate(rsp, subscribe_t, vars)
+			RenderTemplate(rsp, invite_t, vars)
 			return
 		}
 
 		switch req.Method {
 
 		case "GET":
-			RenderTemplate(rsp, subscribe_t, vars)
+			RenderTemplate(rsp, invite_t, vars)
 			return
 
 		case "POST":
@@ -86,13 +86,13 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
+				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
 			if str_addr == "" {
 				vars.Error = errors.New("Empty address")
-				RenderTemplate(rsp, subscribe_t, vars)
+				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
@@ -100,7 +100,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
+				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
@@ -110,84 +110,46 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 				if !database.IsNotExist(err) {
 					vars.Error = err
-					RenderTemplate(rsp, subscribe_t, vars)
+					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
 			}
 
-			// PLEASE FIX ME...
+			// CHECK INVITATION CODES HERE...
 
-			if sub != nil {
-				rsp.Write([]byte("EXISTS"))
-				return
-			}
+			// CREATE INVITATION CODES HERE...
 
-			sub, err = subscription.NewSubscription(addr.Address)
+			invite_event_params := url.Values{}
+			invite_event_params.Set("remote_addr", req.RemoteAddr)
+			invite_event_params.Set("confirmation_code", conf.Code)
 
-			if err != nil {
-				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
-				return
-			}
+			invite_event_message := invite_event_params.Encode()
 
-			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
-
-			if err != nil {
-				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
-				return
-			}
-
-			err = subs_db.AddSubscription(sub)
-
-			if err != nil {
-				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
-				return
-			}
-
-			err = conf_db.AddConfirmation(conf)
-
-			if err != nil {
-
-				go subs_db.RemoveSubscription(sub)
-
-				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
-				return
-			}
-
-			subscribe_event_params := url.Values{}
-			subscribe_event_params.Set("remote_addr", req.RemoteAddr)
-			subscribe_event_params.Set("confirmation_code", conf.Code)
-
-			subscribe_event_message := subscribe_event_params.Encode()
-
-			subscribe_event := &eventlog.EventLog{
+			invite_event := &eventlog.EventLog{
 				Address: addr.Address,
 				Created: time.Now().Unix(),
-				Event:   eventlog.EVENTLOG_SUBSCRIBE_EVENT,
-				Message: subscribe_event_message,
+				Event:   eventlog.EVENTLOG_INVITE_EVENT,
+				Message: invite_event_message,
 			}
 
-			subscribe_event_err := opts.EventLogs.AddEventLog(subscribe_event)
+			invite_event_err := opts.EventLogs.AddEventLog(invite_event)
 
-			if subscribe_event_err != nil {
-				log.Println(subscribe_event_err)
+			if invite_event_err != nil {
+				log.Println(invite_event_err)
 			}
 
 			email_vars := ConfirmationEmailTemplateVars{
 				Code:     conf.Code,
 				SiteName: opts.Config.Name,
 				Paths:    opts.Config.Paths,
-				Action:   "subscribe",
+				Action:   "invite",
 			}
 
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
 				vars.Error = err
-				RenderTemplate(rsp, subscribe_t, vars)
+				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
@@ -234,7 +196,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			if send_err != nil {
 				vars.Error = send_err
-				RenderTemplate(rsp, subscribe_t, vars)
+				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 

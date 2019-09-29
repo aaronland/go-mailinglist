@@ -1,0 +1,36 @@
+{{ define "invite_subscribe"}}
+{{template "common_header" . }}
+
+<div class="card">
+    <h2 class="card-header">Subscribe to the <code>{{ .SiteName }}</code> mailing list</h2>
+    <div class="card-body">
+
+	{{ if .Error }}
+
+	<div class="alert alert-danger" role="alert">
+	    {{ .Error }}
+	</div>
+	{{ end }}
+	
+	<form class="form" method="POST" action="{{ SiteURL .Paths.Invite }}">
+	    <input type="hidden" name="invite_code" value="{{ .InviteCode }}" />
+	    
+	    <div class="form-group">
+		<label for="address">Email address</label>
+		<input type="email" class="form-control" name="address" id="address" aria-describedby="emailHelp" placeholder="Your email address">
+		<small id="emailHelp" class="form-text text-muted">We need your email address to send you email. We don't need (or want) your email address for anything else (like giving it to a third party).</small>
+	    </div>
+	    
+	    <button type="submit" class="btn btn-primary">Submit</button>
+	    
+	</form>
+    </div>
+    
+    <div class="card-footer">
+	<p>When you submit this form we'll send a confirmation email to the address you've entered above to complete the subscription process.</p>
+    </div>
+    
+</div>
+
+{{template "common_footer"}}
+{{ end }}

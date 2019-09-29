@@ -3,8 +3,8 @@
 
 <ul>
 
-    <li><a href="{{ SiteURL .Paths.Subscribe }}">Subscribe</a></li>    
-    <li><a href="{{ SiteURL .Paths.Unsubscribe }}">Unsubscribe</a></li>    
+    {{ if .Flags.Subscribe }}<li><a href="{{ SiteURL .Paths.Subscribe }}">Subscribe</a></li>{{ end }}
+    {{ if .Flags.Unsubscribe }}<li><a href="{{ SiteURL .Paths.Unsubscribe }}">Unsubscribe</a></li>{{ end }}
     
 </ul>
 

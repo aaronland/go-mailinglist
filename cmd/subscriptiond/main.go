@@ -55,6 +55,7 @@ func main() {
 	index_handler := flag.Bool("index-handler", true, "...")
 	subscribe_handler := flag.Bool("subscribe-handler", true, "...")
 	unsubscribe_handler := flag.Bool("unsubscribe-handler", true, "...")
+	invite_handler := flag.Bool("invite-handler", true, "...")
 	confirm_handler := flag.Bool("confirm-handler", true, "...")
 
 	path_index := flag.String("path-index", "/", "...")
@@ -233,6 +234,13 @@ func main() {
 		}
 	}
 
+	feature_flags := &mailinglist.FeatureFlags{
+		Subscribe:   *subscribe_handler,
+		Unsubscribe: *unsubscribe_handler,
+		Invite:      *invite_handler,
+		Confirm:     *confirm_handler,
+	}
+
 	path_cfg := &mailinglist.PathConfig{
 		Index:       *path_index,
 		Subscribe:   *path_subscribe,
@@ -241,10 +249,11 @@ func main() {
 	}
 
 	list_cfg := &mailinglist.MailingListConfig{
-		Name:   *mailinglist_name,
-		URL:    site_url,
-		Sender: *mailinglist_sender,
-		Paths:  path_cfg,
+		Name:         *mailinglist_name,
+		URL:          site_url,
+		Sender:       *mailinglist_sender,
+		Paths:        path_cfg,
+		FeatureFlags: feature_flags,
 	}
 
 	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)

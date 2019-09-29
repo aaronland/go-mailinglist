@@ -64,6 +64,12 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			Paths:    opts.Config.Paths,
 		}
 
+		if !opts.FeatureFlags.Subscribe {
+			vars.Error = errors.New("Disabled")
+			RenderTemplate(rsp, unsubscribe_t, vars)
+			return
+		}
+
 		switch req.Method {
 
 		case "GET":

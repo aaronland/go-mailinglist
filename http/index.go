@@ -12,6 +12,7 @@ import (
 type IndexTemplateVars struct {
 	SiteName string
 	Paths    *mailinglist.PathConfig
+	Flags    *mailinglist.FeatureFlags
 }
 
 type IndexHandlerOptions struct {
@@ -32,6 +33,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 		vars := IndexTemplateVars{
 			SiteName: opts.Config.Name,
 			Paths:    opts.Config.Paths,
+			Flags:    opts.Config.Flags,
 		}
 
 		err := index_t.Execute(rsp, vars)

@@ -72,24 +72,39 @@ func (db *FSInvitationsDatabase) UpdateInvitation(invite *invitation.Invitation)
 	return db.writeInvitation(invite, path)
 }
 
-// this won't work because the invitation won't have a FS path with the invitee address in it...
-
 func (db *FSInvitationsDatabase) GetInvitationWithInvitee(addr string) (*invitation.Invitation, error) {
 
-	path := pathForAddress(db.root, addr)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	_, err := os.Stat(path)
+	var invite *invitation.Invitation
 
-	if err != nil {
+	local_cb := func(ctx context.Context, local_invite *invitation.Invitation) error {
 
-		if os.IsNotExist(err) {
-			return nil, new(database.NoRecordError)
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			// pass
 		}
 
+		if local_invite.Invitee != addr {
+			return nil
+		}
+
+		defer cancel()
+
+		invite = local_invite
+		return nil
+	}
+
+	err := db.crawlInvitations(ctx, local_cb)
+
+	if err != nil {
 		return nil, err
 	}
 
-	return db.readInvitation(path)
+	return invite, nil
 }
 
 func (db *FSInvitationsDatabase) readInvitation(path string) (*invitation.Invitation, error) {
@@ -138,7 +153,7 @@ func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context,
 
 		if invite.Inviter != inviter {
 			return nil
-                }
+		}
 
 		return cb(invite)
 	}
@@ -163,6 +178,6 @@ func (db *FSInvitationsDatabase) crawlInvitations(ctx context.Context, cb func(c
 }
 
 func (db *FSInvitationsDatabase) pathForInvitation(invite *invitation.Invitation) string {
-	fname := fmt.Sprintf("%s-%d", invite.Inviter, invite.Created)	// FIX ME...
+	fname := fmt.Sprintf("%s-%d", invite.Inviter, invite.Created) // FIX ME...
 	return pathForAddress(db.root, fname)
 }
