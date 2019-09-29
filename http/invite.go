@@ -32,7 +32,7 @@ type InviteRequestHandlerOptions struct {
 	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
-	Invitations database.InvitationsDatabase
+	Invitations   database.InvitationsDatabase
 	EventLogs     database.EventLogsDatabase
 	Sender        gomail.Sender
 }
@@ -112,17 +112,60 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
 
 			if err != nil {
-
 				vars.Error = err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
-			// CHECK/GET INVITATION CODES HERE...
+			// START all of this should go in a function
 
 			invites := make([]*invitation.Invitation, 0)
+			counts := make(map[string]int)
 
-			max_codes := 2
+			invites_cb := func(invite *invitation.Invitation) error {
+
+				t := time.Unix(invite.Created, 0)
+				yyyymm := t.Format("200601")
+
+				count, ok := counts[yyyymm]
+
+				if !ok {
+					count = 0
+				}
+
+				counts[yyyymm] = count + 1
+
+				if invite.IsAvailable() {
+					invites = append(invites, invite)
+				}
+
+				return nil
+			}
+
+			err = invites_db.ListInvitationsWithInviter(req.Context(), invites_cb, sub)
+
+			if err != nil {
+				vars.Error = err
+				RenderTemplate(rsp, invite_t, vars)
+				return
+			}
+
+			now := time.Now()
+			yyyymm := now.Format("200601")
+
+			count, ok := counts[yyyymm]
+
+			if !ok {
+				count = 0
+			}
+
+			max_codes := 2 - count
+
+			if max_codes <= 0 {
+				vars.Error = errors.New("All the codes...")
+				RenderTemplate(rsp, invite_t, vars)
+				return
+			}
 
 			for len(invites) < max_codes {
 
@@ -133,7 +176,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
-				
+
 				err = invites_db.AddInvitation(invite)
 
 				if err != nil {
@@ -141,9 +184,11 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
-				
+
 				invites = append(invites, invite)
 			}
+
+			// END all of this should go in a function
 
 			invite_event_params := url.Values{}
 			invite_event_params.Set("remote_addr", req.RemoteAddr)

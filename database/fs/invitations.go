@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/invitation"
+	"github.com/aaronland/go-mailinglist/subscription"
 	"os"
 )
 
@@ -140,7 +141,7 @@ func (db *FSInvitationsDatabase) ListInvitations(ctx context.Context, cb databas
 	return db.crawlInvitations(ctx, local_cb)
 }
 
-func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context, cb database.ListInvitationsFunc, inviter string) error {
+func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context, cb database.ListInvitationsFunc, sub *subscription.Subscription) error {
 
 	local_cb := func(ctx context.Context, invite *invitation.Invitation) error {
 
@@ -151,7 +152,7 @@ func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context,
 			// pass
 		}
 
-		if invite.Inviter != inviter {
+		if invite.Inviter != sub.Address {
 			return nil
 		}
 

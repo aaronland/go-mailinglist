@@ -314,19 +314,19 @@ func main() {
 	mux.Handle(*path_ping, ping_handler)
 
 	index_opts := &http.IndexHandlerOptions{
-			Templates: t,
-			Config:    list_cfg,
-		}
+		Templates: t,
+		Config:    list_cfg,
+	}
 
-		index_handler, err := http.IndexHandler(index_opts)
+	index_handler, err := http.IndexHandler(index_opts)
 
-		if err != nil {
-			log.Fatalf("Failed to create index handler: %s", err)
-		}
+	if err != nil {
+		log.Fatalf("Failed to create index handler: %s", err)
+	}
 
-		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
+	index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
 
-		mux.Handle(path_cfg.Index, index_handler)
+	mux.Handle(path_cfg.Index, index_handler)
 
 	subscribe_opts := &http.SubscribeHandlerOptions{
 		Config:        list_cfg,

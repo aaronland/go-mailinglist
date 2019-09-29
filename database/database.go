@@ -64,6 +64,6 @@ type InvitationsDatabase interface {
 	UpdateInvitation(*invitation.Invitation) error
 	GetInvitationWithInvitee(string) (*invitation.Invitation, error)
 	ListInvitations(context.Context, ListInvitationsFunc) error
-	ListInvitationsWithInviter(context.Context, ListInvitationsFunc, string) error
+	ListInvitationsWithInviter(context.Context, ListInvitationsFunc, *subscription.Subscription) error
 	// ListInvitationsWithStatus(context.Context, ListInvitationsFunc, ...int) error
 }

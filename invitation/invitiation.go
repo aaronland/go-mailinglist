@@ -34,6 +34,15 @@ func NewInvitation(sub *subscription.Subscription) (*Invitation, error) {
 	return invite, nil
 }
 
+func (i *Invitation) IsAvailable() bool {
+
+	if i.Status == INVITATION_STATUS_AVAILABLE {
+		return true
+	}
+
+	return false
+}
+
 func (i *Invitation) Accept(invitee string) error {
 
 	addr, err := mail.ParseAddress(invitee)
