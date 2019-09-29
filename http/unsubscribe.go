@@ -113,6 +113,12 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
+			if !sub.IsEnabled() {
+				vars.Error = errors.New("Disabled")
+				RenderTemplate(rsp, unsubscribe_t, vars)
+				return
+			}
+
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "unsubscribe")
 
 			if err != nil {

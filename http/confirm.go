@@ -110,6 +110,14 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
+			/*
+				if !sub.IsEnabled(){
+					vars.Error = errors.New("Disabled")
+					RenderTemplate(rsp, confirm_t, vars)
+					return
+				}
+			*/
+
 			vars.Action = conf.Action
 			RenderTemplate(rsp, action_t, vars)
 

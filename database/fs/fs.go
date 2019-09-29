@@ -8,6 +8,7 @@ import (
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
+	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/whosonfirst/walk"
 	"io/ioutil"
@@ -64,7 +65,7 @@ func marshalData(data interface{}, path string) error {
 func unmarshalData(path string, data_type string) (interface{}, error) {
 
 	switch data_type {
-	case "confirmation", "eventlog", "subscription":
+	case "confirmation", "eventlog", "invitation", "subscription":
 		// pass
 	default:
 		return nil, errors.New("Unsupported interface")
@@ -113,6 +114,15 @@ func unmarshalData(path string, data_type string) (interface{}, error) {
 
 		if err == nil {
 			data = log
+		}
+
+	case "invitation":
+
+		var invite *invitation.Invitation
+		err = json.Unmarshal(body, &invite)
+
+		if err == nil {
+			data = invite
 		}
 
 	case "subscription":

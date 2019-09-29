@@ -117,6 +117,16 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				return
 			}
 
+			// FIX ME...
+
+			/*
+				if !sub.IsEnabled() {
+					vars.Error = errors.New("Disabled")
+					RenderTemplate(rsp, invite_t, vars)
+					return
+				}
+			*/
+
 			// START all of this should go in a function
 
 			invites := make([]*invitation.Invitation, 0)
@@ -149,8 +159,6 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
-
-			log.Println("COUNTS", counts)
 
 			now := time.Now()
 			yyyymm := now.Format("200601")
@@ -196,9 +204,9 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			invite_event_params.Set("remote_addr", req.RemoteAddr)
 
 			for _, i := range invites {
-				send_event_params.Set("invite_code", i.Code)
+				invite_event_params.Set("invite_code", i.Code)
 			}
-			
+
 			invite_event_message := invite_event_params.Encode()
 
 			invite_event := &eventlog.EventLog{
