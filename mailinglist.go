@@ -70,6 +70,38 @@ func NewSubscriptionsDatabaseFromDSN(str_dsn string) (database.SubscriptionsData
 	return db, nil
 }
 
+func NewInvitationsDatabaseFromDSN(str_dsn string) (database.InvitationsDatabase, error) {
+
+	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "database")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var db database.InvitationsDatabase
+
+	switch strings.ToUpper(dsn_map["database"]) {
+	case "FS":
+
+		root, ok := dsn_map["root"]
+
+		if ok {
+			db, err = fs.NewFSInvitationsDatabase(root)
+		} else {
+			err = errors.New("Missing 'root' DSN string")
+		}
+
+	default:
+		err = errors.New("Invalid database")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
 func NewConfirmationsDatabaseFromDSN(str_dsn string) (database.ConfirmationsDatabase, error) {
 
 	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "database")

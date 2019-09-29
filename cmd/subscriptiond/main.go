@@ -53,11 +53,10 @@ func main() {
 	host := flag.String("host", "localhost", "...")
 	port := flag.Int("port", 8080, "...")
 
-	index_handler := flag.Bool("index-handler", true, "...")
-	subscribe_handler := flag.Bool("subscribe-handler", true, "...")
-	unsubscribe_handler := flag.Bool("unsubscribe-handler", true, "...")
-	invite_handler := flag.Bool("invite-handler", true, "...")
-	confirm_handler := flag.Bool("confirm-handler", true, "...")
+	enable_subscriptions := flag.Bool("enable-subscribe", true, "...")
+	enable_unsubscriptions := flag.Bool("enable-unsubscribe", true, "...")
+	enable_invitations := flag.Bool("enable-invites", true, "...")
+	enable_confirmations := flag.Bool("enable-confirm", true, "...")
 
 	path_index := flag.String("path-index", "/", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
@@ -250,10 +249,10 @@ func main() {
 	}
 
 	feature_flags := &mailinglist.FeatureFlags{
-		Subscribe:   *subscribe_handler,
-		Unsubscribe: *unsubscribe_handler,
-		Invite:      *invite_handler,
-		Confirm:     *confirm_handler,
+		Subscribe:   *enable_subscriptions,
+		Unsubscribe: *enable_unsubscriptions,
+		Invite:      *enable_invitations,
+		Confirm:     *enable_confirmations,
 	}
 
 	path_cfg := &mailinglist.PathConfig{
@@ -314,14 +313,12 @@ func main() {
 
 	mux.Handle(*path_ping, ping_handler)
 
-	if *index_handler {
-
-		opts := &http.IndexHandlerOptions{
+	index_opts := &http.IndexHandlerOptions{
 			Templates: t,
 			Config:    list_cfg,
 		}
 
-		index_handler, err := http.IndexHandler(opts)
+		index_handler, err := http.IndexHandler(index_opts)
 
 		if err != nil {
 			log.Fatalf("Failed to create index handler: %s", err)
@@ -330,9 +327,8 @@ func main() {
 		index_handler = bootstrap.AppendResourcesHandler(index_handler, bootstrap_opts)
 
 		mux.Handle(path_cfg.Index, index_handler)
-	}
 
-	opts := &http.SubscribeHandlerOptions{
+	subscribe_opts := &http.SubscribeHandlerOptions{
 		Config:        list_cfg,
 		Templates:     t,
 		Subscriptions: subs_db,
@@ -341,7 +337,7 @@ func main() {
 		Sender:        sender,
 	}
 
-	subscribe_handler, err := http.SubscribeHandler(opts)
+	subscribe_handler, err := http.SubscribeHandler(subscribe_opts)
 
 	if err != nil {
 		log.Fatalf("Failed to create subscribe handler: %s", err)
@@ -352,7 +348,7 @@ func main() {
 
 	mux.Handle(path_cfg.Subscribe, subscribe_handler)
 
-	opts := &http.UnsubscribeHandlerOptions{
+	unsubscribe_opts := &http.UnsubscribeHandlerOptions{
 		Config:        list_cfg,
 		Templates:     t,
 		Subscriptions: subs_db,
@@ -361,7 +357,7 @@ func main() {
 		Sender:        sender,
 	}
 
-	unsubscribe_handler, err := http.UnsubscribeHandler(opts)
+	unsubscribe_handler, err := http.UnsubscribeHandler(unsubscribe_opts)
 
 	if err != nil {
 		log.Fatalf("Failed to create unsubscribe handler: %s", err)
@@ -372,7 +368,7 @@ func main() {
 
 	mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
 
-	opts := &http.InviteRequestHandlerOptions{
+	invite_request_opts := &http.InviteRequestHandlerOptions{
 		Config:        list_cfg,
 		Templates:     t,
 		Subscriptions: subs_db,
@@ -381,18 +377,18 @@ func main() {
 		Sender:        sender,
 	}
 
-	invite_request_handler, err := http.InviteRequestHandler(opts)
+	invite_request_handler, err := http.InviteRequestHandler(invite_request_opts)
 
 	if err != nil {
 		log.Fatalf("Failed to create invite request handler: %s", err)
 	}
 
 	invite_request_handler = bootstrap.AppendResourcesHandler(invite_request_handler, bootstrap_opts)
-	invite_requesr_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_request_handler, crumb_error_handler)
+	invite_request_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_request_handler, crumb_error_handler)
 
 	mux.Handle("/invite", invite_request_handler) // PLEASE DO NOT HARDCODE ME...
 
-	opts := &http.ConfirmHandlerOptions{
+	confirm_opts := &http.ConfirmHandlerOptions{
 		Config:        list_cfg,
 		Templates:     t,
 		Subscriptions: subs_db,
@@ -400,7 +396,7 @@ func main() {
 		Confirmations: conf_db,
 	}
 
-	confirm_handler, err := http.ConfirmHandler(opts)
+	confirm_handler, err := http.ConfirmHandler(confirm_opts)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirm handler: %s", err)
