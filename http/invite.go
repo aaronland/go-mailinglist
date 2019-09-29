@@ -9,11 +9,10 @@ import (
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
-	// "github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
+	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/message"
-	// "github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
 	"log"
@@ -33,9 +32,15 @@ type InviteRequestHandlerOptions struct {
 	Config        *mailinglist.MailingListConfig
 	Templates     *template.Template
 	Subscriptions database.SubscriptionsDatabase
-	Confirmations database.ConfirmationsDatabase
+	Invitations database.InvitationsDatabase
 	EventLogs     database.EventLogsDatabase
 	Sender        gomail.Sender
+}
+
+type InviteRequestEmailTemplateVars struct {
+	Invites  []*invitation.Invitation
+	SiteName string
+	Paths    *mailinglist.PathConfig
 }
 
 func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, error) {
@@ -80,7 +85,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 		case "POST":
 
 			subs_db := opts.Subscriptions
-			conf_db := opts.Confirmations
+			invites_db := opts.Invitations
 
 			str_addr, err := sanitize.PostString(req, "address")
 
@@ -108,20 +113,41 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 			if err != nil {
 
-				if !database.IsNotExist(err) {
+				vars.Error = err
+				RenderTemplate(rsp, invite_t, vars)
+				return
+			}
+
+			// CHECK/GET INVITATION CODES HERE...
+
+			invites := make([]*invitation.Invitation, 0)
+
+			max_codes := 2
+
+			for len(invites) < max_codes {
+
+				invite, err := invitation.NewInvitation(sub)
+
+				if err != nil {
 					vars.Error = err
 					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
+				
+				err = invites_db.AddInvitation(invite)
+
+				if err != nil {
+					vars.Error = err
+					RenderTemplate(rsp, invite_t, vars)
+					return
+				}
+				
+				invites = append(invites, invite)
 			}
-
-			// CHECK INVITATION CODES HERE...
-
-			// CREATE INVITATION CODES HERE...
 
 			invite_event_params := url.Values{}
 			invite_event_params.Set("remote_addr", req.RemoteAddr)
-			invite_event_params.Set("confirmation_code", conf.Code)
+			// CODES....
 
 			invite_event_message := invite_event_params.Encode()
 
@@ -138,11 +164,10 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				log.Println(invite_event_err)
 			}
 
-			email_vars := ConfirmationEmailTemplateVars{
-				Code:     conf.Code,
+			email_vars := InviteRequestEmailTemplateVars{
+				Invites:  invites,
 				SiteName: opts.Config.Name,
 				Paths:    opts.Config.Paths,
-				Action:   "invite",
 			}
 
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
@@ -169,8 +194,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
-			send_event_params.Set("confirmation_code", conf.Code)
-			send_event_params.Set("action", conf.Action)
+			// CODES
+			send_event_params.Set("action", "invite_request")
 
 			send_event_id := eventlog.EVENTLOG_SEND_OK_EVENT
 

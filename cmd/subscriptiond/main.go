@@ -43,6 +43,7 @@ func main() {
 
 	subs_dsn := flag.String("subscriptions-dsn", "", "...")
 	conf_dsn := flag.String("confirmations-dsn", "", "...")
+	invites_dsn := flag.String("invitations-dsn", "", "...")
 	logs_dsn := flag.String("eventlogs-dsn", "", "...")
 
 	sender_dsn := flag.String("sender-dsn", "", "...")
@@ -103,12 +104,19 @@ func main() {
 
 		subs_dir := filepath.Join(root, "subscriptions")
 		conf_dir := filepath.Join(root, "confirmations")
+		invites_dir := filepath.Join(root, "invitations")
 		logs_dir := filepath.Join(root, "eventlogs")
 
 		err = os.Mkdir(subs_dir, 0700)
 
 		if err != nil {
 			log.Fatalf("Failed to create temporary subscriptions directory (%s): %s", subs_dir, err)
+		}
+
+		err = os.Mkdir(invites_dir, 0700)
+
+		if err != nil {
+			log.Fatalf("Failed to create temporary invitations directory (%s): %s", invites_dir, err)
 		}
 
 		err = os.Mkdir(conf_dir, 0700)
@@ -144,6 +152,7 @@ func main() {
 		}
 
 		*subs_dsn = fmt.Sprintf("database=fs root=%s", subs_dir)
+		*invites_dsn = fmt.Sprintf("database=fs root=%s", invites_dir)
 		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
 		*logs_dsn = fmt.Sprintf("database=fs root=%s", logs_dir)
 
@@ -168,6 +177,12 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Failed to create subscriptions database: %s", err)
+	}
+
+	invites_db, err := mailinglist.NewInvitationsDatabaseFromDSN(*invites_dsn)
+
+	if err != nil {
+		log.Fatalf("Failed to create invitations database: %s", err)
 	}
 
 	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
@@ -317,73 +332,84 @@ func main() {
 		mux.Handle(path_cfg.Index, index_handler)
 	}
 
-	if *subscribe_handler {
-
-		opts := &http.SubscribeHandlerOptions{
-			Config:        list_cfg,
-			Templates:     t,
-			Subscriptions: subs_db,
-			Confirmations: conf_db,
-			EventLogs:     logs_db,
-			Sender:        sender,
-		}
-
-		subscribe_handler, err := http.SubscribeHandler(opts)
-
-		if err != nil {
-			log.Fatalf("Failed to create subscribe handler: %s", err)
-		}
-
-		subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
-		subscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, subscribe_handler, crumb_error_handler)
-
-		mux.Handle(path_cfg.Subscribe, subscribe_handler)
+	opts := &http.SubscribeHandlerOptions{
+		Config:        list_cfg,
+		Templates:     t,
+		Subscriptions: subs_db,
+		Confirmations: conf_db,
+		EventLogs:     logs_db,
+		Sender:        sender,
 	}
 
-	if *unsubscribe_handler {
+	subscribe_handler, err := http.SubscribeHandler(opts)
 
-		opts := &http.UnsubscribeHandlerOptions{
-			Config:        list_cfg,
-			Templates:     t,
-			Subscriptions: subs_db,
-			Confirmations: conf_db,
-			EventLogs:     logs_db,
-			Sender:        sender,
-		}
-
-		unsubscribe_handler, err := http.UnsubscribeHandler(opts)
-
-		if err != nil {
-			log.Fatalf("Failed to create unsubscribe handler: %s", err)
-		}
-
-		unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
-		unsubscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, unsubscribe_handler, crumb_error_handler)
-
-		mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
+	if err != nil {
+		log.Fatalf("Failed to create subscribe handler: %s", err)
 	}
 
-	if *confirm_handler {
+	subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
+	subscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, subscribe_handler, crumb_error_handler)
 
-		opts := &http.ConfirmHandlerOptions{
-			Config:        list_cfg,
-			Templates:     t,
-			Subscriptions: subs_db,
-			EventLogs:     logs_db,
-			Confirmations: conf_db,
-		}
+	mux.Handle(path_cfg.Subscribe, subscribe_handler)
 
-		confirm_handler, err := http.ConfirmHandler(opts)
-
-		if err != nil {
-			log.Fatalf("Failed to create confirm handler: %s", err)
-		}
-
-		confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
-		confirm_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, confirm_handler, crumb_error_handler)
-
-		mux.Handle(path_cfg.Confirm, confirm_handler)
+	opts := &http.UnsubscribeHandlerOptions{
+		Config:        list_cfg,
+		Templates:     t,
+		Subscriptions: subs_db,
+		Confirmations: conf_db,
+		EventLogs:     logs_db,
+		Sender:        sender,
 	}
+
+	unsubscribe_handler, err := http.UnsubscribeHandler(opts)
+
+	if err != nil {
+		log.Fatalf("Failed to create unsubscribe handler: %s", err)
+	}
+
+	unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
+	unsubscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, unsubscribe_handler, crumb_error_handler)
+
+	mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
+
+	opts := &http.InviteRequestHandlerOptions{
+		Config:        list_cfg,
+		Templates:     t,
+		Subscriptions: subs_db,
+		Invitations:   invites_db,
+		EventLogs:     logs_db,
+		Sender:        sender,
+	}
+
+	invite_request_handler, err := http.InviteRequestHandler(opts)
+
+	if err != nil {
+		log.Fatalf("Failed to create invite request handler: %s", err)
+	}
+
+	invite_request_handler = bootstrap.AppendResourcesHandler(invite_request_handler, bootstrap_opts)
+	invite_requesr_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_request_handler, crumb_error_handler)
+
+	mux.Handle("/invite", invite_request_handler) // PLEASE DO NOT HARDCODE ME...
+
+	opts := &http.ConfirmHandlerOptions{
+		Config:        list_cfg,
+		Templates:     t,
+		Subscriptions: subs_db,
+		EventLogs:     logs_db,
+		Confirmations: conf_db,
+	}
+
+	confirm_handler, err := http.ConfirmHandler(opts)
+
+	if err != nil {
+		log.Fatalf("Failed to create confirm handler: %s", err)
+	}
+
+	confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
+	confirm_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, confirm_handler, crumb_error_handler)
+
+	mux.Handle(path_cfg.Confirm, confirm_handler)
 
 	log.Printf("Listening on %s\n", s.Address())
 

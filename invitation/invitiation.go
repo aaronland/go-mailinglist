@@ -1,6 +1,7 @@
 package invitation
 
 import (
+	"github.com/aaronland/go-mailinglist/subscription"
 	"net/mail"
 	"time"
 )
@@ -17,19 +18,13 @@ type Invitation struct {
 	Status       int    `json:"status"`
 }
 
-func NewInvitation(inviter string) (*Invitation, error) {
-
-	addr, err := mail.ParseAddress(inviter)
-
-	if err != nil {
-		return nil, err
-	}
+func NewInvitation(sub *subscription.Subscription) (*Invitation, error) {
 
 	now := time.Now()
 	ts := now.Unix()
 
 	invite := &Invitation{
-		Inviter:      addr.Address,
+		Inviter:      sub.Address,
 		Invitee:      "",
 		Created:      ts,
 		LastModified: ts,
