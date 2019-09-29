@@ -194,8 +194,11 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 			invite_event_params := url.Values{}
 			invite_event_params.Set("remote_addr", req.RemoteAddr)
-			// CODES....
 
+			for _, i := range invites {
+				send_event_params.Set("invite_code", i.Code)
+			}
+			
 			invite_event_message := invite_event_params.Encode()
 
 			invite_event := &eventlog.EventLog{
@@ -241,7 +244,11 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
-			// CODES
+
+			for _, i := range invites {
+				send_event_params.Set("invite_code", i.Code)
+			}
+
 			send_event_params.Set("action", "invite_request")
 
 			send_event_id := eventlog.EVENTLOG_SEND_OK_EVENT
