@@ -497,24 +497,24 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"templates/html/common_footer.html": templatesHtmlCommon_footerHtml,
-	"templates/html/common_header.html": templatesHtmlCommon_headerHtml,
-	"templates/html/confirm.html": templatesHtmlConfirmHtml,
-	"templates/html/confirm_action.html": templatesHtmlConfirm_actionHtml,
-	"templates/html/confirm_email.html": templatesHtmlConfirm_emailHtml,
-	"templates/html/confirm_success.html": templatesHtmlConfirm_successHtml,
-	"templates/html/crumb_error.html": templatesHtmlCrumb_errorHtml,
-	"templates/html/index.html": templatesHtmlIndexHtml,
-	"templates/html/invite_code.html": templatesHtmlInvite_codeHtml,
-	"templates/html/invite_request.html": templatesHtmlInvite_requestHtml,
-	"templates/html/invite_request_email.html": templatesHtmlInvite_request_emailHtml,
-	"templates/html/invite_request_success.html": templatesHtmlInvite_request_successHtml,
-	"templates/html/invite_subscribe.html": templatesHtmlInvite_subscribeHtml,
+	"templates/html/common_footer.html":            templatesHtmlCommon_footerHtml,
+	"templates/html/common_header.html":            templatesHtmlCommon_headerHtml,
+	"templates/html/confirm.html":                  templatesHtmlConfirmHtml,
+	"templates/html/confirm_action.html":           templatesHtmlConfirm_actionHtml,
+	"templates/html/confirm_email.html":            templatesHtmlConfirm_emailHtml,
+	"templates/html/confirm_success.html":          templatesHtmlConfirm_successHtml,
+	"templates/html/crumb_error.html":              templatesHtmlCrumb_errorHtml,
+	"templates/html/index.html":                    templatesHtmlIndexHtml,
+	"templates/html/invite_code.html":              templatesHtmlInvite_codeHtml,
+	"templates/html/invite_request.html":           templatesHtmlInvite_requestHtml,
+	"templates/html/invite_request_email.html":     templatesHtmlInvite_request_emailHtml,
+	"templates/html/invite_request_success.html":   templatesHtmlInvite_request_successHtml,
+	"templates/html/invite_subscribe.html":         templatesHtmlInvite_subscribeHtml,
 	"templates/html/invite_subscribe_success.html": templatesHtmlInvite_subscribe_successHtml,
-	"templates/html/subscribe.html": templatesHtmlSubscribeHtml,
-	"templates/html/subscribe_success.html": templatesHtmlSubscribe_successHtml,
-	"templates/html/unsubscribe.html": templatesHtmlUnsubscribeHtml,
-	"templates/html/unsubscribe_success.html": templatesHtmlUnsubscribe_successHtml,
+	"templates/html/subscribe.html":                templatesHtmlSubscribeHtml,
+	"templates/html/subscribe_success.html":        templatesHtmlSubscribe_successHtml,
+	"templates/html/unsubscribe.html":              templatesHtmlUnsubscribeHtml,
+	"templates/html/unsubscribe_success.html":      templatesHtmlUnsubscribe_successHtml,
 }
 
 // AssetDir returns the file names below a certain
@@ -556,27 +556,28 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"templates": &bintree{nil, map[string]*bintree{
 		"html": &bintree{nil, map[string]*bintree{
-			"common_footer.html": &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
-			"common_header.html": &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
-			"confirm.html": &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
-			"confirm_action.html": &bintree{templatesHtmlConfirm_actionHtml, map[string]*bintree{}},
-			"confirm_email.html": &bintree{templatesHtmlConfirm_emailHtml, map[string]*bintree{}},
-			"confirm_success.html": &bintree{templatesHtmlConfirm_successHtml, map[string]*bintree{}},
-			"crumb_error.html": &bintree{templatesHtmlCrumb_errorHtml, map[string]*bintree{}},
-			"index.html": &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
-			"invite_code.html": &bintree{templatesHtmlInvite_codeHtml, map[string]*bintree{}},
-			"invite_request.html": &bintree{templatesHtmlInvite_requestHtml, map[string]*bintree{}},
-			"invite_request_email.html": &bintree{templatesHtmlInvite_request_emailHtml, map[string]*bintree{}},
-			"invite_request_success.html": &bintree{templatesHtmlInvite_request_successHtml, map[string]*bintree{}},
-			"invite_subscribe.html": &bintree{templatesHtmlInvite_subscribeHtml, map[string]*bintree{}},
+			"common_footer.html":            &bintree{templatesHtmlCommon_footerHtml, map[string]*bintree{}},
+			"common_header.html":            &bintree{templatesHtmlCommon_headerHtml, map[string]*bintree{}},
+			"confirm.html":                  &bintree{templatesHtmlConfirmHtml, map[string]*bintree{}},
+			"confirm_action.html":           &bintree{templatesHtmlConfirm_actionHtml, map[string]*bintree{}},
+			"confirm_email.html":            &bintree{templatesHtmlConfirm_emailHtml, map[string]*bintree{}},
+			"confirm_success.html":          &bintree{templatesHtmlConfirm_successHtml, map[string]*bintree{}},
+			"crumb_error.html":              &bintree{templatesHtmlCrumb_errorHtml, map[string]*bintree{}},
+			"index.html":                    &bintree{templatesHtmlIndexHtml, map[string]*bintree{}},
+			"invite_code.html":              &bintree{templatesHtmlInvite_codeHtml, map[string]*bintree{}},
+			"invite_request.html":           &bintree{templatesHtmlInvite_requestHtml, map[string]*bintree{}},
+			"invite_request_email.html":     &bintree{templatesHtmlInvite_request_emailHtml, map[string]*bintree{}},
+			"invite_request_success.html":   &bintree{templatesHtmlInvite_request_successHtml, map[string]*bintree{}},
+			"invite_subscribe.html":         &bintree{templatesHtmlInvite_subscribeHtml, map[string]*bintree{}},
 			"invite_subscribe_success.html": &bintree{templatesHtmlInvite_subscribe_successHtml, map[string]*bintree{}},
-			"subscribe.html": &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
-			"subscribe_success.html": &bintree{templatesHtmlSubscribe_successHtml, map[string]*bintree{}},
-			"unsubscribe.html": &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
-			"unsubscribe_success.html": &bintree{templatesHtmlUnsubscribe_successHtml, map[string]*bintree{}},
+			"subscribe.html":                &bintree{templatesHtmlSubscribeHtml, map[string]*bintree{}},
+			"subscribe_success.html":        &bintree{templatesHtmlSubscribe_successHtml, map[string]*bintree{}},
+			"unsubscribe.html":              &bintree{templatesHtmlUnsubscribeHtml, map[string]*bintree{}},
+			"unsubscribe_success.html":      &bintree{templatesHtmlUnsubscribe_successHtml, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -627,4 +628,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

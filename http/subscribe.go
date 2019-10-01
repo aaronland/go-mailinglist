@@ -122,6 +122,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
+			// START please reconcile me with http/invite_accept.go
+
 			sub, err = subscription.NewSubscription(addr.Address)
 
 			if err != nil {
@@ -240,6 +242,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			RenderTemplate(rsp, success_t, vars)
 			return
+
+			// END please reconcile me with http/invite_accept.go
 
 		default:
 			gohttp.Error(rsp, "Method not allowed", gohttp.StatusMethodNotAllowed)

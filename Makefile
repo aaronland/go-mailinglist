@@ -6,6 +6,8 @@ go-bindata:
 	curl -s -o cmd/go-bindata/main.go https://raw.githubusercontent.com/whosonfirst/go-bindata/master/cmd/go-bindata/main.go
 	curl -s -o cmd/go-bindata-assetfs/main.go https://raw.githubusercontent.com/whosonfirst/go-bindata-assetfs/master/cmd/go-bindata-assetfs/main.go
 
+devel:
+	go run -mod vendor cmd/subscriptiond/main.go -devel -templates 'templates/html/*.html'
 
 tools:
 	go build -mod vendor -o bin/subscribe cmd/subscribe/main.go

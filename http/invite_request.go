@@ -70,7 +70,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			Paths:    opts.Config.Paths,
 		}
 
-		if !opts.Config.FeatureFlags.Subscribe {
+		if !opts.Config.FeatureFlags.InviteRequest {
 			vars.Error = errors.New("Disabled")
 			RenderTemplate(rsp, invite_t, vars)
 			return

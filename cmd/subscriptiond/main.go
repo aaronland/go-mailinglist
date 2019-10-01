@@ -55,8 +55,9 @@ func main() {
 
 	enable_subscriptions := flag.Bool("enable-subscribe", true, "...")
 	enable_unsubscriptions := flag.Bool("enable-unsubscribe", true, "...")
-	enable_invitations := flag.Bool("enable-invites", true, "...")
 	enable_confirmations := flag.Bool("enable-confirm", true, "...")
+	enable_invitation_requests := flag.Bool("enable-invites-request", true, "...")
+	enable_invitation_accepts := flag.Bool("enable-invites-accept", true, "...")
 
 	path_index := flag.String("path-index", "/", "...")
 	path_subscribe := flag.String("path-subscribe", "/subscribe", "...")
@@ -251,10 +252,11 @@ func main() {
 	}
 
 	feature_flags := &mailinglist.FeatureFlags{
-		Subscribe:   *enable_subscriptions,
-		Unsubscribe: *enable_unsubscriptions,
-		Invite:      *enable_invitations,
-		Confirm:     *enable_confirmations,
+		Subscribe:     *enable_subscriptions,
+		Unsubscribe:   *enable_unsubscriptions,
+		InviteRequest: *enable_invitation_requests,
+		InviteAccept:  *enable_invitation_accepts,
+		Confirm:       *enable_confirmations,
 	}
 
 	path_cfg := &mailinglist.PathConfig{
@@ -390,7 +392,28 @@ func main() {
 	invite_request_handler = bootstrap.AppendResourcesHandler(invite_request_handler, bootstrap_opts)
 	invite_request_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_request_handler, crumb_error_handler)
 
-	mux.Handle("/invite", invite_request_handler) // PLEASE DO NOT HARDCODE ME...
+	mux.Handle(path_cfg.InviteRequest, invite_request_handler)
+
+	invite_accept_opts := &http.InviteAcceptHandlerOptions{
+		Config:        list_cfg,
+		Templates:     t,
+		Subscriptions: subs_db,
+		Confirmations: conf_db,
+		Invitations:   invites_db,
+		EventLogs:     logs_db,
+		Sender:        sender,
+	}
+
+	invite_accept_handler, err := http.InviteAcceptHandler(invite_accept_opts)
+
+	if err != nil {
+		log.Fatalf("Failed to create invite accept handler: %s", err)
+	}
+
+	invite_accept_handler = bootstrap.AppendResourcesHandler(invite_accept_handler, bootstrap_opts)
+	invite_accept_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_accept_handler, crumb_error_handler)
+
+	mux.Handle(path_cfg.InviteAccept, invite_accept_handler)
 
 	confirm_opts := &http.ConfirmHandlerOptions{
 		Config:        list_cfg,

@@ -13,10 +13,11 @@ type MailingListConfig struct {
 }
 
 type FeatureFlags struct {
-	Subscribe   bool
-	Unsubscribe bool
-	Invite      bool
-	Confirm     bool
+	Subscribe     bool
+	Unsubscribe   bool
+	InviteAccept  bool
+	InviteRequest bool
+	Confirm       bool
 }
 
 type PathConfig struct {
