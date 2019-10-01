@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
-	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/message"
+	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/gomail"
 	"html/template"
 	"log"
@@ -59,7 +60,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 		return nil, err
 	}
 
-	invite_t, err := LoadTemplate(opts.Templates, "invite_accept")
+	accept_t, err := LoadTemplate(opts.Templates, "invite_accept")
 
 	if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Accept) {
+	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		code_vars := InviteCodeTemplateVars{
 			SiteName: opts.Config.Name,
@@ -90,7 +91,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 		}
 
 		if !opts.Config.FeatureFlags.InviteAccept {
-			vars.Error = errors.New("Disabled")
+			code_vars.Error = errors.New("Disabled")
 			RenderTemplate(rsp, code_t, code_vars)
 			return
 		}
@@ -128,9 +129,11 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			code_vars.Code = code
+			// now we switch to accept_t
 
-			RenderTemplate(rsp, confirm_t, code_vars)
+			accept_vars.Code = code
+
+			RenderTemplate(rsp, accept_t, accept_vars)
 			return
 
 		case "POST":
@@ -166,43 +169,43 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			// now we switch to invite_t
+			// now we switch to accept_t
 
-			invite_vars.Code = code
+			accept_vars.Code = code
 
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			confirmed, err := sanitize.PostString(req, "confirm")
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			if confirmed == "" {
-				invite_vars.Error = errors.New("Unconfirmed")
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = errors.New("Unconfirmed")
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			if str_addr == "" {
-				invite_vars.Error = errors.New("Empty address")
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = errors.New("Empty address")
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
@@ -211,8 +214,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// PLEASE MAKE ME A BETTER ERROR HANDLER...
 
 			if sub != nil {
-				invite_vars.Error = errors.New("Exists")
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = errors.New("Exists")
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
@@ -221,24 +224,24 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			sub, err = subscription.NewSubscription(addr.Address)
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			err = subs_db.AddSubscription(sub)
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
@@ -248,8 +251,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 				go subs_db.RemoveSubscription(sub)
 
-				invite_vars.Error = err
-				RenderTemplate(rsp, subscribe_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
@@ -283,8 +286,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				invite_vars.Error = err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
@@ -331,8 +334,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			}
 
 			if send_err != nil {
-				invite_vars.Error = send_err
-				RenderTemplate(rsp, invite_t, invite_vars)
+				accept_vars.Error = send_err
+				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
