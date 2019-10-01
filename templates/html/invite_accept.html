@@ -2,7 +2,7 @@
 {{template "common_header" . }}
 
 <div class="card">
-    <h2 class="card-header">Subscribe to the <code>{{ .SiteName }}</code> mailing list</h2>
+    <h2 class="card-header">You've been invited to subscribe to the <code>{{ .SiteName }}</code> mailing list</h2>
     <div class="card-body">
 
 	{{ if .Error }}
@@ -13,13 +13,20 @@
 	{{ end }}
 	
 	<form class="form" method="POST" action="{{ SiteURL .Paths.InviteAccept }}">
-	    <input type="hidden" name="invite_code" value="{{ .InviteCode }}" />
+	    <input type="hidden" name="code" value="{{ .Code }}" />
 	    
 	    <div class="form-group">
 		<label for="address">Email address</label>
 		<input type="email" class="form-control" name="address" id="address" aria-describedby="emailHelp" placeholder="Your email address">
 		<small id="emailHelp" class="form-text text-muted">We need your email address to send you email. We don't need (or want) your email address for anything else (like giving it to a third party).</small>
 	    </div>
+
+	    <div class="custom-control custom-checkbox">
+		<input type="checkbox" class="custom-control-input" id="confirm" name="confirm">
+		<label class="custom-control-label" for="confirm">
+		    Please confirm that you wish to accept the invitation to the <code>{{ .SiteName }}</code> mailing list</code>
+		</label>
+	    </div>	    
 	    
 	    <button type="submit" class="btn btn-primary">Submit</button>
 	    
@@ -27,7 +34,7 @@
     </div>
     
     <div class="card-footer">
-	<p>When you submit this form we'll send a confirmation email to the address you've entered above to complete the subscription process.</p>
+	<p>When you submit this form we'll send you a confirmation email to the address you've entered above with instructions to complete the subscription process.</p>
     </div>
     
 </div>

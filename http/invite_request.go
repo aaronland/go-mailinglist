@@ -200,6 +200,10 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 
 			// END all of this should go in a function
 
+			for _, i := range invites {
+				log.Println("CODE ", i.Code)
+			}
+
 			invite_event_params := url.Values{}
 			invite_event_params.Set("remote_addr", req.RemoteAddr)
 
