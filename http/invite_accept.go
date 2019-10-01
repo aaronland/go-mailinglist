@@ -20,6 +20,7 @@ import (
 	gohttp "net/http"
 	"net/mail"
 	"net/url"
+	"sync"
 	"time"
 )
 
@@ -249,10 +250,58 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 			if err != nil {
 
-				go subs_db.RemoveSubscription(sub)
+				wg := new(sync.WaitGroup)
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+					subs_db.RemoveSubscription(sub)
+				}()
 
 				accept_vars.Error = err
 				RenderTemplate(rsp, accept_t, accept_vars)
+
+				wg.Wait()
+				return
+			}
+
+			err = invite.Accept(addr.Address)
+
+			if err != nil {
+
+				wg := new(sync.WaitGroup)
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+					subs_db.RemoveSubscription(sub)
+					conf_db.RemoveConfirmation(conf)
+				}()
+
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
+
+				wg.Wait()
+				return
+			}
+
+			err = invites_db.UpdateInvitation(invite)
+
+			if err != nil {
+
+				wg := new(sync.WaitGroup)
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+					subs_db.RemoveSubscription(sub)
+					conf_db.RemoveConfirmation(conf)
+				}()
+
+				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
+
+				wg.Wait()
 				return
 			}
 

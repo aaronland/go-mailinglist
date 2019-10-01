@@ -20,6 +20,7 @@ import (
 	gohttp "net/http"
 	"net/mail"
 	"net/url"
+	"sync"
 	"time"
 )
 
@@ -152,10 +153,18 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 			if err != nil {
 
-				go subs_db.RemoveSubscription(sub)
+				wg := new(sync.WaitGroup)
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+					subs_db.RemoveSubscription(sub)
+				}()
 
 				vars.Error = err
 				RenderTemplate(rsp, subscribe_t, vars)
+
+				wg.Wait()
 				return
 			}
 

@@ -214,6 +214,6 @@ func (db *FSInvitationsDatabase) crawlInvitations(ctx context.Context, cb func(c
 }
 
 func (db *FSInvitationsDatabase) pathForInvitation(invite *invitation.Invitation) string {
-	fname := fmt.Sprintf("%s-%d", invite.Inviter, invite.Code) // FIX ME...
+	fname := fmt.Sprintf("%s-%s", invite.Inviter, invite.Code) // FIX ME...
 	return pathForAddress(db.root, fname)
 }
