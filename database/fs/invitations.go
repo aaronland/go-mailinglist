@@ -66,8 +66,8 @@ func (db *FSInvitationsDatabase) UpdateInvitation(invite *invitation.Invitation)
 
 	_, err := os.Stat(path)
 
-	if err == nil {
-		return nil
+	if err != nil {
+		return err
 	}
 
 	return db.writeInvitation(invite, path)
