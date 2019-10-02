@@ -117,15 +117,11 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				return
 			}
 
-			// FIX ME...
-
-			/*
-				if !sub.IsEnabled() {
-					vars.Error = errors.New("Disabled")
-					RenderTemplate(rsp, invite_t, vars)
-					return
-				}
-			*/
+			if !sub.IsEnabled() {
+				vars.Error = errors.New("Disabled")
+				RenderTemplate(rsp, invite_t, vars)
+				return
+			}
 
 			// START all of this should go in a function
 

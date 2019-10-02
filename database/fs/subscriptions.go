@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
+	_ "log"
 	"os"
 )
 
@@ -64,8 +65,8 @@ func (db *FSSubscriptionsDatabase) UpdateSubscription(sub *subscription.Subscrip
 
 	_, err := os.Stat(path)
 
-	if err == nil {
-		return nil
+	if err != nil {
+		return err
 	}
 
 	return db.writeSubscription(sub, path)

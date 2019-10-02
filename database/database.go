@@ -1,5 +1,10 @@
 package database
 
+// Register("fs", "subscriptions", Database)
+
+// Open("fs://subscriptions/path/to/root")
+// Open("dynamodb://subscriptions?stuff")
+
 import (
 	"context"
 	"github.com/aaronland/go-mailinglist/confirmation"

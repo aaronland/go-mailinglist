@@ -189,8 +189,13 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			switch conf.Action {
 			case "subscribe":
 
-				now := time.Now()
-				sub.Confirmed = now.Unix()
+				err = sub.Confirm()
+
+				if err != nil {
+					vars.Error = err
+					RenderTemplate(rsp, action_t, vars)
+					return
+				}
 
 				err = subs_db.UpdateSubscription(sub)
 
@@ -210,6 +215,12 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 
 			case "unsubscribe":
+
+				if !sub.IsEnabled() {
+					vars.Error = errors.New("Disabled")
+					RenderTemplate(rsp, action_t, vars)
+					return
+				}
 
 				err = subs_db.RemoveSubscription(sub)
 

@@ -191,7 +191,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			}
 
 			if confirmed == "" {
-				accept_vars.Error = errors.New("Unconfirmed")
+				accept_vars.Error = errors.New("Unconfirmed") // here?
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}

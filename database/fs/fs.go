@@ -12,6 +12,7 @@ import (
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/whosonfirst/walk"
 	"io/ioutil"
+	_ "log"
 	"os"
 	"path/filepath"
 	"strings"
