@@ -34,6 +34,7 @@ type InviteAcceptTemplateVars struct {
 	SiteName string
 	Paths    *mailinglist.PathConfig
 	Error    error
+	Email    string
 	Code     string
 }
 
@@ -190,22 +191,37 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			if confirmed == "" {
-				accept_vars.Error = errors.New("Unconfirmed") // here?
+			// no address AND no confirmation
+
+			if str_addr == "" && confirmed == "" {
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
+			// no address
+
 			if str_addr == "" {
-				accept_vars.Error = errors.New("Empty address")
+				accept_vars.Error = errors.New("Missing address")
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
 
 			addr, err := mail.ParseAddress(str_addr)
 
+			// bad address
+
 			if err != nil {
 				accept_vars.Error = err
+				RenderTemplate(rsp, accept_t, accept_vars)
+				return
+			}
+
+			accept_vars.Email = addr.Address
+
+			// no confirmation
+
+			if confirmed == "" {
+				accept_vars.Error = errors.New("Unconfirmed") // here?
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
