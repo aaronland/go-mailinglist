@@ -24,18 +24,7 @@
 	
 	</form>
 
-	<p>Here's how invitations work: We (the <code>{{ .SiteName }}</code> mailing list) don't send them ourselves. Instead we generate invitation codes and send them to <em>you</em>. Then you send them to people you know along with a link (to the <code>{{ .SiteName }}</code> site) where they can be "accepted".</p>
-
-	<p>Once an invitation code has been accepted by an individual they will be prompted for their email address and they will go through the regular subscription process, meaning they'll get a second confirmation email to complete their subscription.</p>
-
-	<p>Why do we do it this way? We do it this way so that the recipient of the invitation doesn't have to wonder if receiving an email, out of the blue, from something called "the <code>{{ .SiteName }}</code> mailing list" is junk mail or not. We assume that you already have a relationship with the person and by extension that you are confortable sharing your email address with them.</p>
-
-	<p>If we were to send the email we'd either need to expose your email address to let the recipient know who the invitation was from, or allow you to add your name to the invitation. If we let you (in the broadest sense, not <q>you</q> personally) add words and phrases to the body of the email then we would also need to check that text for <q>bad</q> or <em>offensive</em> content. Since we can't read your mind or know your intentions, let alone those of the recipient, it's easiest just to stay out of that business altogther.</p>
-
-	<p>Instead we'll send you an email with individual invitation codes and the link where they can be accepted. It will be up to you to copy and paste a code and the link in to a separate email and send it to the person you want to invite with whatever message you think is appropriate.</p>
-
-	<p>Is this overly-complicated? It's definitely more complicated than it <em>should</em> be. Unfortunately the internet is a complicated place right now. It shouldn't be but we (again, the collective <q>we</q>) are still working it out how to make things better so for now that means invitations require a few extra steps along the way.</p>
-	    
+	{{ template "invite_how_it_works" }}	
     </div>
     
     <div class="card-footer">

@@ -9,6 +9,14 @@ Here are the invitation codes you requested for the <code>{{ .SiteName }}</code>
     {{ end }}
 </ul>
 
-<p>...{{ SiteURL .Paths.InviteAccept }}</p>
+<p>Each code listed above contains a link (with the invitation code) to the <code>{{ .SiteName }}</code> mailing list website. Remember: These are links that you need to send to the person you want to invite yourself. The <code>{{ .SiteName }}</code> mailing list does not contact other people on your behalf. There's a longer explanation below if you are wondering why.</p>
+
+<p>You can also tell people to go directly to this URL (on the <code>{{ .SiteName }}</code> mailing list website) and enter their invitation code manually:</p>
+
+<p><a href="{{ SiteURL .Paths.InviteAccept }}">{{ SiteURL .Paths.InviteAccept }}</a></p>
+
+<hr />
+
+{{ template "invite_how_it_works" }}
 
 {{ end }}
