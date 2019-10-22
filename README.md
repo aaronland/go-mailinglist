@@ -1,4 +1,4 @@
-# go-mailinglist
+># go-mailinglist
 
 This is work-in-progress.
 
@@ -51,6 +51,30 @@ Content-Transfer-Encoding: quoted-printable
 
 <p>hello world</p>
 ```
+
+## Templates
+
+### common_footer
+### common_header
+
+### confirm
+### confirm_action
+### confirm_email
+### confirm_success
+
+### crumb_error
+### index
+
+### invite_accept
+### invite_code
+### invite_how_it_works
+### invite_request_email
+### invite_request_success
+### invite_request
+### subscribe
+### subscribe_success
+### unsubscribe
+### unsubscribe_success
 
 ## See also
 

@@ -36,12 +36,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 			Flags:    opts.Config.FeatureFlags,
 		}
 
-		err := index_t.Execute(rsp, vars)
-
-		if err != nil {
-			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-		}
-
+		RenderTemplate(rsp, index_t, vars)
 		return
 	}
 
