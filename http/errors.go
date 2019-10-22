@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -20,16 +21,30 @@ var errors_map = map[int]string {
 	DISABLED_UNSUBSCRIBE: DISABLED_UNSUBSCRIBE_MESSAGE,
 }
 
-type MailingListError struct {
+type ApplicationError struct {
 	Code    int
 	Message string
+	Detail string
 }
 
-func (e *MailingListError) Error() string {
-	return e.Message
+func (e *ApplicationError) Error() string {
+
+	if e.Detail == "" {
+		return e.Message
+	}
+
+	return fmt.Sprintf("%s: %s", e.Message, e.Detail)
 }
 
-func NewMailingListError(code int, err error) *MailingListError {
+func NewFeatureFlagError(code int) *ApplicationError {
+	return NewApplicationError(code, "", nil)
+}
+
+func NewParamsError(code int, param string) *ApplicationError {
+	return NewApplicationError(code, param, nil)	
+}
+
+func NewApplicationError(code int, detail string, err error) *ApplicationError {
 
 	msg, ok := errors_map[code]
 
@@ -38,11 +53,12 @@ func NewMailingListError(code int, err error) *MailingListError {
 		msg, _ = errors_map[code]
 	}
 
-	log.Printf("[ERROR][%d] %v\n", code, err)
+	log.Printf("[ERROR][%d] %s (%v)\n", code, detail, err)
 
-	return &MailingListError{
+	return &ApplicationError{
 		Code:    code,
 		Message: msg,
+		Detail: detail,
 	}
 }
 
