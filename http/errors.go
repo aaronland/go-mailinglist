@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 // -1 (house keeping)
@@ -49,6 +50,7 @@ const E_SUBSCRIPTION_CREATE int = 303
 const E_SUBSCRIPTION_CONFIRM int = 304
 const E_SUBSCRIPTION_DISABLED int = 305
 const E_SUBSCRIPTION_ADD int = 306
+const E_SUBSCRIPTION_UPDATE int = 307
 
 const E_SUBSCRIPTION_EXISTS_MESSAGE string = "Already subscribed." // how to not leak data...?
 const E_SUBSCRIPTION_RETRIEVE_MESSAGE string = "Failed to retrieve subscription."
@@ -57,6 +59,7 @@ const E_SUBSCRIPTION_CREATE_MESSAGE string = "Failed to create new subscription.
 const E_SUBSCRIPTION_CONFIRM_MESSAGE string = "Failed to confirm subscription."
 const E_SUBSCRIPTION_DISABLED_MESSAGE string = "Subscription is disabled."
 const E_SUBSCRIPTION_ADD_MESSAGE string = "Failed to add subscription."
+const E_SUBSCRIPTION_UPDATE_MESSAGE string = "Failed to update subscription."
 
 // 400 - 499 (confirmations)
 
@@ -65,12 +68,14 @@ const E_CONFIRMATION_EXPIRED int = 401
 const E_CONFIRMATION_CREATE int = 402
 const E_CONFIRMATION_ADD int = 403
 const E_CONFIRMATION_INVALID int = 404
+const E_CONFIRMATION_CONFIRM int = 405
 
 const E_CONFIRMATION_RETRIEVE_MESSAGE string = "Failed to retrieve confirmation."
 const E_CONFIRMATION_EXPIRED_MESSAGE string = "Confirmation has expired."
 const E_CONFIRMATION_CREATE_MESSAGE string = "Failed to create confirmation."
 const E_CONFIRMATION_ADD_MESSAGE string = "Failed to add confirmation."
 const E_CONFIRMATION_INVALID_MESSAGE string = "Invalid confirmation."
+const E_CONFIRMATION_CONFIRM_MESSAGE string = "Failed to confirm."
 
 // 500 - 599 (invitations)
 
@@ -122,10 +127,12 @@ var errors_map = map[int]string{
 	E_SUBSCRIPTION_CONFIRM:   E_SUBSCRIPTION_CONFIRM_MESSAGE,
 	E_SUBSCRIPTION_DISABLED:  E_SUBSCRIPTION_DISABLED_MESSAGE,
 	E_SUBSCRIPTION_ADD:       E_SUBSCRIPTION_ADD_MESSAGE,
+	E_SUBSCRIPTION_UPDATE:    E_SUBSCRIPTION_UPDATE_MESSAGE,
 	E_CONFIRMATION_RETRIEVE:  E_CONFIRMATION_RETRIEVE_MESSAGE,
 	E_CONFIRMATION_EXPIRED:   E_CONFIRMATION_EXPIRED_MESSAGE,
 	E_CONFIRMATION_CREATE:    E_CONFIRMATION_CREATE_MESSAGE,
 	E_CONFIRMATION_ADD:       E_CONFIRMATION_ADD_MESSAGE,
+	E_CONFIRMATION_CONFIRM:   E_CONFIRMATION_CONFIRM_MESSAGE,
 	E_CONFIRMATION_INVALID:   E_CONFIRMATION_INVALID_MESSAGE,
 	E_INVITATION_RETRIEVE:    E_INVITATION_RETRIEVE_MESSAGE,
 	E_INVITATION_UNAVAILABLE: E_INVITATION_UNAVAILABLE_MESSAGE,
@@ -152,15 +159,7 @@ func (e *ApplicationError) Error() string {
 	return fmt.Sprintf("%s: %s", e.Message, e.Detail)
 }
 
-func NewFeatureFlagError(code int) *ApplicationError {
-	return NewApplicationError(code, "", nil)
-}
-
-func NewParamsError(code int, param string) *ApplicationError {
-	return NewApplicationError(code, param, nil)
-}
-
-func NewApplicationError(code int, detail string, err error) *ApplicationError {
+func NewApplicationError(err error, code int, details ...string) *ApplicationError {
 
 	msg, ok := errors_map[code]
 
@@ -169,11 +168,13 @@ func NewApplicationError(code int, detail string, err error) *ApplicationError {
 		msg, _ = errors_map[code]
 	}
 
-	log.Printf("[ERROR][%d] %s (%v)\n", code, detail, err)
+	str_details := strings.Join(details, " ")
+
+	log.Printf("[ERROR][%d] %s (%v)\n", code, str_details, err)
 
 	return &ApplicationError{
 		Code:    code,
 		Message: msg,
-		Detail:  detail,
+		Detail:  str_details,
 	}
 }

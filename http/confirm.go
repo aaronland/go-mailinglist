@@ -64,7 +64,10 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 		}
 
 		if !opts.Config.FeatureFlags.Subscribe {
-			vars.Error = errors.New("Disabled")
+
+			app_err := NewApplicationError(nil, E_DISABLED_SUBSCRIBE)
+			vars.Error = app_err
+
 			RenderTemplate(rsp, confirm_t, vars)
 			return
 		}
@@ -76,12 +79,19 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			code, err := sanitize.GetString(req, "code")
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "code")
+				vars.Error = app_err
+
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			if code == "" {
+
+				app_err := NewApplicationError(nil, E_INPUT_PARSE, "code")
+				vars.Error = app_err
+
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
@@ -91,13 +101,18 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			conf, err := conf_db.GetConfirmationWithCode(code)
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_CONFIRMATION_RETRIEVE)
+				vars.Error = app_err
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
 
 			if conf.IsExpired() {
-				vars.Error = errors.New("Confirmation code is expired.")
+
+				app_err := NewApplicationError(nil, E_CONFIRMATION_EXPIRED)
+				vars.Error = app_err
+
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
@@ -105,7 +120,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			_, err = subs_db.GetSubscriptionWithAddress(conf.Address)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
+				vars.Error = app_err
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
@@ -128,7 +144,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			code, err := sanitize.PostString(req, "code")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "code")
+				vars.Error = app_err
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
@@ -138,7 +155,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			confirmed, err := sanitize.PostString(req, "confirm")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "confirm")
+				vars.Error = app_err
 				RenderTemplate(rsp, action_t, vars)
 				return
 			}
@@ -146,13 +164,15 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			conf, err := conf_db.GetConfirmationWithCode(code)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_RETRIEVE)
+				vars.Error = app_err
 				RenderTemplate(rsp, action_t, vars)
 				return
 			}
 
 			if conf.IsExpired() {
-				vars.Error = errors.New("Expired")
+				app_err := NewApplicationError(nil, E_CONFIRMATION_EXPIRED)
+				vars.Error = app_err
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}
@@ -167,7 +187,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			sub, err := subs_db.GetSubscriptionWithAddress(conf.Address)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
+				vars.Error = app_err
 				RenderTemplate(rsp, action_t, vars)
 				return
 			}
@@ -192,7 +213,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				err = sub.Confirm()
 
 				if err != nil {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_CONFIRMATION_CONFIRM)
+					vars.Error = app_err
 					RenderTemplate(rsp, action_t, vars)
 					return
 				}
@@ -200,7 +222,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				err = subs_db.UpdateSubscription(sub)
 
 				if err != nil {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_SUBSCRIPTION_UPDATE)
+					vars.Error = app_err
 					RenderTemplate(rsp, action_t, vars)
 					return
 				}
@@ -217,7 +240,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			case "unsubscribe":
 
 				if !sub.IsEnabled() {
-					vars.Error = errors.New("Disabled")
+					app_err := NewApplicationError(nil, E_SUBSCRIPTION_DISABLED)
+					vars.Error = app_err
 					RenderTemplate(rsp, action_t, vars)
 					return
 				}
