@@ -51,6 +51,7 @@ const E_SUBSCRIPTION_CONFIRM int = 304
 const E_SUBSCRIPTION_DISABLED int = 305
 const E_SUBSCRIPTION_ADD int = 306
 const E_SUBSCRIPTION_UPDATE int = 307
+const E_SUBSCRIPTION_REMOVE int = 308
 
 const E_SUBSCRIPTION_EXISTS_MESSAGE string = "Already subscribed." // how to not leak data...?
 const E_SUBSCRIPTION_RETRIEVE_MESSAGE string = "Failed to retrieve subscription."
@@ -60,6 +61,7 @@ const E_SUBSCRIPTION_CONFIRM_MESSAGE string = "Failed to confirm subscription."
 const E_SUBSCRIPTION_DISABLED_MESSAGE string = "Subscription is disabled."
 const E_SUBSCRIPTION_ADD_MESSAGE string = "Failed to add subscription."
 const E_SUBSCRIPTION_UPDATE_MESSAGE string = "Failed to update subscription."
+const E_SUBSCRIPTION_REMOVE_MESSAGE string = "Failed to remove subscription."
 
 // 400 - 499 (confirmations)
 
@@ -128,6 +130,7 @@ var errors_map = map[int]string{
 	E_SUBSCRIPTION_DISABLED:  E_SUBSCRIPTION_DISABLED_MESSAGE,
 	E_SUBSCRIPTION_ADD:       E_SUBSCRIPTION_ADD_MESSAGE,
 	E_SUBSCRIPTION_UPDATE:    E_SUBSCRIPTION_UPDATE_MESSAGE,
+	E_SUBSCRIPTION_REMOVE:    E_SUBSCRIPTION_REMOVE_MESSAGE,
 	E_CONFIRMATION_RETRIEVE:  E_CONFIRMATION_RETRIEVE_MESSAGE,
 	E_CONFIRMATION_EXPIRED:   E_CONFIRMATION_EXPIRED_MESSAGE,
 	E_CONFIRMATION_CREATE:    E_CONFIRMATION_CREATE_MESSAGE,

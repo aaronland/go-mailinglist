@@ -5,7 +5,6 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"errors"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
@@ -249,7 +248,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				err = subs_db.RemoveSubscription(sub)
 
 				if err != nil {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_SUBSCRIPTION_REMOVE)
+					vars.Error = app_err
 					RenderTemplate(rsp, action_t, vars)
 					return
 				}
@@ -265,7 +265,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 			default:
 
-				vars.Error = errors.New("Invalid action")
+				app_err := NewApplicationError(nil, E_CONFIRMATION_INVALID)
+				vars.Error = app_err
 				RenderTemplate(rsp, confirm_t, vars)
 				return
 			}

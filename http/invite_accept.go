@@ -93,7 +93,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 		}
 
 		if !opts.Config.FeatureFlags.InviteAccept {
-			code_vars.Error = errors.New("Disabled")
+			app_err := NewApplicationError(nil, E_DISABLED_INVITE)
+			code_vars.Error = app_err
 			RenderTemplate(rsp, code_t, code_vars)
 			return
 		}
@@ -107,7 +108,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			code, err := sanitize.GetString(req, "code")
 
 			if err != nil {
-				code_vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "code")
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
@@ -120,13 +122,15 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			invite, err := invites_db.GetInvitationWithCode(code)
 
 			if err != nil {
-				code_vars.Error = err
+				app_err := NewApplicationError(err, E_INVITATION_RETRIEVE)
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
 
 			if !invite.IsAvailable() {
-				code_vars.Error = errors.New("Invitation unavailable")
+				app_err := NewApplicationError(err, E_INVITATION_UNAVAILABLE)
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
@@ -146,13 +150,15 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			code, err := sanitize.PostString(req, "code")
 
 			if err != nil {
-				code_vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "code")
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
 
 			if code == "" {
-				code_vars.Error = errors.New("Missing code")
+				app_err := NewApplicationError(err, E_INPUT_MISSING, "code")
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
@@ -160,13 +166,15 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			invite, err := invites_db.GetInvitationWithCode(code)
 
 			if err != nil {
-				code_vars.Error = err
+				app_err := NewApplicationError(err, E_INVITATION_RETRIEVE)
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
 
 			if !invite.IsAvailable() {
-				code_vars.Error = errors.New("Invitation unavailable")
+				app_err := NewApplicationError(err, E_INVITATION_UNAVAILABLE)
+				code_vars.Error = app_err
 				RenderTemplate(rsp, code_t, code_vars)
 				return
 			}
@@ -178,7 +186,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "address")
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -186,7 +195,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			confirmed, err := sanitize.PostString(req, "confirm")
 
 			if err != nil {
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "confirm")
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -201,7 +211,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// no address
 
 			if str_addr == "" {
-				accept_vars.Error = errors.New("Missing address")
+				app_err := NewApplicationError(err, E_INPUT_MISSING, "address")
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -211,7 +222,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// bad address
 
 			if err != nil {
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_EMAIL_INVALID)
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -221,6 +233,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// no confirmation
 
 			if confirmed == "" {
+
 				accept_vars.Error = errors.New("Unconfirmed") // here?
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
@@ -228,10 +241,11 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
 
-			// PLEASE MAKE ME A BETTER ERROR HANDLER...
-
 			if sub != nil {
-				accept_vars.Error = errors.New("Exists")
+
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_EXISTS)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -241,7 +255,10 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			sub, err = subscription.NewSubscription(addr.Address)
 
 			if err != nil {
-				accept_vars.Error = err
+
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_CREATE)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -249,7 +266,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
 
 			if err != nil {
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_CREATE)
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -257,7 +275,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			err = subs_db.AddSubscription(sub)
 
 			if err != nil {
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_ADD)
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -274,7 +293,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 					subs_db.RemoveSubscription(sub)
 				}()
 
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_ADD)
+				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 
 				wg.Wait()
@@ -294,7 +314,9 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 					conf_db.RemoveConfirmation(conf)
 				}()
 
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_INVITATION_ACCEPT)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 
 				wg.Wait()
@@ -314,7 +336,9 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 					conf_db.RemoveConfirmation(conf)
 				}()
 
-				accept_vars.Error = err
+				app_err := NewApplicationError(err, E_INVITATION_UPDATE)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 
 				wg.Wait()
@@ -351,7 +375,10 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				accept_vars.Error = err
+
+				app_err := NewApplicationError(err, E_EMAIL_CREATE)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
@@ -399,7 +426,10 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			}
 
 			if send_err != nil {
-				accept_vars.Error = send_err
+
+				app_err := NewApplicationError(send_err, E_EMAIL_SEND)
+				accept_vars.Error = app_err
+
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return
 			}
