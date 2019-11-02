@@ -222,7 +222,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// bad address
 
 			if err != nil {
-				app_err := NewApplicationError(err, E_EMAIL_INVALID)
+				app_err := NewApplicationError(err, E_EMAIL_PARSE)
 				accept_vars.Error = app_err
 				RenderTemplate(rsp, accept_t, accept_vars)
 				return

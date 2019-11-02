@@ -23,7 +23,7 @@ const E_DISABLED_UNSUBSCRIBE_MESSAGE string = "Unsubscribing is not currently en
 const E_DISABLED_CONFIRM_MESSAGE string = "Confirmations are not currently enabled."
 const E_DISABLED_INVITE_MESSAGE string = "Invites are not currently enabled."
 
-// 100 - 199 (input validation)
+// 100 - 149 (input validation)
 
 const E_INPUT_MISSING int = 100
 const E_INPUT_PARSE int = 101
@@ -31,13 +31,18 @@ const E_INPUT_PARSE int = 101
 const E_INPUT_MISSING_MESSAGE string = "Missing parameter '%s'"
 const E_INPUT_PARSE_MESSAGE string = "Invalid parameter '%s'"
 
+// 150 - 199 (templates)
+
+const E_TEMPLATE_RENDER int = 150
+const E_TEMPLATE_RENDER_MESSAGE string = "Failed to render output."
+
 // 200 - 299 (email)
 
-const E_EMAIL_INVALID int = 200
+const E_EMAIL_PARSE int = 200
 const E_EMAIL_CREATE int = 201
 const E_EMAIL_SEND int = 202
 
-const E_EMAIL_INVALID_MESSAGE string = "Invalid email address '%s'."
+const E_EMAIL_PARSE_MESSAGE string = "Invalid email address '%s'."
 const E_EMAIL_CREATE_MESSAGE string = "Failed to create new email message."
 const E_EMAIL_SEND_MESSAGE string = "Failed to send email message."
 
@@ -119,7 +124,8 @@ var errors_map = map[int]string{
 	E_DISABLED_INVITE:        E_DISABLED_INVITE_MESSAGE,
 	E_INPUT_MISSING:          E_INPUT_MISSING_MESSAGE,
 	E_INPUT_PARSE:            E_INPUT_PARSE_MESSAGE,
-	E_EMAIL_INVALID:          E_EMAIL_INVALID_MESSAGE,
+	E_TEMPLATE_RENDER:        E_TEMPLATE_RENDER_MESSAGE,
+	E_EMAIL_PARSE:            E_EMAIL_PARSE_MESSAGE,
 	E_EMAIL_CREATE:           E_EMAIL_CREATE_MESSAGE,
 	E_EMAIL_SEND:             E_EMAIL_SEND_MESSAGE,
 	E_SUBSCRIPTION_EXISTS:    E_SUBSCRIPTION_EXISTS_MESSAGE,

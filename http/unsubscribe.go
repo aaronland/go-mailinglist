@@ -5,7 +5,6 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
@@ -64,8 +63,9 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			Paths:    opts.Config.Paths,
 		}
 
-		if !opts.Config.FeatureFlags.Subscribe {
-			vars.Error = errors.New("Disabled")
+		if !opts.Config.FeatureFlags.Unsubscribe {
+			app_err := NewApplicationError(nil, E_DISABLED_UNSUBSCRIBE)
+			vars.Error = app_err
 			RenderTemplate(rsp, unsubscribe_t, vars)
 			return
 		}
@@ -85,7 +85,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "address")
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -93,7 +94,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_EMAIL_PARSE)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -103,18 +105,23 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			if err != nil {
 
 				if !database.IsNotExist(err) {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
+					vars.Error = app_err
 					RenderTemplate(rsp, unsubscribe_t, vars)
 					return
 				}
 
-				vars.Error = errors.New("Invalid subscription")
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_NOTFOUND)
+				vars.Error = app_err
+
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
 
 			if !sub.IsEnabled() {
-				vars.Error = errors.New("Disabled")
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_DISABLED)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -122,7 +129,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "unsubscribe")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_CREATE)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -131,7 +139,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 			if err != nil {
 
-				vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_ADD)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -166,7 +175,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 
 			if err != nil {
 
-				vars.Error = err
+				app_err := NewApplicationError(err, E_EMAIL_CREATE)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}
@@ -213,7 +223,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			}
 
 			if send_err != nil {
-				vars.Error = send_err
+				app_err := NewApplicationError(send_err, E_EMAIL_SEND)
+				vars.Error = app_err
 				RenderTemplate(rsp, unsubscribe_t, vars)
 				return
 			}

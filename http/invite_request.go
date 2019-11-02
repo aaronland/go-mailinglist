@@ -5,7 +5,6 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
@@ -71,7 +70,10 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 		}
 
 		if !opts.Config.FeatureFlags.InviteRequest {
-			vars.Error = errors.New("Disabled")
+
+			app_err := NewApplicationError(nil, E_DISABLED_INVITE)
+			vars.Error = app_err
+
 			RenderTemplate(rsp, invite_t, vars)
 			return
 		}
@@ -90,13 +92,19 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "address")
+				vars.Error = app_err
+
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
 			if str_addr == "" {
-				vars.Error = errors.New("Empty address")
+
+				app_err := NewApplicationError(err, E_INPUT_MISSING, "address")
+				vars.Error = app_err
+
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -104,7 +112,9 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_EMAIL_PARSE)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -112,13 +122,16 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
 
 			if !sub.IsEnabled() {
-				vars.Error = errors.New("Disabled")
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_DISABLED)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -151,7 +164,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			err = invites_db.ListInvitationsWithInviter(req.Context(), invites_cb, sub)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_INVITATION_LIST)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -168,7 +182,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			max_codes := 2 - count
 
 			if max_codes <= 0 {
-				vars.Error = errors.New("All the codes...")
+				app_err := NewApplicationError(nil, E_INVITATION_MAX)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -178,7 +193,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				invite, err := invitation.NewInvitation(sub)
 
 				if err != nil {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_INVITATION_NEW)
+					vars.Error = app_err
 					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
@@ -186,7 +202,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				err = invites_db.AddInvitation(invite)
 
 				if err != nil {
-					vars.Error = err
+					app_err := NewApplicationError(err, E_INVITATION_ADD)
+					vars.Error = app_err
 					RenderTemplate(rsp, invite_t, vars)
 					return
 				}
@@ -231,7 +248,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_EMAIL_CREATE)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}
@@ -282,7 +300,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			}
 
 			if send_err != nil {
-				vars.Error = send_err
+				app_err := NewApplicationError(send_err, E_EMAIL_SEND)
+				vars.Error = app_err
 				RenderTemplate(rsp, invite_t, vars)
 				return
 			}

@@ -5,7 +5,6 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
@@ -67,7 +66,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 		}
 
 		if !opts.Config.FeatureFlags.Subscribe {
-			vars.Error = errors.New("Disabled")
+			app_err := NewApplicationError(nil, E_DISABLED_SUBSCRIBE)
+			vars.Error = app_err
 			RenderTemplate(rsp, subscribe_t, vars)
 			return
 		}
@@ -86,13 +86,15 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			str_addr, err := sanitize.PostString(req, "address")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_INPUT_PARSE, "address")
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
 
 			if str_addr == "" {
-				vars.Error = errors.New("Empty address")
+				app_err := NewApplicationError(err, E_INPUT_MISSING, "address")
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -100,7 +102,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			addr, err := mail.ParseAddress(str_addr)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_EMAIL_PARSE)
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -110,7 +113,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			if err != nil {
 
 				if !database.IsNotExist(err) {
-					vars.Error = err
+
+					app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
+					vars.Error = app_err
 					RenderTemplate(rsp, subscribe_t, vars)
 					return
 				}
@@ -128,7 +133,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			sub, err = subscription.NewSubscription(addr.Address)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_CREATE)
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -136,7 +142,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			conf, err := confirmation.NewConfirmationForSubscription(sub, "subscribe")
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_CREATE)
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -144,7 +151,8 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			err = subs_db.AddSubscription(sub)
 
 			if err != nil {
-				vars.Error = err
+				app_err := NewApplicationError(err, E_SUBSCRIPTION_ADD)
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -161,7 +169,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 					subs_db.RemoveSubscription(sub)
 				}()
 
-				vars.Error = err
+				app_err := NewApplicationError(err, E_CONFIRMATION_ADD)
+				vars.Error = app_err
+
 				RenderTemplate(rsp, subscribe_t, vars)
 
 				wg.Wait()
@@ -197,7 +207,10 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			msg, err := message.NewMessageFromHTMLTemplate(email_t, email_vars)
 
 			if err != nil {
-				vars.Error = err
+
+				app_err := NewApplicationError(err, E_EMAIL_CREATE)
+				vars.Error = app_err
+
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
@@ -244,7 +257,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			}
 
 			if send_err != nil {
-				vars.Error = send_err
+
+				app_err := NewApplicationError(send_err, E_EMAIL_SEND)
+				vars.Error = app_err
 				RenderTemplate(rsp, subscribe_t, vars)
 				return
 			}
