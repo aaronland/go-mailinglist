@@ -3,8 +3,10 @@ package gomail
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -18,6 +20,7 @@ type Message struct {
 	encoding    Encoding
 	hEncoder    mimeEncoder
 	buf         bytes.Buffer
+	mu          *sync.RWMutex
 }
 
 type header map[string][]string
@@ -44,6 +47,9 @@ func NewMessage(settings ...MessageSetting) *Message {
 	} else {
 		m.hEncoder = qEncoding
 	}
+
+	mu := new(sync.RWMutex)
+	m.mu = mu
 
 	return m
 }
@@ -311,6 +317,91 @@ func (m *Message) appendFile(list []*file, name string, settings []FileSetting) 
 	return append(list, f)
 }
 
+func (m *Message) appendReader(list []*file, filename string, r io.ReadCloser, settings []FileSetting) []*file {
+	f := &file{
+		Name:   filepath.Base(filename),
+		Header: make(map[string][]string),
+		CopyFunc: func(w io.Writer) error {
+
+			if _, err := io.Copy(w, r); err != nil {
+				r.Close()
+				return err
+			}
+
+			return r.Close()
+		},
+	}
+
+	for _, s := range settings {
+		s(f)
+	}
+
+	if list == nil {
+		return []*file{f}
+	}
+
+	return append(list, f)
+}
+
+func (m *Message) appendReadSeekCloser(list []*file, filename string, r ReadSeekCloser, settings []FileSetting) []*file {
+	f := &file{
+		Name:   filepath.Base(filename),
+		Header: make(map[string][]string),
+		CopyFunc: func(w io.Writer) error {
+
+			m.mu.Lock()
+			defer m.mu.Unlock()
+
+			if _, err := io.Copy(w, r); err != nil {
+				r.Close()
+				return err
+			}
+
+			_, err := r.Seek(0, 0)
+			return err
+		},
+	}
+
+	for _, s := range settings {
+		s(f)
+	}
+
+	if list == nil {
+		return []*file{f}
+	}
+
+	return append(list, f)
+}
+
+func (m *Message) appendBuffer(list []*file, filename string, buf *bytes.Buffer, settings []FileSetting) []*file {
+	f := &file{
+		Name:   filepath.Base(filename),
+		Header: make(map[string][]string),
+		CopyFunc: func(w io.Writer) error {
+
+			br := bytes.NewReader(buf.Bytes())
+			r := ioutil.NopCloser(br)
+
+			if _, err := io.Copy(w, r); err != nil {
+				r.Close()
+				return err
+			}
+
+			return r.Close()
+		},
+	}
+
+	for _, s := range settings {
+		s(f)
+	}
+
+	if list == nil {
+		return []*file{f}
+	}
+
+	return append(list, f)
+}
+
 // Attach attaches the files to the email.
 func (m *Message) Attach(filename string, settings ...FileSetting) {
 	m.attachments = m.appendFile(m.attachments, filename, settings)
@@ -319,4 +410,16 @@ func (m *Message) Attach(filename string, settings ...FileSetting) {
 // Embed embeds the images to the email.
 func (m *Message) Embed(filename string, settings ...FileSetting) {
 	m.embedded = m.appendFile(m.embedded, filename, settings)
+}
+
+func (m *Message) EmbedReader(filename string, r io.ReadCloser, settings ...FileSetting) {
+	m.embedded = m.appendReader(m.embedded, filename, r, settings)
+}
+
+func (m *Message) EmbedReadSeekCloser(filename string, r ReadSeekCloser, settings ...FileSetting) {
+	m.embedded = m.appendReadSeekCloser(m.embedded, filename, r, settings)
+}
+
+func (m *Message) EmbedBuffer(filename string, buf *bytes.Buffer, settings ...FileSetting) {
+	m.embedded = m.appendBuffer(m.embedded, filename, buf, settings)
 }
