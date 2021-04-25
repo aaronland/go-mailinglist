@@ -12,10 +12,10 @@ import (
 	"fmt"
 	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
+	"github.com/aaronland/go-http-server"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/assets/templates"
 	"github.com/aaronland/go-mailinglist/http"
-	"github.com/aaronland/go-mailinglist/server"
 	"github.com/aaronland/go-string/random"
 	"github.com/aaronland/gocloud-runtimevar-string"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
@@ -47,11 +47,9 @@ func main() {
 	logs_dsn := flag.String("eventlogs-dsn", "", "...")
 
 	sender_dsn := flag.String("sender-dsn", "", "...")
-	crumb_url := flag.String("crumb-url", "", "...")
+	crumb_uri := flag.String("crumb-uri", "", "...")
 
-	protocol := flag.String("protocol", "http", "...")
-	host := flag.String("host", "localhost", "...")
-	port := flag.Int("port", 8080, "...")
+	server_uri := flag.String("server-uri", "http://localhost:8080", "...")
 
 	enable_subscriptions := flag.Bool("enable-subscribe", true, "...")
 	enable_unsubscriptions := flag.Bool("enable-unsubscribe", true, "...")
@@ -77,7 +75,9 @@ func main() {
 
 	flag.Parse()
 
-	s, err := server.NewServer(*protocol, *host, *port)
+	ctx := context.Background()
+
+	s, err := server.NewServer(ctx, *server_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create server: %s", err)
@@ -158,7 +158,7 @@ func main() {
 		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
 		*logs_dsn = fmt.Sprintf("database=fs root=%s", logs_dir)
 
-		*crumb_url = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=foo+separator=:+ttl=300", secret, salt)
+		*crumb_uri = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=foo+separator=:+ttl=300", secret, salt)
 		*sender_dsn = "sender=stdout"
 
 		*mailinglist_name = "Development"
@@ -276,16 +276,16 @@ func main() {
 		FeatureFlags: feature_flags,
 	}
 
-	crumb_dsn, err := runtimevar.OpenString(context.Background(), *crumb_url)
+	cr_uri, err := runtimevar.OpenString(context.Background(), *crumb_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to open crumb URL: %s", err)
 	}
 
-	crumb_cfg, err := crumb.NewCrumbConfigFromDSN(crumb_dsn)
+	cr, err := crumb.NewCrumb(ctx, cr_uri)
 
 	if err != nil {
-		log.Fatalf("Failed to create crumb: %s", err)
+		log.Fatalf("Failed to create new crumb, %v", err)
 	}
 
 	mux := gohttp.NewServeMux()
@@ -350,7 +350,7 @@ func main() {
 	}
 
 	subscribe_handler = bootstrap.AppendResourcesHandler(subscribe_handler, bootstrap_opts)
-	subscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, subscribe_handler, crumb_error_handler)
+	subscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(cr, subscribe_handler, crumb_error_handler)
 
 	mux.Handle(path_cfg.Subscribe, subscribe_handler)
 
@@ -370,7 +370,7 @@ func main() {
 	}
 
 	unsubscribe_handler = bootstrap.AppendResourcesHandler(unsubscribe_handler, bootstrap_opts)
-	unsubscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, unsubscribe_handler, crumb_error_handler)
+	unsubscribe_handler = crumb.EnsureCrumbHandlerWithErrorHandler(cr, unsubscribe_handler, crumb_error_handler)
 
 	mux.Handle(path_cfg.Unsubscribe, unsubscribe_handler)
 
@@ -390,7 +390,7 @@ func main() {
 	}
 
 	invite_request_handler = bootstrap.AppendResourcesHandler(invite_request_handler, bootstrap_opts)
-	invite_request_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_request_handler, crumb_error_handler)
+	invite_request_handler = crumb.EnsureCrumbHandlerWithErrorHandler(cr, invite_request_handler, crumb_error_handler)
 
 	mux.Handle(path_cfg.InviteRequest, invite_request_handler)
 
@@ -411,7 +411,7 @@ func main() {
 	}
 
 	invite_accept_handler = bootstrap.AppendResourcesHandler(invite_accept_handler, bootstrap_opts)
-	invite_accept_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, invite_accept_handler, crumb_error_handler)
+	invite_accept_handler = crumb.EnsureCrumbHandlerWithErrorHandler(cr, invite_accept_handler, crumb_error_handler)
 
 	mux.Handle(path_cfg.InviteAccept, invite_accept_handler)
 
@@ -430,13 +430,13 @@ func main() {
 	}
 
 	confirm_handler = bootstrap.AppendResourcesHandler(confirm_handler, bootstrap_opts)
-	confirm_handler = crumb.EnsureCrumbHandlerWithErrorHandler(crumb_cfg, confirm_handler, crumb_error_handler)
+	confirm_handler = crumb.EnsureCrumbHandlerWithErrorHandler(cr, confirm_handler, crumb_error_handler)
 
 	mux.Handle(path_cfg.Confirm, confirm_handler)
 
 	log.Printf("Listening on %s\n", s.Address())
 
-	err = s.ListenAndServe(mux)
+	err = s.ListenAndServe(ctx, mux)
 
 	if err != nil {
 		log.Fatal(err)
