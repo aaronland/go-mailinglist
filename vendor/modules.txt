@@ -25,7 +25,7 @@ github.com/aaronland/go-string/random
 # github.com/aaronland/gocloud-runtimevar-string v0.0.1
 ## explicit
 github.com/aaronland/gocloud-runtimevar-string
-# github.com/aaronland/gomail v2.0.6+incompatible
+# github.com/aaronland/gomail v0.0.0-20210425015633-f12d66321070
 ## explicit
 github.com/aaronland/gomail
 # github.com/aws/aws-lambda-go v1.10.0

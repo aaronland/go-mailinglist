@@ -126,6 +126,8 @@ github.com/aaronland/go-string v0.1.2 h1:RSr/mQNbLgF37H0RV+nF7j2kILRRFkCmr8Jwq4l
 github.com/aaronland/go-string v0.1.2/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/gocloud-runtimevar-string v0.0.1 h1:pBS9qITcLXeVqd1Ly0SV9d3b2YNHPoj6fiup/V1L5aE=
 github.com/aaronland/gocloud-runtimevar-string v0.0.1/go.mod h1:/XvGvPB7JUmUJ6xFB1Xa9gNcRkLBsoHC1fruBXfw6bY=
+github.com/aaronland/gomail v0.0.0-20210425015633-f12d66321070 h1:3fJYwI+EsJ4OMBhjz/McUyJBU/+HfYuFTFE2ASjLEkk=
+github.com/aaronland/gomail v0.0.0-20210425015633-f12d66321070/go.mod h1:LXR3UViK1YA2nixzZy8rLegJ41d7m92I3xr0oqEyUoE=
 github.com/aaronland/gomail v2.0.1+incompatible h1:qCaawLvpmMWSbaBfLvUUcuWMXiksfZINc7WQjqjGKXo=
 github.com/aaronland/gomail v2.0.1+incompatible/go.mod h1:SDeus8DT9zwd3QCYkE+rIViYlR6narNZwKqVD/VJOPA=
 github.com/aaronland/gomail v2.0.6+incompatible h1:ucE+SiJv0C50YZiwCB323fMLV8h3yXDv3X+WHd23PWA=

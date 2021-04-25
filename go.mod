@@ -9,7 +9,7 @@ require (
 	github.com/aaronland/go-http-server v0.0.6
 	github.com/aaronland/go-string v0.1.2
 	github.com/aaronland/gocloud-runtimevar-string v0.0.1
-	github.com/aaronland/gomail v2.0.6+incompatible
+	github.com/aaronland/gomail v0.0.0-20210425015633-f12d66321070
 	github.com/whosonfirst/walk v0.0.1
 	gocloud.dev v0.22.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
