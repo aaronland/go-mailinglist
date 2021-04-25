@@ -17,7 +17,7 @@ import (
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/http"
-	"github.com/aaronland/go-mailinglist/sender"
+	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/go-mailinglist/templates/html"
 	"github.com/aaronland/go-string/random"
 	"github.com/aaronland/gocloud-runtimevar-string"

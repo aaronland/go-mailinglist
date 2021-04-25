@@ -29,6 +29,9 @@ github.com/aaronland/go-string/random
 # github.com/aaronland/gocloud-runtimevar-string v0.0.1
 ## explicit
 github.com/aaronland/gocloud-runtimevar-string
+# github.com/aaronland/gomail-sender v0.0.1
+## explicit
+github.com/aaronland/gomail-sender
 # github.com/aaronland/gomail/v2 v2.0.8
 ## explicit
 github.com/aaronland/gomail/v2
@@ -223,5 +226,4 @@ google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
-## explicit
 gopkg.in/alexcesaro/quotedprintable.v3

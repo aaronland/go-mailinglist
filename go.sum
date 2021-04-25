@@ -134,6 +134,8 @@ github.com/aaronland/gomail v2.0.1+incompatible h1:qCaawLvpmMWSbaBfLvUUcuWMXiksf
 github.com/aaronland/gomail v2.0.1+incompatible/go.mod h1:SDeus8DT9zwd3QCYkE+rIViYlR6narNZwKqVD/VJOPA=
 github.com/aaronland/gomail v2.0.6+incompatible h1:ucE+SiJv0C50YZiwCB323fMLV8h3yXDv3X+WHd23PWA=
 github.com/aaronland/gomail v2.0.6+incompatible/go.mod h1:SDeus8DT9zwd3QCYkE+rIViYlR6narNZwKqVD/VJOPA=
+github.com/aaronland/gomail-sender v0.0.1 h1:GAvt6pEFWavw6OgRqd+NY4zT0UAII43ScyaPSr9pwlQ=
+github.com/aaronland/gomail-sender v0.0.1/go.mod h1:zyY9nzuawfMq7RHcNEnsk0U8n7a9NfHExYXPK6KyazM=
 github.com/aaronland/gomail/v2 v2.0.8 h1:pTHK0/Q7Xctz2/HcG3pa3SH8DS9kNW/f/kmvPPTJmq0=
 github.com/aaronland/gomail/v2 v2.0.8/go.mod h1:EW4vlCrGmTlJm5vu6BJbkATC8xzqicURtJjoWSX0FWM=
 github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7 h1:IAPakbB8XIYLWMATOpgH9Nbz7nsR2aRHHXoMHxduXSc=
