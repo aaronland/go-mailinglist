@@ -1,4 +1,4 @@
-module github.com/aaronland/gomail
+module github.com/aaronland/gomail/v2
 
 go 1.16
 

@@ -6,7 +6,7 @@ import (
 	"github.com/aaronland/go-mailinglist/database/fs"
 	"github.com/aaronland/go-mailinglist/sender"
 	"github.com/aaronland/go-string/dsn"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	_ "log"
 	"strings"
 )

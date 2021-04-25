@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	"log"
 	"net/mail"
 	"sync"

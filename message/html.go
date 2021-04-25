@@ -3,7 +3,7 @@ package message
 import (
 	"bufio"
 	"bytes"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	html_template "html/template"
 )
 

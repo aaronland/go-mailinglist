@@ -1,7 +1,7 @@
 package sender
 
 import (
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	"io"
 	_ "log"
 	"os"

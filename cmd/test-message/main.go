@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/go-mailinglist/sender"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	"log"
 	"net/mail"
 )

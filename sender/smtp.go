@@ -2,7 +2,7 @@ package sender
 
 import (
 	"github.com/aaronland/go-string/dsn"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	"strconv"
 )
 

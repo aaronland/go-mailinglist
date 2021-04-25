@@ -12,7 +12,7 @@ import (
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/message"
-	"github.com/aaronland/gomail"
+	"github.com/aaronland/gomail/v2"
 	"html/template"
 	"log"
 	gohttp "net/http"
