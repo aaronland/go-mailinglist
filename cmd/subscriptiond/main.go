@@ -2,7 +2,7 @@ package main
 
 /*
 
-go run -mod vendor cmd/subscriptiond/main.go -devel -templates 'templates/html/*.html'
+go run -mod vendor cmd/subscriptiond/main.go -devel
 
 */
 
@@ -14,11 +14,10 @@ import (
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-http-server"
 	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/assets/templates"
+	"github.com/aaronland/go-mailinglist/templates/html"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-string/random"
 	"github.com/aaronland/gocloud-runtimevar-string"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	_ "gocloud.dev/runtimevar/constantvar"
 	_ "gocloud.dev/runtimevar/filevar"
 	"html/template"
@@ -47,9 +46,9 @@ func main() {
 	logs_dsn := flag.String("eventlogs-dsn", "", "...")
 
 	sender_dsn := flag.String("sender-dsn", "", "...")
-	crumb_uri := flag.String("crumb-uri", "", "...")
+	crumb_uri := flag.String("crumb-uri", "", "A valid aaronland/go-http-crumb URI.")
 
-	server_uri := flag.String("server-uri", "http://localhost:8080", "...")
+	server_uri := flag.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
 
 	enable_subscriptions := flag.Bool("enable-subscribe", true, "...")
 	enable_unsubscriptions := flag.Bool("enable-unsubscribe", true, "...")
@@ -65,9 +64,6 @@ func main() {
 	path_confirm := flag.String("path-confirm", "/confirm", "...")
 
 	static_prefix := flag.String("static-prefix", "", "Prepend this prefix to URLs for static assets.")
-
-	var path_templates flags.MultiString
-	flag.Var(&path_templates, "templates", "One or more optional strings for local templates. This is anything that can be read by the 'templates.ParseGlob' method.")
 
 	path_ping := flag.String("path-ping", "/ping", "...")
 
@@ -213,33 +209,10 @@ func main() {
 		},
 	})
 
-	if len(path_templates) > 0 {
+	t, err = t.ParseFS(html.FS, "*.html")
 
-		for _, p := range path_templates {
-
-			t, err = t.ParseGlob(p)
-
-			if err != nil {
-				log.Fatalf("Failed to parse templates (%s): %s", p, err)
-			}
-		}
-
-	} else {
-
-		for _, name := range templates.AssetNames() {
-
-			body, err := templates.Asset(name)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			t, err = t.Parse(string(body))
-
-			if err != nil {
-				log.Fatalf("Failed to parse template (%s): %s", name, err)
-			}
-		}
+	if err != nil {
+		log.Fatalf("Failed to parse templates, %v", err)
 	}
 
 	if *static_prefix != "" {

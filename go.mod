@@ -11,9 +11,6 @@ require (
 	github.com/aaronland/gocloud-runtimevar-string v0.0.1
 	github.com/aaronland/gomail v2.0.6+incompatible
 	github.com/whosonfirst/algnhsa v0.1.0
-	github.com/whosonfirst/go-bindata v0.1.0
-	github.com/whosonfirst/go-bindata-assetfs v1.0.1
-	github.com/whosonfirst/go-whosonfirst-cli v0.1.0
 	github.com/whosonfirst/walk v0.0.1
 	gocloud.dev v0.22.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
