@@ -1,19 +1,32 @@
-package fs
+package database
 
 import (
 	"context"
-	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/subscription"
 	_ "log"
+	"net/url"
 	"os"
 )
 
 type FSSubscriptionsDatabase struct {
-	database.SubscriptionsDatabase
+	SubscriptionsDatabase
 	root string
 }
 
-func NewFSSubscriptionsDatabase(root string) (database.SubscriptionsDatabase, error) {
+func init() {
+	ctx := context.Background()
+	RegisterSubscriptionsDatabase(ctx, "fs", NewFSSubscriptionsDatabase)
+}
+
+func NewFSSubscriptionsDatabase(ctx context.Context, uri string) (SubscriptionsDatabase, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	root := u.Path
 
 	abs_root, err := ensureRoot(root)
 
@@ -81,7 +94,7 @@ func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(addr string) (*sub
 	if err != nil {
 
 		if os.IsNotExist(err) {
-			return nil, new(database.NoRecordError)
+			return nil, new(NoRecordError)
 		}
 
 		return nil, err
@@ -106,7 +119,7 @@ func (db *FSSubscriptionsDatabase) writeSubscription(sub *subscription.Subscript
 	return marshalData(sub, path)
 }
 
-func (db *FSSubscriptionsDatabase) ListSubscriptions(ctx context.Context, cb database.ListSubscriptionsFunc) error {
+func (db *FSSubscriptionsDatabase) ListSubscriptions(ctx context.Context, cb ListSubscriptionsFunc) error {
 
 	local_cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
@@ -123,7 +136,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptions(ctx context.Context, cb dat
 	return db.crawlSubscriptions(ctx, local_cb)
 }
 
-func (db *FSSubscriptionsDatabase) ListSubscriptionsWithStatus(ctx context.Context, cb database.ListSubscriptionsFunc, status ...int) error {
+func (db *FSSubscriptionsDatabase) ListSubscriptionsWithStatus(ctx context.Context, cb ListSubscriptionsFunc, status ...int) error {
 
 	local_cb := func(ctx context.Context, sub *subscription.Subscription) error {
 

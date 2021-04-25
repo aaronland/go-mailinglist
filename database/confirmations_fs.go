@@ -1,20 +1,28 @@
-package fs
+package database
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/aaronland/go-mailinglist/confirmation"
-	"github.com/aaronland/go-mailinglist/database"
 	"io/ioutil"
+	"net/url"
 	"os"
 )
 
 type FSConfirmationsDatabase struct {
-	database.ConfirmationsDatabase
+	ConfirmationsDatabase
 	root string
 }
 
-func NewFSConfirmationsDatabase(root string) (database.ConfirmationsDatabase, error) {
+func NewFSConfirmationsDatabase(ctx context.Context, uri string) (ConfirmationsDatabase, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	root := u.Path
 
 	abs_root, err := ensureRoot(root)
 
@@ -118,7 +126,7 @@ func (db *FSConfirmationsDatabase) writeConfirmation(conf *confirmation.Confirma
 	return fh.Close()
 }
 
-func (db *FSConfirmationsDatabase) crawlConfirmations(ctx context.Context, cb database.ListConfirmationsFunc) error {
+func (db *FSConfirmationsDatabase) crawlConfirmations(ctx context.Context, cb ListConfirmationsFunc) error {
 
 	local_cb := func(ctx context.Context, path string) error {
 

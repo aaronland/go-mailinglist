@@ -1,21 +1,34 @@
-package fs
+package database
 
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	_ "log"
+	"net/url"
 	"os"
 	"path/filepath"
 )
 
 type FSEventLogsDatabase struct {
-	database.EventLogsDatabase
+	EventLogsDatabase
 	root string
 }
 
-func NewFSEventLogsDatabase(root string) (database.EventLogsDatabase, error) {
+func init() {
+	ctx := context.Background()
+	RegisterEventLogsDatabase(ctx, "fs", NewFSEventLogsDatabase)
+}
+
+func NewFSEventLogsDatabase(ctx context.Context, uri string) (EventLogsDatabase, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	root := u.Path
 
 	abs_root, err := ensureRoot(root)
 
@@ -61,7 +74,7 @@ func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
 	return marshalData(ev, path)
 }
 
-func (db *FSEventLogsDatabase) ListEventLogs(ctx context.Context, callback database.ListEventLogsFunc) error {
+func (db *FSEventLogsDatabase) ListEventLogs(ctx context.Context, callback ListEventLogsFunc) error {
 
 	local_cb := func(ctx context.Context, ev *eventlog.EventLog) error {
 

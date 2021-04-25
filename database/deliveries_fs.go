@@ -1,21 +1,29 @@
-package fs
+package database
 
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/delivery"
 	_ "log"
+	"net/url"
 	"os"
 	"path/filepath"
 )
 
 type FSDeliveriesDatabase struct {
-	database.DeliveriesDatabase
+	DeliveriesDatabase
 	root string
 }
 
-func NewFSDeliveriesDatabase(root string) (database.DeliveriesDatabase, error) {
+func NewFSDeliveriesDatabase(ctx context.Context, uri string) (DeliveriesDatabase, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	root := u.Path
 
 	abs_root, err := ensureRoot(root)
 
@@ -83,7 +91,7 @@ func (db *FSDeliveriesDatabase) GetDeliveryWithAddressAndMessageId(address strin
 	return db.readDelivery(path)
 }
 
-func (db *FSDeliveriesDatabase) ListDeliveries(ctx context.Context, callback database.ListDeliveriesFunc) error {
+func (db *FSDeliveriesDatabase) ListDeliveries(ctx context.Context, callback ListDeliveriesFunc) error {
 
 	local_cb := func(ctx context.Context, d *delivery.Delivery) error {
 

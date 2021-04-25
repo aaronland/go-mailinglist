@@ -1,20 +1,33 @@
-package fs
+package database
 
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/subscription"
+	"net/url"
 	"os"
 )
 
 type FSInvitationsDatabase struct {
-	database.InvitationsDatabase
+	InvitationsDatabase
 	root string
 }
 
-func NewFSInvitationsDatabase(root string) (database.InvitationsDatabase, error) {
+func init() {
+	ctx := context.Background()
+	RegisterInvitationsDatabase(ctx, "fs", NewFSInvitationsDatabase)
+}
+
+func NewFSInvitationsDatabase(ctx context.Context, uri string) (InvitationsDatabase, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	root := u.Path
 
 	abs_root, err := ensureRoot(root)
 
@@ -159,7 +172,7 @@ func (db *FSInvitationsDatabase) writeInvitation(invite *invitation.Invitation, 
 	return marshalData(invite, path)
 }
 
-func (db *FSInvitationsDatabase) ListInvitations(ctx context.Context, cb database.ListInvitationsFunc) error {
+func (db *FSInvitationsDatabase) ListInvitations(ctx context.Context, cb ListInvitationsFunc) error {
 
 	local_cb := func(ctx context.Context, invite *invitation.Invitation) error {
 
@@ -176,7 +189,7 @@ func (db *FSInvitationsDatabase) ListInvitations(ctx context.Context, cb databas
 	return db.crawlInvitations(ctx, local_cb)
 }
 
-func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context, cb database.ListInvitationsFunc, sub *subscription.Subscription) error {
+func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context, cb ListInvitationsFunc, sub *subscription.Subscription) error {
 
 	local_cb := func(ctx context.Context, invite *invitation.Invitation) error {
 

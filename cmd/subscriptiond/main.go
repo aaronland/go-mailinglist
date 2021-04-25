@@ -15,7 +15,9 @@ import (
 	"github.com/aaronland/go-http-ping"
 	"github.com/aaronland/go-http-server"
 	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/http"
+	"github.com/aaronland/go-mailinglist/sender"
 	"github.com/aaronland/go-mailinglist/templates/html"
 	"github.com/aaronland/go-string/random"
 	"github.com/aaronland/gocloud-runtimevar-string"
@@ -35,18 +37,18 @@ import (
 func main() {
 
 	// maybe -mailinglist-config...
-	// mailinglist_dsn := flag.String("mailinglist-dsn", "", "...")
+	// mailinglist_uri := flag.String("mailinglist-uri", "", "...")
 
 	mailinglist_name := flag.String("mailinglist-name", "", "...")
 	mailinglist_url := flag.String("mailinglist-url", "", "...")
 	mailinglist_sender := flag.String("mailinglist-sender", "", "...")
 
-	subs_dsn := flag.String("subscriptions-dsn", "", "...")
-	conf_dsn := flag.String("confirmations-dsn", "", "...")
-	invites_dsn := flag.String("invitations-dsn", "", "...")
-	logs_dsn := flag.String("eventlogs-dsn", "", "...")
+	subs_uri := flag.String("subscriptions-uri", "", "...")
+	conf_uri := flag.String("confirmations-uri", "", "...")
+	invites_uri := flag.String("invitations-uri", "", "...")
+	logs_uri := flag.String("eventlogs-uri", "", "...")
 
-	sender_dsn := flag.String("sender-dsn", "", "...")
+	sender_uri := flag.String("sender-uri", "", "...")
 	crumb_uri := flag.String("crumb-uri", "", "A valid aaronland/go-http-crumb URI.")
 
 	server_uri := flag.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
@@ -150,13 +152,13 @@ func main() {
 			log.Fatalf("Failed to create crumb salt: %s", err)
 		}
 
-		*subs_dsn = fmt.Sprintf("database=fs root=%s", subs_dir)
-		*invites_dsn = fmt.Sprintf("database=fs root=%s", invites_dir)
-		*conf_dsn = fmt.Sprintf("database=fs root=%s", conf_dir)
-		*logs_dsn = fmt.Sprintf("database=fs root=%s", logs_dir)
+		*subs_uri = fmt.Sprintf("fs://%s", subs_dir)
+		*invites_uri = fmt.Sprintf("fs://%s", invites_dir)
+		*conf_uri = fmt.Sprintf("fs://%s", conf_dir)
+		*logs_uri = fmt.Sprintf("fs://%s", logs_dir)
 
 		*crumb_uri = fmt.Sprintf("constant://?val=secret=%s+salt=%s+extra=foo+separator=:+ttl=300", secret, salt)
-		*sender_dsn = "sender=stdout"
+		*sender_uri = "stdout://"
 
 		*mailinglist_name = "Development"
 		*mailinglist_sender = "development@localhost"
@@ -172,31 +174,31 @@ func main() {
 		log.Fatal("Invalid -mailinglist-sender")
 	}
 
-	subs_db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*subs_dsn)
+	subs_db, err := database.NewSubscriptionsDatabase(ctx, *subs_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create subscriptions database: %s", err)
 	}
 
-	invites_db, err := mailinglist.NewInvitationsDatabaseFromDSN(*invites_dsn)
+	invites_db, err := database.NewInvitationsDatabase(ctx, *invites_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create invitations database: %s", err)
 	}
 
-	conf_db, err := mailinglist.NewConfirmationsDatabaseFromDSN(*conf_dsn)
+	conf_db, err := database.NewConfirmationsDatabase(ctx, *conf_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirmations database:", err)
 	}
 
-	logs_db, err := mailinglist.NewEventLogsDatabaseFromDSN(*logs_dsn)
+	logs_db, err := database.NewEventLogsDatabase(ctx, *logs_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirmations database:", err)
 	}
 
-	sender, err := mailinglist.NewSenderFromDSN(*sender_dsn)
+	sender, err := sender.NewSender(ctx, *sender_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create mail sender: %s", err)
