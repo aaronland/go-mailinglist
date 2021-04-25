@@ -8,6 +8,9 @@ github.com/aaronland/go-http-bootstrap/static
 # github.com/aaronland/go-http-crumb v0.1.2
 ## explicit
 github.com/aaronland/go-http-crumb
+# github.com/aaronland/go-http-ping v1.0.0
+## explicit
+github.com/aaronland/go-http-ping
 # github.com/aaronland/go-http-rewrite v0.0.6
 github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.5

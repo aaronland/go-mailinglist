@@ -103,6 +103,8 @@ github.com/aaronland/go-http-crumb v0.0.4 h1:49nHR5HnTZq/D2WnAY1iWCVSHRfOkhm5YVF
 github.com/aaronland/go-http-crumb v0.0.4/go.mod h1:tzp6zHKE/pojVXQhcS1J5x5qQkhhxOTvJS2N7S1VVuY=
 github.com/aaronland/go-http-crumb v0.1.2 h1:n/xPbekt4O4GVMNRlISKSU/x69c4h9Bt1jfQ/A9iUnc=
 github.com/aaronland/go-http-crumb v0.1.2/go.mod h1:rsigdbYNw021+cHU70mGCtQAIfDthtJFOMS1D1SvuL0=
+github.com/aaronland/go-http-ping v1.0.0 h1:ayR9n9YNnuGOhkaZhcy5Z/qSUOo0NUCu6gJ428omyXs=
+github.com/aaronland/go-http-ping v1.0.0/go.mod h1:zU9CSFLh2XzPlrFgoyCysNED+DoLRioCKaa2Kl+O6DA=
 github.com/aaronland/go-http-rewrite v0.0.1 h1:nQ4qqtOC0QHpEhQeFpRRwdXAEwuhHhgsxQaV3hDT8iw=
 github.com/aaronland/go-http-rewrite v0.0.1/go.mod h1:g62jjXpsArD0lzJLs9bVLR9Locdt3f4OmqFkkJL2rQU=
 github.com/aaronland/go-http-rewrite v0.0.3 h1:mhRnmKLpv1MiHCXpi1jmgdJujRKQNifctuT/ahv+q0U=

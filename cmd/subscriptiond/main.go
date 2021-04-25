@@ -13,6 +13,7 @@ import (
 	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-http-server"
+	"github.com/aaronland/go-http-ping"	
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/http"
 	"github.com/aaronland/go-mailinglist/templates/html"
@@ -284,7 +285,7 @@ func main() {
 
 	crumb_error_handler = bootstrap.AppendResourcesHandler(crumb_error_handler, bootstrap_opts)
 
-	ping_handler, err := http.PingHandler()
+	ping_handler, err := ping.PingHandler()
 
 	if err != nil {
 		log.Fatalf("Failed to create ping handler:%s", err)

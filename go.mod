@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/aaronland/go-http-bootstrap v0.0.10
 	github.com/aaronland/go-http-crumb v0.1.2
+	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-http-sanitize v0.0.5
 	github.com/aaronland/go-http-server v0.0.6
 	github.com/aaronland/go-roster v0.0.2
