@@ -1,33 +1,43 @@
 package sender
 
 import (
-	"github.com/aaronland/go-string/dsn"
+	"context"
 	"github.com/aaronland/gomail/v2"
+	"net/url"
 	"strconv"
 )
 
-func NewSMTPSenderFromDSN(str_dsn string) (gomail.Sender, error) {
+func init() {
 
-	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "host", "port", "username", "password")
-
-	if err != nil {
-		return nil, err
-	}
-
-	port, err := strconv.Atoi(dsn_map["port"])
+	ctx := context.Background()
+	err := RegisterSender(ctx, "smtp", NewSMTPSender)
 
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-
-	host := dsn_map["host"]
-	username := dsn_map["username"]
-	password := dsn_map["password"]
-
-	return NewSMTPSender(host, port, username, password)
 }
 
-func NewSMTPSender(host string, port int, username string, password string) (gomail.Sender, error) {
+func NewSMTPSender(ctx context.Context, uri string) (gomail.Sender, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := u.Query()
+
+	host := q.Get("host")
+	str_port := q.Get("port")
+	username := q.Get("username")
+	password := q.Get("password")
+
+	port, err := strconv.Atoi(str_port)
+
+	if err != nil {
+		return nil, err
+
+	}
 
 	d := gomail.NewDialer(host, port, username, password)
 	return d.Dial()

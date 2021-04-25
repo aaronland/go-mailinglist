@@ -1,17 +1,28 @@
 package sender
 
 import (
+	"context"
 	"github.com/aaronland/gomail/v2"
 	"io"
 	_ "log"
 	"os"
 )
 
+func init() {
+
+	ctx := context.Background()
+	err := RegisterSender(ctx, "stdout", NewStdoutSender)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
 type StdoutSender struct {
 	gomail.Sender
 }
 
-func NewStdoutSender() (gomail.Sender, error) {
+func NewStdoutSender(ctx context.Context, uri string) (gomail.Sender, error) {
 
 	s := StdoutSender{}
 	return &s, nil
