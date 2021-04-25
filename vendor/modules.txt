@@ -87,7 +87,6 @@ github.com/googleapis/gax-go/v2
 # github.com/jmespath/go-jmespath v0.4.0
 github.com/jmespath/go-jmespath
 # github.com/whosonfirst/algnhsa v0.1.0
-## explicit
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
