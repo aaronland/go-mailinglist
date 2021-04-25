@@ -15,6 +15,11 @@ type FSDeliveriesDatabase struct {
 	root string
 }
 
+func init() {
+	ctx := context.Background()
+	RegisterDeliveriesDatabase(ctx, "fs", NewDeliveriesDatabase)
+}
+
 func NewFSDeliveriesDatabase(ctx context.Context, uri string) (DeliveriesDatabase, error) {
 
 	u, err := url.Parse(uri)

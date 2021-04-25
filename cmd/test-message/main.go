@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"github.com/aaronland/go-mailinglist/message"
+	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
-	"github.com/aaronland/gomail-sender"	
 	"log"
 	"net/mail"
 )
