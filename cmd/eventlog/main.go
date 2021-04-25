@@ -1,8 +1,9 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"log"
 	"os"
@@ -10,8 +11,8 @@ import (
 
 func main() {
 
-	subs_dsn := flag.String("subscriptions-dsn", "", "...")
-	logs_dsn := flag.String("eventlogs-dsn", "", "...")
+	subs_uri := flag.String("subscriptions-uri", "", "...")
+	logs_uri := flag.String("eventlogs-uri", "", "...")
 	message := flag.String("message", "", "...")
 
 	addr := flag.String("address", "", "...")
@@ -22,13 +23,15 @@ func main() {
 		log.Fatal("Invalid -message parameter")
 	}
 
-	subs_db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*subs_dsn)
+	ctx := context.Background()
+
+	subs_db, err := database.NewSubscriptionsDatabase(ctx, *subs_uri)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	logs_db, err := mailinglist.NewEventLogsDatabaseFromDSN(*logs_dsn)
+	logs_db, err := database.NewEventLogsDatabase(ctx, *logs_uri)
 
 	if err != nil {
 		log.Fatal(err)
