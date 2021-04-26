@@ -164,6 +164,7 @@ func main() {
 		*mailinglist_sender = "development@localhost"
 	}
 
+	log.Println("WTF 1")
 	if *mailinglist_name == "" {
 		log.Fatal("Missing -mailinglist-name")
 	}
@@ -174,11 +175,14 @@ func main() {
 		log.Fatal("Invalid -mailinglist-sender")
 	}
 
+	log.Println("WTF 1a")
 	subs_db, err := database.NewSubscriptionsDatabase(ctx, *subs_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create subscriptions database: %s", err)
 	}
+
+	log.Println("WTF 1b")
 
 	invites_db, err := database.NewInvitationsDatabase(ctx, *invites_uri)
 
@@ -186,17 +190,23 @@ func main() {
 		log.Fatalf("Failed to create invitations database: %s", err)
 	}
 
+	log.Println("WTF 1c", *conf_uri)
+
 	conf_db, err := database.NewConfirmationsDatabase(ctx, *conf_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirmations database:", err)
 	}
 
+	log.Println("WTF 1d")
+
 	logs_db, err := database.NewEventLogsDatabase(ctx, *logs_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to create confirmations database:", err)
 	}
+
+	log.Println("WTF 2")
 
 	sender, err := sender.NewSender(ctx, *sender_uri)
 
@@ -217,6 +227,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse templates, %v", err)
 	}
+
+	log.Println("WTF 3")
 
 	if *static_prefix != "" {
 
@@ -252,6 +264,8 @@ func main() {
 		FeatureFlags: feature_flags,
 	}
 
+	log.Println("WTF 4")
+
 	cr_uri, err := runtimevar.OpenString(context.Background(), *crumb_uri)
 
 	if err != nil {
@@ -263,6 +277,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create new crumb, %v", err)
 	}
+
+	log.Println("WTF 5")
 
 	mux := gohttp.NewServeMux()
 

@@ -16,7 +16,7 @@ type FSConfirmationsDatabase struct {
 
 func init() {
 	ctx := context.Background()
-	RegisterConfirmationsDatabase(ctx, "fs", NewConfirmationsDatabase)
+	RegisterConfirmationsDatabase(ctx, "fs", NewFSConfirmationsDatabase)
 }
 
 func NewFSConfirmationsDatabase(ctx context.Context, uri string) (ConfirmationsDatabase, error) {
