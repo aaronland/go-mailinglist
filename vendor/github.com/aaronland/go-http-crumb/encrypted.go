@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/aaronland/go-string/random"
 	"io"
 	_ "log"
 	"net/http"
@@ -17,14 +16,16 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/aaronland/go-string/random"
 )
 
 func init() {
-
 	ctx := context.Background()
 	RegisterCrumb(ctx, "encrypted", NewEncryptedCrumb)
 }
 
+// type EncryptedCrumb implements the Crumb interface for crumb strings that are encrypted.
 type EncryptedCrumb struct {
 	Crumb
 	extra     string
@@ -34,19 +35,48 @@ type EncryptedCrumb struct {
 	key       string
 }
 
-func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (string, error) {
+// NewRandomEncryptedCrumbSecret returns a random salt value suitable for `encrypted://` crumb URIs.
+func NewRandomEncryptedCrumbSecret() (string, error) {
 
 	r_opts := random.DefaultOptions()
 	r_opts.AlphaNumeric = true
 
-	s, err := random.String(r_opts)
+	secret, err := random.String(r_opts)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate secret, %w", err)
+	}
+
+	return secret, nil
+}
+
+// NewRandomEncryptedCrumbExtra returns a random extra value suitable for `encrypted://` crumb URIs.
+func NewRandomEncryptedCrumbExtra() (string, error) {
+
+	r_opts := random.DefaultOptions()
+	r_opts.Length = 8
+	r_opts.AlphaNumeric = true
+
+	extra, err := random.String(r_opts)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate extra, %w", err)
+	}
+
+	return extra, nil
+}
+
+// NewRandomEncryptedCrumbURI return a valid `aaronland/go-http-crumb` URI for an encrypted crumb
+// whose key is 'key' and whose time to live is 'ttl'.
+func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (string, error) {
+
+	s, err := NewRandomEncryptedCrumbSecret()
 
 	if err != nil {
 		return "", err
 	}
 
-	r_opts.Length = 8
-	e, err := random.String(r_opts)
+	e, err := NewRandomEncryptedCrumbExtra()
 
 	if err != nil {
 		return "", err
@@ -63,6 +93,7 @@ func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (strin
 	return uri, nil
 }
 
+// NewEncryptedCrumb returns a new `Crumb` instance for 'uri'.
 func NewEncryptedCrumb(ctx context.Context, uri string) (Crumb, error) {
 
 	u, err := url.Parse(uri)
@@ -116,6 +147,7 @@ func NewEncryptedCrumb(ctx context.Context, uri string) (Crumb, error) {
 	return cr, nil
 }
 
+// Generate returns a new crumb string for 'req'.
 func (cr *EncryptedCrumb) Generate(req *http.Request, extra ...string) (string, error) {
 
 	crumb_base, err := cr.crumbBase(req, extra...)
@@ -151,6 +183,7 @@ func (cr *EncryptedCrumb) Generate(req *http.Request, extra ...string) (string, 
 	return enc_var, nil
 }
 
+// Validates return trues or false if 'enc_var' is a valid crumb for 'req'.
 func (cr *EncryptedCrumb) Validate(req *http.Request, enc_var string, extra ...string) (bool, error) {
 
 	crumb_var, err := cr.decryptCrumb(enc_var)
@@ -209,6 +242,7 @@ func (cr *EncryptedCrumb) Validate(req *http.Request, enc_var string, extra ...s
 	return true, nil
 }
 
+// Key returns the key that 'cr' was instantiated with or, if empty, the path for 'req'.
 func (cr *EncryptedCrumb) Key(req *http.Request) string {
 
 	switch cr.key {

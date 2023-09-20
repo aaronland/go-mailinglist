@@ -3,11 +3,12 @@ package sender
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-roster"
-	"github.com/aaronland/gomail/v2"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-roster"
+	"github.com/aaronland/gomail/v2"
 )
 
 var senders roster.Roster

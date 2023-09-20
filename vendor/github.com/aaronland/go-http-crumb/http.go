@@ -1,79 +1,105 @@
 package crumb
 
 import (
-	"context"
-	"errors"
-	"github.com/aaronland/go-http-rewrite"
-	"github.com/aaronland/go-http-sanitize"
+	"fmt"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"io"
-	_ "log"
+	"log"
 	go_http "net/http"
+
+	"github.com/aaronland/go-http-rewrite"
+	"github.com/aaronland/go-http-sanitize"
+	"github.com/sfomuseum/go-http-fault/v2"
 )
 
-// START OF all of this will be replaced by common code in aaronland/go-http-error
-
-func SetErrorContextWithRequest(req *go_http.Request, err error, status_code int) *go_http.Request {
-
-	ctx := req.Context()
-	ctx = SetErrorContextWithContext(ctx, err, status_code)
-	return req.WithContext(ctx)
-}
-
-func SetErrorContextWithContext(ctx context.Context, err error, status_code int) context.Context {
-
-	ctx = context.WithValue(ctx, "Status", status_code)
-	ctx = context.WithValue(ctx, "Error", err)
-	return ctx
-}
-
-func GetErrorContextValuesWithContext(ctx context.Context) (error, int, error) {
-
-	crumb_err := ctx.Value("Error")
-
-	if crumb_err == nil {
-		return nil, 0, errors.New("Invalid crumb handler")
-	}
-
-	status_code := ctx.Value("Status")
-
-	if status_code == nil {
-		return nil, 0, errors.New("Invalid crumb handler")
-	}
-
-	return crumb_err.(error), status_code.(int), nil
-}
-
-func GetErrorContextValuesWithRequest(req *go_http.Request) (error, int, error) {
-	return GetErrorContextValuesWithContext(req.Context())
-}
-
-func DefaultErrorHandler() go_http.Handler {
-
-	handler_fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
-
-		crumb_err, status_code, err := GetErrorContextValuesWithRequest(req)
-
-		if err != nil {
-			go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)
-		}
-
-		go_http.Error(rsp, crumb_err.Error(), status_code)
-		return
-	}
-
-	return go_http.HandlerFunc(handler_fn)
-}
-
-// END OF all of this will be replaced by common code in aaronland/go-http-error
-
+// EnsureCrumbHandler wraps 'next_handler' with a middleware `http.Handler` for assigning and validating
+// crumbs using the default `fomuseum/go-http-fault/v2.FaultHandler` as an error handler. Any errors that
+// trigger the error handler can be retrieved using `sfomuseum/go-http-fault/v2.RetrieveError()`.
 func EnsureCrumbHandler(cr Crumb, next_handler go_http.Handler) go_http.Handler {
 
-	err_handler := DefaultErrorHandler()
-	return EnsureCrumbHandlerWithErrorHandler(cr, next_handler, err_handler)
+	logger := log.Default()
+	fault_handler := fault.FaultHandler(logger)
+	return EnsureCrumbHandlerWithErrorHandler(cr, next_handler, fault_handler)
 }
 
+// EnsureCrumbHandlerWithFaultWrapper wraps 'next_handler' with a middleware `http.Handler` for assigning and validating
+// crumbs. Error handling is assumed to be handled by a separate middleware handler provided by a `sfomuseum/go-http-fault/v2.FaultWrapper`.
+// instance. Any errors that are triggered as recorded using the `sfomuseum/go-http-fault/v2.AssignError()` method and can
+// be retrieved using `sfomuseum/go-http-fault/v2.RetrieveError()` method.
+func EnsureCrumbHandlerWithFaultWrapper(cr Crumb, next_handler go_http.Handler) go_http.Handler {
+
+	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
+
+		switch req.Method {
+
+		case "POST", "PUT":
+
+			var crumb_var string
+			var crumb_err error
+
+			if req.Method == "POST" {
+				crumb_var, crumb_err = sanitize.PostString(req, "crumb")
+			} else {
+				crumb_var, crumb_err = sanitize.GetString(req, "crumb")
+			}
+
+			if crumb_err != nil {
+				err := Error(UnsanitizedCrumb, crumb_err)
+				fault.AssignError(req, err, go_http.StatusBadRequest)
+				rsp.WriteHeader(go_http.StatusBadRequest)
+				return
+			}
+
+			if crumb_var == "" {
+				err := Error(MissingCrumb, fmt.Errorf("Missing crumb"))
+				fault.AssignError(req, err, go_http.StatusBadRequest)
+				rsp.WriteHeader(go_http.StatusBadRequest)
+				return
+			}
+
+			ok, err := cr.Validate(req, crumb_var)
+
+			if err != nil {
+				err := Error(InvalidCrumb, err)
+				fault.AssignError(req, err, go_http.StatusBadRequest)
+				rsp.WriteHeader(go_http.StatusBadRequest)
+				return
+			}
+
+			if !ok {
+				err := Error(ExpiredCrumb, fmt.Errorf("Expired"))
+				fault.AssignError(req, err, go_http.StatusForbidden)
+				rsp.WriteHeader(go_http.StatusForbidden)
+				return
+			}
+
+		default:
+			// pass
+		}
+
+		crumb_var, err := cr.Generate(req)
+
+		if err != nil {
+			err := Error(GenerateCrumb, fmt.Errorf("Expired"))
+			fault.AssignError(req, err, go_http.StatusInternalServerError)
+			rsp.WriteHeader(go_http.StatusInternalServerError)
+			return
+		}
+
+		rewrite_func := NewCrumbRewriteFunc(crumb_var)
+		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
+
+		rewrite_handler.ServeHTTP(rsp, req)
+	}
+
+	h := go_http.HandlerFunc(fn)
+	return h
+}
+
+// EnsureCrumbHandlerWithErrorHandler wraps 'next_handler' with a middleware a middleware `http.Handler` for
+// assigning and validating crumbs using a custom error handler. Any errors that trigger the error handler can
+// be retrieved using `sfomuseum/go-http-fault/v2.RetrieveError()`.
 func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, error_handler go_http.Handler) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
@@ -92,13 +118,13 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 			}
 
 			if crumb_err != nil {
-				req = SetErrorContextWithRequest(req, crumb_err, go_http.StatusBadRequest)
+				fault.AssignError(req, Error(UnsanitizedCrumb, crumb_err), go_http.StatusBadRequest)
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
 
 			if crumb_var == "" {
-				req = SetErrorContextWithRequest(req, errors.New("Missing crumb"), go_http.StatusBadRequest)
+				fault.AssignError(req, Error(MissingCrumb, fmt.Errorf("Missing crumb")), go_http.StatusBadRequest)
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
@@ -106,13 +132,13 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 			ok, err := cr.Validate(req, crumb_var)
 
 			if err != nil {
-				req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+				fault.AssignError(req, Error(InvalidCrumb, err), go_http.StatusInternalServerError)
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
 
 			if !ok {
-				req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
+				fault.AssignError(req, Error(ExpiredCrumb, fmt.Errorf("Expired")), go_http.StatusForbidden)
 				error_handler.ServeHTTP(rsp, req)
 				return
 			}
@@ -124,7 +150,7 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 		crumb_var, err := cr.Generate(req)
 
 		if err != nil {
-			req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+			fault.AssignError(req, Error(GenerateCrumb, err), go_http.StatusInternalServerError)
 			error_handler.ServeHTTP(rsp, req)
 			return
 		}
@@ -136,9 +162,12 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 
 	}
 
-	return go_http.HandlerFunc(fn)
+	h := go_http.HandlerFunc(fn)
+	return h
 }
 
+// NewCrumbRewriteFunc returns a `aaronland/go-http-rewrite.RewriteHTMLFunc` used to
+// append crumb data to HTML output.
 func NewCrumbRewriteFunc(crumb_var string) rewrite.RewriteHTMLFunc {
 
 	var rewrite_func rewrite.RewriteHTMLFunc

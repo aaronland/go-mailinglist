@@ -2,6 +2,10 @@
 
 Go package for creating and validating (HTTP) crumbs.
 
+## Documentation
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/aaronland/go-http-crumb.svg)](https://pkg.go.dev/github.com/aaronland/go-http-crumb)
+
 ## Example
 
 _The following are abbreviated code examples. Error handling has been omitted for the sake of brevity._
@@ -89,19 +93,6 @@ func CrumbHandler() (http.Handler, error) {
 
 	h := http.HandlerFunc(fn)
 	return h, nil
-}
-```
-
-## Interfaces
-
-## Crumb
-
-```
-type Crumb interface {
-	Generate(*http.Request, ...string) (string, error)
-	Validate(*http.Request, string, ...string) (bool, error)
-	Key(*http.Request) string
-	Base(*http.Request, ...string) (string, error)
 }
 ```
 

@@ -24,16 +24,17 @@
 // Known Issues:
 //
 // * On macOS, if an empty file is copied into a configuration file,
-//   filevar will not detect the change.
 //
-// URLs
+//	filevar will not detect the change.
+//
+// # URLs
 //
 // For runtimevar.OpenVariable, filevar registers for the scheme "file".
 // To customize the URL opener, or for more details on the URL format,
 // see URLOpener.
 // See https://gocloud.dev/concepts/urls/ for background information.
 //
-// As
+// # As
 //
 // filevar does not support any types for As.
 package filevar // import "gocloud.dev/runtimevar/filevar"
@@ -71,8 +72,10 @@ const Scheme = "file"
 //
 // The following URL parameters are supported:
 //   - decoder: The decoder to use. Defaults to URLOpener.Decoder, or
-//       runtimevar.BytesDecoder if URLOpener.Decoder is nil.
-//       See runtimevar.DecoderByName for supported values.
+//     runtimevar.BytesDecoder if URLOpener.Decoder is nil.
+//     See runtimevar.DecoderByName for supported values.
+//   - wait: The frequency for retries after an error, in time.ParseDuration formats.
+//     Defaults to 30s.
 type URLOpener struct {
 	// Decoder specifies the decoder to use if one is not specified in the URL.
 	// Defaults to runtimevar.BytesDecoder.
@@ -93,6 +96,15 @@ func (o *URLOpener) OpenVariableURL(ctx context.Context, u *url.URL) (*runtimeva
 	if err != nil {
 		return nil, fmt.Errorf("open variable %v: invalid decoder: %v", u, err)
 	}
+	opts := o.Options
+	if s := q.Get("wait"); s != "" {
+		q.Del("wait")
+		d, err := time.ParseDuration(s)
+		if err != nil {
+			return nil, fmt.Errorf("open variable %v: invalid wait %q: %v", u, s, err)
+		}
+		opts.WaitDuration = d
+	}
 
 	for param := range q {
 		return nil, fmt.Errorf("open variable %v: invalid query parameter %q", u, param)
@@ -101,7 +113,7 @@ func (o *URLOpener) OpenVariableURL(ctx context.Context, u *url.URL) (*runtimeva
 	if os.PathSeparator != '/' {
 		path = strings.TrimPrefix(path, "/")
 	}
-	return OpenVariable(filepath.FromSlash(path), decoder, &o.Options)
+	return OpenVariable(filepath.FromSlash(path), decoder, &opts)
 }
 
 // Options sets options.
