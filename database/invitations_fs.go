@@ -3,10 +3,11 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/invitation"
-	"github.com/aaronland/go-mailinglist/subscription"
 	"net/url"
 	"os"
+
+	"github.com/aaronland/go-mailinglist/invitation"
+	"github.com/aaronland/go-mailinglist/subscription"
 )
 
 type FSInvitationsDatabase struct {
@@ -42,7 +43,7 @@ func NewFSInvitationsDatabase(ctx context.Context, uri string) (InvitationsDatab
 	return &db, nil
 }
 
-func (db *FSInvitationsDatabase) AddInvitation(invite *invitation.Invitation) error {
+func (db *FSInvitationsDatabase) AddInvitation(ctx context.Context, invite *invitation.Invitation) error {
 
 	path := db.pathForInvitation(invite)
 
@@ -55,7 +56,7 @@ func (db *FSInvitationsDatabase) AddInvitation(invite *invitation.Invitation) er
 	return db.writeInvitation(invite, path)
 }
 
-func (db *FSInvitationsDatabase) RemoveInvitation(invite *invitation.Invitation) error {
+func (db *FSInvitationsDatabase) RemoveInvitation(ctx context.Context, invite *invitation.Invitation) error {
 
 	path := db.pathForInvitation(invite)
 
@@ -73,7 +74,7 @@ func (db *FSInvitationsDatabase) RemoveInvitation(invite *invitation.Invitation)
 	return os.Remove(path)
 }
 
-func (db *FSInvitationsDatabase) UpdateInvitation(invite *invitation.Invitation) error {
+func (db *FSInvitationsDatabase) UpdateInvitation(ctx context.Context, invite *invitation.Invitation) error {
 
 	path := db.pathForInvitation(invite)
 
@@ -86,9 +87,9 @@ func (db *FSInvitationsDatabase) UpdateInvitation(invite *invitation.Invitation)
 	return db.writeInvitation(invite, path)
 }
 
-func (db *FSInvitationsDatabase) GetInvitationWithCode(code string) (*invitation.Invitation, error) {
+func (db *FSInvitationsDatabase) GetInvitationWithCode(ctx context.Context, code string) (*invitation.Invitation, error) {
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	var invite *invitation.Invitation
@@ -121,9 +122,9 @@ func (db *FSInvitationsDatabase) GetInvitationWithCode(code string) (*invitation
 	return invite, nil
 }
 
-func (db *FSInvitationsDatabase) GetInvitationWithInvitee(addr string) (*invitation.Invitation, error) {
+func (db *FSInvitationsDatabase) GetInvitationWithInvitee(ctx context.Context, addr string) (*invitation.Invitation, error) {
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	var invite *invitation.Invitation
@@ -183,7 +184,7 @@ func (db *FSInvitationsDatabase) ListInvitations(ctx context.Context, cb ListInv
 			// pass
 		}
 
-		return cb(invite)
+		return cb(ctx, invite)
 	}
 
 	return db.crawlInvitations(ctx, local_cb)
@@ -204,7 +205,7 @@ func (db *FSInvitationsDatabase) ListInvitationsWithInviter(ctx context.Context,
 			return nil
 		}
 
-		return cb(invite)
+		return cb(ctx, invite)
 	}
 
 	return db.crawlInvitations(ctx, local_cb)

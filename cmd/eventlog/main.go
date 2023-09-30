@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/eventlog"
 	"log"
 	"os"
+
+	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/eventlog"	
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sub, err := subs_db.GetSubscriptionWithAddress(*addr)
+	sub, err := subs_db.GetSubscriptionWithAddress(ctx, *addr)
 
 	if err != nil {
 		log.Fatal(err)
@@ -49,7 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = logs_db.AddEventLog(event_log)
+	err = logs_db.AddEventLog(ctx, event_log)
 
 	if err != nil {
 		log.Fatal(err)

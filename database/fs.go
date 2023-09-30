@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	_ "log"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/whosonfirst/walk"
-	"io/ioutil"
-	_ "log"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func ensureRoot(root string) (string, error) {

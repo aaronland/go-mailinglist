@@ -3,17 +3,18 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/delivery"
-	"github.com/aaronland/go-roster"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-mailinglist/delivery"
+	"github.com/aaronland/go-roster"
 )
 
 type DeliveriesDatabase interface {
-	AddDelivery(*delivery.Delivery) error
+	AddDelivery(context.Context, *delivery.Delivery) error
 	ListDeliveries(context.Context, ListDeliveriesFunc) error
-	GetDeliveryWithAddressAndMessageId(string, string) (*delivery.Delivery, error)
+	GetDeliveryWithAddressAndMessageId(context.Context, string, string) (*delivery.Delivery, error)
 }
 
 var deliveries_databases roster.Roster

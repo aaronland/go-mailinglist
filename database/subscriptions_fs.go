@@ -2,10 +2,11 @@ package database
 
 import (
 	"context"
-	"github.com/aaronland/go-mailinglist/subscription"
 	_ "log"
 	"net/url"
 	"os"
+
+	"github.com/aaronland/go-mailinglist/subscription"
 )
 
 type FSSubscriptionsDatabase struct {
@@ -41,7 +42,7 @@ func NewFSSubscriptionsDatabase(ctx context.Context, uri string) (SubscriptionsD
 	return &db, nil
 }
 
-func (db *FSSubscriptionsDatabase) AddSubscription(sub *subscription.Subscription) error {
+func (db *FSSubscriptionsDatabase) AddSubscription(ctx context.Context, sub *subscription.Subscription) error {
 
 	path := db.pathForSubscription(sub)
 
@@ -54,7 +55,7 @@ func (db *FSSubscriptionsDatabase) AddSubscription(sub *subscription.Subscriptio
 	return db.writeSubscription(sub, path)
 }
 
-func (db *FSSubscriptionsDatabase) RemoveSubscription(sub *subscription.Subscription) error {
+func (db *FSSubscriptionsDatabase) RemoveSubscription(ctx context.Context, sub *subscription.Subscription) error {
 
 	path := db.pathForSubscription(sub)
 
@@ -72,7 +73,7 @@ func (db *FSSubscriptionsDatabase) RemoveSubscription(sub *subscription.Subscrip
 	return os.Remove(path)
 }
 
-func (db *FSSubscriptionsDatabase) UpdateSubscription(sub *subscription.Subscription) error {
+func (db *FSSubscriptionsDatabase) UpdateSubscription(ctx context.Context, sub *subscription.Subscription) error {
 
 	path := db.pathForSubscription(sub)
 
@@ -85,7 +86,7 @@ func (db *FSSubscriptionsDatabase) UpdateSubscription(sub *subscription.Subscrip
 	return db.writeSubscription(sub, path)
 }
 
-func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(addr string) (*subscription.Subscription, error) {
+func (db *FSSubscriptionsDatabase) GetSubscriptionWithAddress(ctx context.Context, addr string) (*subscription.Subscription, error) {
 
 	path := pathForAddress(db.root, addr)
 
@@ -130,7 +131,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptions(ctx context.Context, cb Lis
 			// pass
 		}
 
-		return cb(sub)
+		return cb(ctx, sub)
 	}
 
 	return db.crawlSubscriptions(ctx, local_cb)
@@ -160,7 +161,7 @@ func (db *FSSubscriptionsDatabase) ListSubscriptionsWithStatus(ctx context.Conte
 			return nil
 		}
 
-		return cb(sub)
+		return cb(ctx, sub)
 	}
 
 	return db.crawlSubscriptions(ctx, local_cb)

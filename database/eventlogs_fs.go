@@ -3,11 +3,12 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/eventlog"
 	_ "log"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/aaronland/go-mailinglist/eventlog"
 )
 
 type FSEventLogsDatabase struct {
@@ -43,7 +44,7 @@ func NewFSEventLogsDatabase(ctx context.Context, uri string) (EventLogsDatabase,
 	return &db, nil
 }
 
-func (db *FSEventLogsDatabase) AddEventLog(ev *eventlog.EventLog) error {
+func (db *FSEventLogsDatabase) AddEventLog(ctx context.Context, ev *eventlog.EventLog) error {
 
 	root := filepath.Join(db.root, ev.Address)
 
@@ -85,7 +86,7 @@ func (db *FSEventLogsDatabase) ListEventLogs(ctx context.Context, callback ListE
 			// pass
 		}
 
-		return callback(ev)
+		return callback(ctx, ev)
 	}
 
 	return db.crawlEventLogs(ctx, local_cb)

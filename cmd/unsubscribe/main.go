@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/aaronland/go-mailinglist/database"
 	"log"
+
+	"github.com/aaronland/go-mailinglist/database"
 )
 
 func main() {
@@ -22,13 +23,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sub, err := subs_db.GetSubscriptionWithAddress(*addr)
+	sub, err := subs_db.GetSubscriptionWithAddress(ctx, *addr)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = subs_db.RemoveSubscription(sub)
+	err = subs_db.RemoveSubscription(ctx, sub)
 
 	if err != nil {
 		log.Fatal(err)

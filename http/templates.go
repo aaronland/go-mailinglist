@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/aaronland/go-mailinglist/errors"
 	"html/template"
 	_ "log"
 	gohttp "net/http"
+
+	"github.com/aaronland/go-mailinglist/errors"
 )
 
 func LoadTemplate(t *template.Template, name string) (*template.Template, error) {

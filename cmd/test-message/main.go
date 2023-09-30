@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"log"
+	"net/mail"
+
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
-	"log"
-	"net/mail"
+	
 )
 
 func main() {

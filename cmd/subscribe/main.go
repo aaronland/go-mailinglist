@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/subscription"
 	"log"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/subscription"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 		sub.Confirmed = now.Unix()
 	}
 
-	err = subs_db.AddSubscription(sub)
+	err = subs_db.AddSubscription(ctx, sub)
 
 	if err != nil {
 		log.Fatal(err)

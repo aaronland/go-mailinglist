@@ -3,28 +3,29 @@ package database
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"sort"
+	"strings"
+
 	"github.com/aaronland/go-mailinglist/confirmation"
 	"github.com/aaronland/go-mailinglist/delivery"
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/subscription"
 	"github.com/aaronland/go-roster"
-	"net/url"
-	"sort"
-	"strings"
 )
 
-type ListSubscriptionsFunc func(*subscription.Subscription) error
-type ListConfirmationsFunc func(*confirmation.Confirmation) error
-type ListEventLogsFunc func(*eventlog.EventLog) error
-type ListDeliveriesFunc func(*delivery.Delivery) error
-type ListInvitationsFunc func(*invitation.Invitation) error
+type ListSubscriptionsFunc func(context.Context, *subscription.Subscription) error
+type ListConfirmationsFunc func(context.Context, *confirmation.Confirmation) error
+type ListEventLogsFunc func(context.Context, *eventlog.EventLog) error
+type ListDeliveriesFunc func(context.Context, *delivery.Delivery) error
+type ListInvitationsFunc func(context.Context, *invitation.Invitation) error
 
 type SubscriptionsDatabase interface {
-	AddSubscription(*subscription.Subscription) error
-	RemoveSubscription(*subscription.Subscription) error
-	UpdateSubscription(*subscription.Subscription) error
-	GetSubscriptionWithAddress(string) (*subscription.Subscription, error)
+	AddSubscription(context.Context, *subscription.Subscription) error
+	RemoveSubscription(context.Context, *subscription.Subscription) error
+	UpdateSubscription(context.Context, *subscription.Subscription) error
+	GetSubscriptionWithAddress(context.Context, string) (*subscription.Subscription, error)
 	ListSubscriptions(context.Context, ListSubscriptionsFunc) error
 	ListSubscriptionsWithStatus(context.Context, ListSubscriptionsFunc, ...int) error
 }

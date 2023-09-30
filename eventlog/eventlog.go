@@ -1,8 +1,9 @@
 package eventlog
 
 import (
-	"github.com/aaronland/go-mailinglist/subscription"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/subscription"
 )
 
 const EVENTLOG_CUSTOM_EVENT int = 0

@@ -3,11 +3,12 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/delivery"
 	_ "log"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/aaronland/go-mailinglist/delivery"
 )
 
 type FSDeliveriesDatabase struct {
@@ -43,7 +44,7 @@ func NewFSDeliveriesDatabase(ctx context.Context, uri string) (DeliveriesDatabas
 	return &db, nil
 }
 
-func (db *FSDeliveriesDatabase) AddDelivery(d *delivery.Delivery) error {
+func (db *FSDeliveriesDatabase) AddDelivery(ctx context.Context, d *delivery.Delivery) error {
 
 	root := filepath.Join(db.root, d.MessageId)
 
@@ -74,7 +75,7 @@ func (db *FSDeliveriesDatabase) AddDelivery(d *delivery.Delivery) error {
 	return marshalData(d, path)
 }
 
-func (db *FSDeliveriesDatabase) GetDeliveryWithAddressAndMessageId(address string, message_id string) (*delivery.Delivery, error) {
+func (db *FSDeliveriesDatabase) GetDeliveryWithAddressAndMessageId(ctx context.Context, address string, message_id string) (*delivery.Delivery, error) {
 
 	root := filepath.Join(db.root, message_id)
 
@@ -107,7 +108,7 @@ func (db *FSDeliveriesDatabase) ListDeliveries(ctx context.Context, callback Lis
 			// pass
 		}
 
-		return callback(d)
+		return callback(ctx, d)
 	}
 
 	return db.crawlDeliveries(ctx, local_cb)

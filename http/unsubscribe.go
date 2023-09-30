@@ -6,6 +6,13 @@ package http
 
 import (
 	"fmt"
+	"html/template"
+	"log"
+	gohttp "net/http"
+	"net/mail"
+	"net/url"
+	"time"
+
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/confirmation"
@@ -13,12 +20,6 @@ import (
 	"github.com/aaronland/go-mailinglist/eventlog"
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail/v2"
-	"html/template"
-	"log"
-	gohttp "net/http"
-	"net/mail"
-	"net/url"
-	"time"
 )
 
 type UnsubscribeTemplateVars struct {
@@ -57,6 +58,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+
+		ctx := req.Context()
 
 		vars := UnsubscribeTemplateVars{
 			SiteName: opts.Config.Name,
@@ -100,7 +103,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr.Address)
 
 			if err != nil {
 
@@ -135,7 +138,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			err = conf_db.AddConfirmation(conf)
+			err = conf_db.AddConfirmation(ctx, conf)
 
 			if err != nil {
 
@@ -158,7 +161,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				Message: unsubscribe_event_message,
 			}
 
-			unsubscribe_event_err := opts.EventLogs.AddEventLog(unsubscribe_event)
+			unsubscribe_event_err := opts.EventLogs.AddEventLog(ctx, unsubscribe_event)
 
 			if unsubscribe_event_err != nil {
 				log.Println(unsubscribe_event_err)
@@ -216,7 +219,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				Message: send_event_message,
 			}
 
-			send_event_err := opts.EventLogs.AddEventLog(send_event)
+			send_event_err := opts.EventLogs.AddEventLog(ctx, send_event)
 
 			if send_event_err != nil {
 				log.Println(send_event_err)

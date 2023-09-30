@@ -42,7 +42,7 @@ func NewFSConfirmationsDatabase(ctx context.Context, uri string) (ConfirmationsD
 	return &db, nil
 }
 
-func (db *FSConfirmationsDatabase) AddConfirmation(conf *confirmation.Confirmation) error {
+func (db *FSConfirmationsDatabase) AddConfirmation(ctx context.Context, conf *confirmation.Confirmation) error {
 
 	path := db.pathForConfirmation(conf)
 
@@ -55,7 +55,7 @@ func (db *FSConfirmationsDatabase) AddConfirmation(conf *confirmation.Confirmati
 	return db.writeConfirmation(conf, path)
 }
 
-func (db *FSConfirmationsDatabase) RemoveConfirmation(conf *confirmation.Confirmation) error {
+func (db *FSConfirmationsDatabase) RemoveConfirmation(ctx context.Context, conf *confirmation.Confirmation) error {
 
 	path := db.pathForConfirmation(conf)
 
@@ -73,7 +73,7 @@ func (db *FSConfirmationsDatabase) RemoveConfirmation(conf *confirmation.Confirm
 	return os.Remove(path)
 }
 
-func (db *FSConfirmationsDatabase) GetConfirmationWithCode(code string) (*confirmation.Confirmation, error) {
+func (db *FSConfirmationsDatabase) GetConfirmationWithCode(ctx context.Context, code string) (*confirmation.Confirmation, error) {
 
 	path := pathForAddress(db.root, code)
 
@@ -141,7 +141,7 @@ func (db *FSConfirmationsDatabase) crawlConfirmations(ctx context.Context, cb Li
 			return err
 		}
 
-		return cb(conf)
+		return cb(ctx, conf)
 	}
 
 	return crawlDatabase(ctx, db.root, local_cb)

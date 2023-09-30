@@ -3,20 +3,21 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/invitation"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/go-roster"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-mailinglist/invitation"
+	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/aaronland/go-roster"
 )
 
 type InvitationsDatabase interface {
-	AddInvitation(*invitation.Invitation) error
-	RemoveInvitation(*invitation.Invitation) error
-	UpdateInvitation(*invitation.Invitation) error
-	GetInvitationWithCode(string) (*invitation.Invitation, error)
-	GetInvitationWithInvitee(string) (*invitation.Invitation, error)
+	AddInvitation(context.Context, *invitation.Invitation) error
+	RemoveInvitation(context.Context, *invitation.Invitation) error
+	UpdateInvitation(context.Context, *invitation.Invitation) error
+	GetInvitationWithCode(context.Context, string) (*invitation.Invitation, error)
+	GetInvitationWithInvitee(context.Context, string) (*invitation.Invitation, error)
 	ListInvitations(context.Context, ListInvitationsFunc) error
 	ListInvitationsWithInviter(context.Context, ListInvitationsFunc, *subscription.Subscription) error
 }

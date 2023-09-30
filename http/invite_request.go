@@ -5,7 +5,15 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
+	"context"
 	"fmt"
+	"html/template"
+	"log"
+	gohttp "net/http"
+	"net/mail"
+	"net/url"
+	"time"
+
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist"
 	"github.com/aaronland/go-mailinglist/database"
@@ -13,12 +21,6 @@ import (
 	"github.com/aaronland/go-mailinglist/invitation"
 	"github.com/aaronland/go-mailinglist/message"
 	"github.com/aaronland/gomail/v2"
-	"html/template"
-	"log"
-	gohttp "net/http"
-	"net/mail"
-	"net/url"
-	"time"
 )
 
 type InviteRequestTemplateVars struct {
@@ -63,6 +65,8 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+
+		ctx := req.Context()
 
 		vars := InviteRequestTemplateVars{
 			SiteName: opts.Config.Name,
@@ -119,7 +123,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr.Address)
 
 			if err != nil {
 
@@ -141,7 +145,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 			invites := make([]*invitation.Invitation, 0)
 			counts := make(map[string]int)
 
-			invites_cb := func(invite *invitation.Invitation) error {
+			invites_cb := func(ctx context.Context, invite *invitation.Invitation) error {
 
 				t := time.Unix(invite.Created, 0)
 				yyyymm := t.Format("200601")
@@ -161,7 +165,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				return nil
 			}
 
-			err = invites_db.ListInvitationsWithInviter(req.Context(), invites_cb, sub)
+			err = invites_db.ListInvitationsWithInviter(ctx, invites_cb, sub)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_INVITATION_LIST)
@@ -199,7 +203,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 					return
 				}
 
-				err = invites_db.AddInvitation(invite)
+				err = invites_db.AddInvitation(ctx, invite)
 
 				if err != nil {
 					app_err := NewApplicationError(err, E_INVITATION_ADD)
@@ -233,7 +237,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				Message: invite_event_message,
 			}
 
-			invite_event_err := opts.EventLogs.AddEventLog(invite_event)
+			invite_event_err := opts.EventLogs.AddEventLog(ctx, invite_event)
 
 			if invite_event_err != nil {
 				log.Println(invite_event_err)
@@ -293,7 +297,7 @@ func InviteRequestHandler(opts *InviteRequestHandlerOptions) (gohttp.Handler, er
 				Message: send_event_message,
 			}
 
-			send_event_err := opts.EventLogs.AddEventLog(send_event)
+			send_event_err := opts.EventLogs.AddEventLog(ctx, send_event)
 
 			if send_event_err != nil {
 				log.Println(send_event_err)

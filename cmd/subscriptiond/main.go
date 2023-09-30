@@ -10,6 +10,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"html/template"
+	"io/ioutil"
+	"log"
+	gohttp "net/http"
+	"net/mail"
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/aaronland/go-http-bootstrap"
 	"github.com/aaronland/go-http-crumb"
 	"github.com/aaronland/go-http-ping"
@@ -23,15 +33,6 @@ import (
 	"github.com/aaronland/gomail-sender"
 	_ "gocloud.dev/runtimevar/constantvar"
 	_ "gocloud.dev/runtimevar/filevar"
-	"html/template"
-	"io/ioutil"
-	"log"
-	gohttp "net/http"
-	"net/mail"
-	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func main() {
@@ -284,7 +285,7 @@ func main() {
 
 	bootstrap_opts := bootstrap.DefaultBootstrapOptions()
 
-	err = bootstrap.AppendAssetHandlers(mux)
+	err = bootstrap.AppendAssetHandlers(mux, bootstrap_opts)
 
 	if err != nil {
 		log.Fatal(err)

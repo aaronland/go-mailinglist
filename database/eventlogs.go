@@ -3,15 +3,16 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-mailinglist/eventlog"
-	"github.com/aaronland/go-roster"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-mailinglist/eventlog"
+	"github.com/aaronland/go-roster"
 )
 
 type EventLogsDatabase interface {
-	AddEventLog(*eventlog.EventLog) error
+	AddEventLog(context.Context, *eventlog.EventLog) error
 	ListEventLogs(context.Context, ListEventLogsFunc) error
 }
 

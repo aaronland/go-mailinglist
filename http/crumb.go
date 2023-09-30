@@ -5,11 +5,12 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"github.com/aaronland/go-http-crumb"
-	"github.com/aaronland/go-mailinglist"
+	"fmt"
 	"html/template"
-	_ "log"
 	gohttp "net/http"
+
+	_ "github.com/aaronland/go-http-crumb"
+	"github.com/aaronland/go-mailinglist"
 )
 
 type CrumbErrorHandlerOptions struct {
@@ -33,7 +34,10 @@ func CrumbErrorHandler(opts *CrumbErrorHandlerOptions) (gohttp.Handler, error) {
 
 	handler_fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		crumb_err, _, err := crumb.GetErrorContextValuesWithRequest(req)
+		// Fix me. Where did this go?
+		// crumb_err, _, err := crumb.GetErrorContextValuesWithRequest(req)
+
+		crumb_err := fmt.Errorf("Internal server error")
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

@@ -2,13 +2,14 @@ package message
 
 import (
 	"context"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/gomail/v2"
 	"log"
 	"net/mail"
 	"sync"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/aaronland/gomail/v2"
 )
 
 type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip
@@ -61,7 +62,7 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 	wg := new(sync.WaitGroup)
 
-	cb := func(sub *subscription.Subscription) error {
+	cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
 		select {
 		case <-ctx.Done():

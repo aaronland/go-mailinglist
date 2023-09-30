@@ -4,9 +4,10 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"github.com/aaronland/go-mailinglist"
 	"html/template"
 	gohttp "net/http"
+
+	"github.com/aaronland/go-mailinglist"
 )
 
 type IndexTemplateVars struct {
