@@ -5,11 +5,12 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"github.com/aaronland/go-http-crumb"
-	"github.com/aaronland/go-mailinglist"
 	"html/template"
 	_ "log"
 	gohttp "net/http"
+
+	"github.com/aaronland/go-http-crumb"
+	"github.com/aaronland/go-mailinglist"	
 )
 
 type CrumbErrorHandlerOptions struct {

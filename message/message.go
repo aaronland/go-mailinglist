@@ -2,13 +2,14 @@ package message
 
 import (
 	"context"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/gomail"
 	"log"
 	"net/mail"
 	"sync"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/subscription"
+	"github.com/aaronland/gomail"	
 )
 
 type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip

@@ -1,9 +1,11 @@
 package sender
 
 import (
+	"strconv"
+
 	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/gomail"
-	"strconv"
+	
 )
 
 func NewSMTPSenderFromDSN(str_dsn string) (gomail.Sender, error) {

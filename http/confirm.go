@@ -5,15 +5,16 @@ package http
 // see cmd/subscriptiond/main.go for details
 
 import (
-	"github.com/aaronland/go-http-sanitize"
-	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/eventlog"
 	"html/template"
 	"log"
 	gohttp "net/http"
 	"net/url"
 	"time"
+
+	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/database"
+	"github.com/aaronland/go-mailinglist/eventlog"	
 )
 
 type ConfirmHandlerOptions struct {

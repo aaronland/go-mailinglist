@@ -2,13 +2,15 @@ package mailinglist
 
 import (
 	"errors"
+	_ "log"
+	"strings"
+
 	"github.com/aaronland/go-mailinglist/database"
 	"github.com/aaronland/go-mailinglist/database/fs"
 	"github.com/aaronland/go-mailinglist/sender"
 	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/gomail"
-	_ "log"
-	"strings"
+	
 )
 
 func NewSenderFromDSN(str_dsn string) (gomail.Sender, error) {
