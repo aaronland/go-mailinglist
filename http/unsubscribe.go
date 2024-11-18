@@ -20,7 +20,6 @@ import (
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 	"github.com/aaronland/go-mailinglist/v2/message"
 	"github.com/aaronland/gomail/v2"
-	
 )
 
 type UnsubscribeTemplateVars struct {

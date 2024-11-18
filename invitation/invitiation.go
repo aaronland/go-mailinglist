@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/aaronland/go-mailinglist/v2/code"
-	"github.com/aaronland/go-mailinglist/v2/subscription"	
+	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
 
 const INVITATION_STATUS_AVAILABLE int = 0

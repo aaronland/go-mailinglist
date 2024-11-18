@@ -1,13 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
-	"context"
-	
-	"github.com/aaronland/go-mailinglist/v2"
-	"github.com/aaronland/go-mailinglist/v2/database"	
+
+	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 )
 
@@ -22,7 +21,7 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	
+
 	if *message == "" {
 		log.Fatal("Invalid -message parameter")
 	}
@@ -39,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sub, err := subs_db.GetSubscriptionWithAddress(*addr)
+	sub, err := subs_db.GetSubscriptionWithAddress(ctx, *addr)
 
 	if err != nil {
 		log.Fatal(err)
@@ -51,7 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = logs_db.AddEventLog(event_log)
+	err = logs_db.AddEventLog(ctx, event_log)
 
 	if err != nil {
 		log.Fatal(err)

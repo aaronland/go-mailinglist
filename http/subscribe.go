@@ -21,7 +21,7 @@ import (
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 	"github.com/aaronland/go-mailinglist/v2/message"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
-	"github.com/aaronland/gomail/v2"	
+	"github.com/aaronland/gomail/v2"
 )
 
 type SubscribeTemplateVars struct {

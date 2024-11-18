@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aaronland/go-string/random"	
+	"github.com/aaronland/go-string/random"
 )
 
 func NewSecretCode() (string, error) {

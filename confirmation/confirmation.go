@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/aaronland/go-mailinglist/v2/subscription"
-	"github.com/aaronland/go-string/random"	
+	"github.com/aaronland/go-string/random"
 )
 
 type Confirmation struct {

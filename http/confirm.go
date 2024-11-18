@@ -14,7 +14,7 @@ import (
 	"github.com/aaronland/go-http-sanitize"
 	"github.com/aaronland/go-mailinglist/v2"
 	"github.com/aaronland/go-mailinglist/v2/database"
-	"github.com/aaronland/go-mailinglist/v2/eventlog"	
+	"github.com/aaronland/go-mailinglist/v2/eventlog"
 )
 
 type ConfirmHandlerOptions struct {
@@ -54,6 +54,8 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+
+		ctx := req.Context()
 
 		subs_db := opts.Subscriptions
 		conf_db := opts.Confirmations
@@ -98,7 +100,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 
 			vars.Code = code
 
-			conf, err := conf_db.GetConfirmationWithCode(code)
+			conf, err := conf_db.GetConfirmationWithCode(ctx, code)
 
 			if err != nil {
 
@@ -117,7 +119,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			_, err = subs_db.GetSubscriptionWithAddress(conf.Address)
+			_, err = subs_db.GetSubscriptionWithAddress(ctx, conf.Address)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
@@ -161,7 +163,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			conf, err := conf_db.GetConfirmationWithCode(code)
+			conf, err := conf_db.GetConfirmationWithCode(ctx, code)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_CONFIRMATION_RETRIEVE)
@@ -184,7 +186,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(conf.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, conf.Address)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_SUBSCRIPTION_RETRIEVE)
@@ -219,7 +221,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					return
 				}
 
-				err = subs_db.UpdateSubscription(sub)
+				err = subs_db.UpdateSubscription(ctx, sub)
 
 				if err != nil {
 					app_err := NewApplicationError(err, E_SUBSCRIPTION_UPDATE)
@@ -228,7 +230,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					return
 				}
 
-				confirm_event_err := opts.EventLogs.AddEventLog(confirm_event)
+				confirm_event_err := opts.EventLogs.AddEventLog(ctx, confirm_event)
 
 				if confirm_event_err != nil {
 					log.Println(confirm_event_err)
@@ -246,7 +248,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					return
 				}
 
-				err = subs_db.RemoveSubscription(sub)
+				err = subs_db.RemoveSubscription(ctx, sub)
 
 				if err != nil {
 					app_err := NewApplicationError(err, E_SUBSCRIPTION_REMOVE)
@@ -255,7 +257,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 					return
 				}
 
-				confirm_event_err := opts.EventLogs.AddEventLog(confirm_event)
+				confirm_event_err := opts.EventLogs.AddEventLog(ctx, confirm_event)
 
 				if confirm_event_err != nil {
 					log.Println(confirm_event_err)

@@ -3,7 +3,7 @@ package eventlog
 import (
 	"time"
 
-	"github.com/aaronland/go-mailinglist/v2/subscription"	
+	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
 
 const EVENTLOG_CUSTOM_EVENT int = 0

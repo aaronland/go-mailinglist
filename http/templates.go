@@ -5,7 +5,7 @@ import (
 	_ "log"
 	gohttp "net/http"
 
-	"github.com/aaronland/go-mailinglist/v2/errors"	
+	"github.com/aaronland/go-mailinglist/v2/errors"
 )
 
 func LoadTemplate(t *template.Template, name string) (*template.Template, error) {

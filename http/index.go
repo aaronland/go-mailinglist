@@ -7,7 +7,7 @@ import (
 	"html/template"
 	gohttp "net/http"
 
-	"github.com/aaronland/go-mailinglist/v2"	
+	"github.com/aaronland/go-mailinglist/v2"
 )
 
 type IndexTemplateVars struct {
