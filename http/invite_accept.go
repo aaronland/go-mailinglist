@@ -7,14 +7,6 @@ package http
 import (
 	"errors"
 	"fmt"
-	"github.com/aaronland/go-http-sanitize"
-	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/confirmation"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/eventlog"
-	"github.com/aaronland/go-mailinglist/message"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/gomail"
 	"html/template"
 	"log"
 	gohttp "net/http"
@@ -22,6 +14,15 @@ import (
 	"net/url"
 	"sync"
 	"time"
+
+	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-mailinglist/v2"
+	"github.com/aaronland/go-mailinglist/v2/confirmation"
+	"github.com/aaronland/go-mailinglist/v2/database"
+	"github.com/aaronland/go-mailinglist/v2/eventlog"
+	"github.com/aaronland/go-mailinglist/v2/message"
+	"github.com/aaronland/go-mailinglist/v2/subscription"
+	"github.com/aaronland/gomail/v2"	
 )
 
 type InviteCodeTemplateVars struct {

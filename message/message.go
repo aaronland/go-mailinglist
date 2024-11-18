@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/gomail"	
+	"github.com/aaronland/go-mailinglist/v2/database"
+	"github.com/aaronland/go-mailinglist/v2/subscription"
+	"github.com/aaronland/gomail/v2"	
 )
 
 type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip

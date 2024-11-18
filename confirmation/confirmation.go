@@ -2,9 +2,10 @@ package confirmation
 
 import (
 	"errors"
-	"github.com/aaronland/go-mailinglist/subscription"
-	"github.com/aaronland/go-string/random"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/v2/subscription"
+	"github.com/aaronland/go-string/random"	
 )
 
 type Confirmation struct {

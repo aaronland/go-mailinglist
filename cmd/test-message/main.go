@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/aaronland/go-mailinglist/message"
-	"github.com/aaronland/go-mailinglist/sender"
-	"github.com/aaronland/gomail"
 	"log"
 	"net/mail"
+	"context"
+	
+	"github.com/aaronland/go-mailinglist/v2/message"
+	"github.com/aaronland/gomail-sender"
+	
 )
 
 func main() {
 
-	s, err := sender.NewStdoutSender()
+	ctx := context.Background()
+	s, err := sender.NewStdoutSender(ctx, "stdout://")
 
 	if err != nil {
 		log.Fatal(err)

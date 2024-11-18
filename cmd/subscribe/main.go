@@ -2,27 +2,33 @@ package main
 
 import (
 	"flag"
-	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/subscription"
 	"log"
 	"time"
+	"context"
+	
+	"github.com/aaronland/go-mailinglist/v2"
+	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
 
 func main() {
 
-	dsn := flag.String("dsn", "", "...")
+	subs_db_uri := flag.String("subscriptions-database-uri", "", "...")
 
 	addr := flag.String("address", "", "...")
 	confirmed := flag.Bool("confirmed", false, "...")
 
 	flag.Parse()
 
-	db, err := mailinglist.NewSubscriptionsDatabaseFromDSN(*dsn)
+	ctx := context.Background()
+	
+	db, err := database.NewSubscriptionsDatabase(ctx, *subs_db_uri)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	defer db.Close()
+	
 	sub, err := subscription.NewSubscription(*addr)
 
 	if err != nil {

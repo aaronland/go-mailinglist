@@ -10,7 +10,7 @@ import (
 	gohttp "net/http"
 
 	"github.com/aaronland/go-http-crumb"
-	"github.com/aaronland/go-mailinglist"	
+	"github.com/aaronland/go-mailinglist/v2"	
 )
 
 type CrumbErrorHandlerOptions struct {

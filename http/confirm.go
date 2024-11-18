@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/aaronland/go-http-sanitize"
-	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/database"
-	"github.com/aaronland/go-mailinglist/eventlog"	
+	"github.com/aaronland/go-mailinglist/v2"
+	"github.com/aaronland/go-mailinglist/v2/database"
+	"github.com/aaronland/go-mailinglist/v2/eventlog"	
 )
 
 type ConfirmHandlerOptions struct {

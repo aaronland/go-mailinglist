@@ -5,7 +5,7 @@ import (
 	"bytes"
 	html_template "html/template"
 
-	"github.com/aaronland/gomail"	
+	"github.com/aaronland/gomail/v2"	
 )
 
 func NewMessageFromHTMLTemplate(t *html_template.Template, vars interface{}) (*gomail.Message, error) {

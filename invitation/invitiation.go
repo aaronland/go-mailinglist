@@ -1,10 +1,11 @@
 package invitation
 
 import (
-	"github.com/aaronland/go-mailinglist/code"
-	"github.com/aaronland/go-mailinglist/subscription"
 	"net/mail"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/v2/code"
+	"github.com/aaronland/go-mailinglist/v2/subscription"	
 )
 
 const INVITATION_STATUS_AVAILABLE int = 0

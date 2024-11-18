@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/v2"
 )
 
 type ConfirmationEmailTemplateVars struct {
