@@ -74,9 +74,9 @@ func (db *SubscriptionsDocstoreDatabase) ListSubscriptions(ctx context.Context, 
 	return db.getSubscriptionsWithCallback(ctx, q, cb)
 }
 
-func (db *SubscriptionsDocstoreDatabase) ListSubscriptionsWithStatus(ctx context.Context, statuses []int, cb ListSubscriptionsFunc) error {
+func (db *SubscriptionsDocstoreDatabase) ListSubscriptionsWithStatus(ctx context.Context, status int, cb ListSubscriptionsFunc) error {
 	q := db.collection.Query()
-	// FIX ME: Add statuses here...
+	q = q.Where("status", "=", status)
 	return db.getSubscriptionsWithCallback(ctx, q, cb)
 }
 

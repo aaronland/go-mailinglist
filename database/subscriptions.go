@@ -19,7 +19,7 @@ type SubscriptionsDatabase interface {
 	UpdateSubscription(context.Context, *subscription.Subscription) error
 	GetSubscriptionWithAddress(context.Context, string) (*subscription.Subscription, error)
 	ListSubscriptions(context.Context, ListSubscriptionsFunc) error
-	ListSubscriptionsWithStatus(context.Context, []int, ListSubscriptionsFunc) error
+	ListSubscriptionsWithStatus(context.Context, int, ListSubscriptionsFunc) error
 	Close() error
 }
 

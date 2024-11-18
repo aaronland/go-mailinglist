@@ -137,11 +137,7 @@ func SendMessageToList(ctx context.Context, subs_db database.SubscriptionsDataba
 		return nil
 	}
 
-	statuses := []int{
-		subscription.SUBSCRIPTION_STATUS_ENABLED,
-	}
-
-	err := subs_db.ListSubscriptionsWithStatus(ctx, statuses, cb)
+	err := subs_db.ListSubscriptionsWithStatus(ctx, subscription.SUBSCRIPTION_STATUS_ENABLED, cb)
 
 	if err != nil {
 		return err
