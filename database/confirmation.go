@@ -11,7 +11,7 @@ import (
 	"github.com/aaronland/go-roster"
 )
 
-type ListConfirmationsFunc func(*confirmation.Confirmation) error
+type ListConfirmationsFunc func(context.Context, *confirmation.Confirmation) error
 
 type ConfirmationsDatabase interface {
 	AddConfirmation(context.Context, *confirmation.Confirmation) error

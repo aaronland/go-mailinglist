@@ -12,7 +12,7 @@ import (
 	"github.com/aaronland/go-roster"
 )
 
-type ListInvitationsFunc func(*invitation.Invitation) error
+type ListInvitationsFunc func(context.Context, *invitation.Invitation) error
 
 type InvitationsDatabase interface {
 	AddInvitation(context.Context, *invitation.Invitation) error
@@ -21,7 +21,7 @@ type InvitationsDatabase interface {
 	GetInvitationWithCode(context.Context, string) (*invitation.Invitation, error)
 	GetInvitationWithInvitee(context.Context, string) (*invitation.Invitation, error)
 	ListInvitations(context.Context, ListInvitationsFunc) error
-	ListInvitationsWithInviter(context.Context, ListInvitationsFunc, *subscription.Subscription) error
+	ListInvitationsWithInviter(context.Context, *subscription.Subscription, ListInvitationsFunc) error
 	Close() error
 }
 

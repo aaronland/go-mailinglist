@@ -11,7 +11,7 @@ import (
 	"github.com/aaronland/go-roster"
 )
 
-type ListDeliveriesFunc func(*delivery.Delivery) error
+type ListDeliveriesFunc func(context.Context, *delivery.Delivery) error
 
 type DeliveriesDatabase interface {
 	AddDelivery(context.Context, *delivery.Delivery) error

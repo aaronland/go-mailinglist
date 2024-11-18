@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"io"
 
 	"github.com/aaronland/go-mailinglist/v2/delivery"
 	aa_docstore "github.com/aaronland/gocloud-docstore"
@@ -55,15 +57,36 @@ func (db *DeliveriesDocstoreDatabase) AddDelivery(ctx context.Context, d *delive
 }
 
 func (db *DeliveriesDocstoreDatabase) ListDeliveries(ctx context.Context, cb ListDeliveriesFunc) error {
-	return db.getDeliveriesWithCallback(ctx, cb)
+	q := db.collection.Query()
+	return db.getDeliveriesWithCallback(ctx, q, cb)
 }
 
 func (db *DeliveriesDocstoreDatabase) GetDeliveryWithAddressAndMessageId(ctx context.Context, addr string, id string) (*delivery.Delivery, error) {
-
+	q := db.collection.Query()
+	q.Where("address", "=", addr)
+	q.Where("id", "=", id)
+	return db.getDeliveryWithQuery(ctx, q)
 }
 
 func (db *DeliveriesDocstoreDatabase) Close() error {
 	return db.collection.Close()
+}
+
+func (db *DeliveriesDocstoreDatabase) getDeliveryWithQuery(ctx context.Context, q *docstore.Query) (*delivery.Delivery, error) {
+
+	iter := q.Get(ctx)
+	defer iter.Stop()
+
+	var d delivery.Delivery
+	err := iter.Next(ctx, &d)
+
+	if err == io.EOF {
+		return nil, NoRecordError("")
+	} else if err != nil {
+		return nil, fmt.Errorf("Failed to interate, %w", err)
+	} else {
+		return &d, nil
+	}
 }
 
 func (db *DeliveriesDocstoreDatabase) getDeliveriesWithCallback(ctx context.Context, q *docstore.Query, cb ListDeliveriesFunc) error {

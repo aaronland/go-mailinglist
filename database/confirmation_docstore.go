@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"io"
 
 	"github.com/aaronland/go-mailinglist/v2/confirmation"
 	aa_docstore "github.com/aaronland/gocloud-docstore"
@@ -59,12 +61,63 @@ func (db *ConfirmationsDocstoreDatabase) RemoveConfirmation(ctx context.Context,
 }
 
 func (db *ConfirmationsDocstoreDatabase) GetConfirmationWithCode(ctx context.Context, code string) (*confirmation.Confirmation, error) {
+
+	q := db.collection.Query()
+	q = q.Where("code", "=", code)
+
+	return db.getConfirmationWithQuery(ctx, q)
 }
 
 func (db *ConfirmationsDocstoreDatabase) ListConfirmations(ctx context.Context, cb ListConfirmationsFunc) error {
 
+	q := db.collection.Query()
+	return db.getConfirmationsWithCallback(ctx, q, cb)
 }
 
 func (db *ConfirmationsDocstoreDatabase) Close() error {
 	return db.collection.Close()
+}
+
+func (db *ConfirmationsDocstoreDatabase) getConfirmationWithQuery(ctx context.Context, q *docstore.Query) (*confirmation.Confirmation, error) {
+
+	iter := q.Get(ctx)
+	defer iter.Stop()
+
+	var c confirmation.Confirmation
+	err := iter.Next(ctx, &c)
+
+	if err == io.EOF {
+		return nil, NoRecordError("")
+	} else if err != nil {
+		return nil, fmt.Errorf("Failed to interate, %w", err)
+	} else {
+		return &c, nil
+	}
+}
+
+func (db *ConfirmationsDocstoreDatabase) getConfirmationsWithCallback(ctx context.Context, q *docstore.Query, cb ListConfirmationsFunc) error {
+
+	iter := q.Get(ctx)
+	defer iter.Stop()
+
+	for {
+
+		var c confirmation.Confirmation
+		err := iter.Next(ctx, &c)
+
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return fmt.Errorf("Failed to interate, %w", err)
+		} else {
+
+			err := cb(ctx, &c)
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

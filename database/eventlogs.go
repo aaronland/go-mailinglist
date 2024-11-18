@@ -11,7 +11,7 @@ import (
 	"github.com/aaronland/go-roster"
 )
 
-type ListEventLogsFunc func(*eventlog.EventLog) error
+type ListEventLogsFunc func(context.Context, *eventlog.EventLog) error
 
 type EventLogsDatabase interface {
 	AddEventLog(context.Context, *eventlog.EventLog) error

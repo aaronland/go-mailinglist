@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"io"
 
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 	aa_docstore "github.com/aaronland/gocloud-docstore"
@@ -62,15 +64,66 @@ func (db *SubscriptionsDocstoreDatabase) UpdateSubscription(ctx context.Context,
 }
 
 func (db *SubscriptionsDocstoreDatabase) GetSubscriptionWithAddress(ctx context.Context, addr string) (*subscription.Subscription, error) {
+	q := db.collection.Query()
+	q = q.Where("address", "=", addr)
+	return db.getSubscriptionWithQuery(ctx, q)
 }
 
 func (db *SubscriptionsDocstoreDatabase) ListSubscriptions(ctx context.Context, cb ListSubscriptionsFunc) error {
-
+	q := db.collection.Query()
+	return db.getSubscriptionsWithCallback(ctx, q, cb)
 }
 
-func (db *SubscriptionsDocstoreDatabase) ListSubscriptionsWithStatus(ctx context.Context, cb ListSubscriptionsFunc, statuses ...int) error {
+func (db *SubscriptionsDocstoreDatabase) ListSubscriptionsWithStatus(ctx context.Context, statuses []int, cb ListSubscriptionsFunc) error {
+	q := db.collection.Query()
+	// FIX ME: Add statuses here...
+	return db.getSubscriptionsWithCallback(ctx, q, cb)
 }
 
 func (db *SubscriptionsDocstoreDatabase) Close() error {
 	return db.collection.Close()
+}
+
+func (db *SubscriptionsDocstoreDatabase) getSubscriptionWithQuery(ctx context.Context, q *docstore.Query) (*subscription.Subscription, error) {
+
+	iter := q.Get(ctx)
+	defer iter.Stop()
+
+	var s subscription.Subscription
+	err := iter.Next(ctx, &s)
+
+	if err == io.EOF {
+		return nil, NoRecordError("")
+	} else if err != nil {
+		return nil, fmt.Errorf("Failed to interate, %w", err)
+	} else {
+		return &s, nil
+	}
+}
+
+func (db *SubscriptionsDocstoreDatabase) getSubscriptionsWithCallback(ctx context.Context, q *docstore.Query, cb ListSubscriptionsFunc) error {
+
+	iter := q.Get(ctx)
+	defer iter.Stop()
+
+	for {
+
+		var s subscription.Subscription
+		err := iter.Next(ctx, &s)
+
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return fmt.Errorf("Failed to interate, %w", err)
+		} else {
+
+			err := cb(ctx, &s)
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

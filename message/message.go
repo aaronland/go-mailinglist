@@ -12,9 +12,9 @@ import (
 	"github.com/aaronland/gomail/v2"
 )
 
-type PreSendMessageFilterFunc func(*gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip
+type PreSendMessageFilterFunc func(context.Context, *gomail.Message, *mail.Address) (bool, error) // true to send mail, false to skip
 
-type PostSendMessageFunc func(*gomail.Message, *mail.Address, time.Duration, error) error
+type PostSendMessageFunc func(context.Context, *gomail.Message, *mail.Address, time.Duration, error) error
 
 type SendMessageOptions struct {
 	Sender            gomail.Sender
@@ -26,7 +26,7 @@ type SendMessageOptions struct {
 	// Throttle	<-chan time.Time
 }
 
-func SendMessage(msg *gomail.Message, opts *SendMessageOptions) error {
+func SendMessage(ctx context.Context, opts *SendMessageOptions, msg *gomail.Message) error {
 
 	from := opts.From.String()
 	to := opts.To.String()
@@ -38,15 +38,10 @@ func SendMessage(msg *gomail.Message, opts *SendMessageOptions) error {
 	return gomail.Send(opts.Sender, msg)
 }
 
-func SendMessageToList(subs_db database.SubscriptionsDatabase, msg *gomail.Message, opts *SendMessageOptions) error {
+func SendMessageToList(ctx context.Context, subs_db database.SubscriptionsDatabase, msg *gomail.Message, opts *SendMessageOptions) error {
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-
-	return SendMailToListWithContext(ctx, subs_db, msg, opts)
-}
-
-func SendMailToListWithContext(ctx context.Context, subs_db database.SubscriptionsDatabase, msg *gomail.Message, opts *SendMessageOptions) error {
 
 	t1 := time.Now()
 
@@ -62,7 +57,7 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 	wg := new(sync.WaitGroup)
 
-	cb := func(sub *subscription.Subscription) error {
+	cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
 		select {
 		case <-ctx.Done():
@@ -79,7 +74,7 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		if opts.PreSendFilterFunc != nil {
 
-			include, err := opts.PreSendFilterFunc(msg, to)
+			include, err := opts.PreSendFilterFunc(ctx, msg, to)
 
 			if err != nil {
 				return err
@@ -112,7 +107,7 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 		wg.Add(1)
 
-		go func(wg *sync.WaitGroup, msg *gomail.Message, local_opts *SendMessageOptions) {
+		go func(wg *sync.WaitGroup, local_opts *SendMessageOptions, msg *gomail.Message) {
 
 			t2 := time.Now()
 
@@ -120,7 +115,7 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 				wg.Done()
 			}()
 
-			err := SendMessage(msg, local_opts)
+			err := SendMessage(ctx, local_opts, msg)
 
 			if err != nil {
 				log.Printf("Failed to send message to %s (%s)\n", to, err)
@@ -130,19 +125,23 @@ func SendMailToListWithContext(ctx context.Context, subs_db database.Subscriptio
 
 				tts := time.Since(t2)
 
-				post_err := local_opts.PostSendFunc(msg, local_opts.To, tts, err)
+				post_err := local_opts.PostSendFunc(ctx, msg, local_opts.To, tts, err)
 
 				if post_err != nil {
 					log.Printf("Failed to complete post send message func for %s (%s)\n", to, post_err)
 				}
 			}
 
-		}(wg, msg, local_opts)
+		}(wg, local_opts, msg)
 
 		return nil
 	}
 
-	err := subs_db.ListSubscriptionsWithStatus(ctx, cb, subscription.SUBSCRIPTION_STATUS_ENABLED)
+	statuses := []int{
+		subscription.SUBSCRIPTION_STATUS_ENABLED,
+	}
+
+	err := subs_db.ListSubscriptionsWithStatus(ctx, statuses, cb)
 
 	if err != nil {
 		return err
