@@ -8,15 +8,17 @@ This is work-in-progress.
 package main
 
 import (
-	"github.com/aaronland/go-mailinglist/message"	
-	"github.com/aaronland/go-mailinglist/sender"
-	"github.com/aaronland/gomail"	
 	"net/mail"
+
+	"github.com/aaronland/go-mailinglist/v2/message"	
+	"github.com/aaronland/gomail-sender"
+	"github.com/aaronland/gomail/v2"	
 )
 
 func main() {
 
-	s, _ := sender.NewStdoutSender()
+	ctx := context.Background()
+	s, _ := sender.NewSender(ctx, "stdout://")
 
 	to, _ := mail.ParseAddress("to@example.com")
 	from, _ := mail.ParseAddress("from@example.com")	
@@ -32,7 +34,7 @@ func main() {
 	m := gomail.NewMessage()
 	m.SetBody("text/html", "<p>hello world</p>")
 
-	message.SendMessage(m, opts)
+	message.SendMessage(ctx, m, opts)
 }
 ```
 
@@ -51,30 +53,6 @@ Content-Transfer-Encoding: quoted-printable
 
 <p>hello world</p>
 ```
-
-## Templates
-
-### common_footer
-### common_header
-
-### confirm
-### confirm_action
-### confirm_email
-### confirm_success
-
-### crumb_error
-### index
-
-### invite_accept
-### invite_code
-### invite_how_it_works
-### invite_request_email
-### invite_request_success
-### invite_request
-### subscribe
-### subscribe_success
-### unsubscribe
-### unsubscribe_success
 
 ## See also
 
