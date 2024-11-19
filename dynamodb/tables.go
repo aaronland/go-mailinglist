@@ -5,11 +5,9 @@ import (
 )
 
 var DynamoDBTables = map[string]*aws_dynamodb.CreateTableInput{
-	/*
-		"subscriptions":   SubscriptionsTable,
-		"confirmations":   ConfirmationsTable,
-		"deliveries": DeliveriesTable,
-		"invitations": InvitationsTable,
-		"eventlogs": EventLogsTable,
-	*/
+	"subscriptions": DynamoDBSubscriptionsTable,
+	"confirmations": DynamoDBConfirmationsTable,
+	"deliveries":    DynamoDBDeliveriesTable,
+	// "invitations": InvitationsTable,
+	"eventlogs": DynamoDBEventLogsTable,
 }
