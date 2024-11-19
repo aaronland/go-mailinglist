@@ -1,4 +1,4 @@
-package http
+package www
 
 // CSRF crumbs are handled by go-http-crumb middleware
 // Bootstrap stuff is handled by go-http-bootstrap middleware
@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	gohttp "net/http"
+	"net/http"
 	"net/mail"
 	"net/url"
 	"sync"
@@ -55,7 +55,7 @@ type InviteAcceptHandlerOptions struct {
 	Sender        gomail.Sender
 }
 
-func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, error) {
+func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (http.Handler, error) {
 
 	code_t, err := LoadTemplate(opts.Templates, "invite_code")
 
@@ -81,7 +81,9 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	fn := func(rsp http.ResponseWriter, req *http.Request) {
+
+		ctx := req.Context()
 
 		code_vars := InviteCodeTemplateVars{
 			SiteName: opts.Config.Name,
@@ -120,7 +122,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			invite, err := invites_db.GetInvitationWithCode(code)
+			invite, err := invites_db.GetInvitationWithCode(ctx, code)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_INVITATION_RETRIEVE)
@@ -164,7 +166,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			invite, err := invites_db.GetInvitationWithCode(code)
+			invite, err := invites_db.GetInvitationWithCode(ctx, code)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_INVITATION_RETRIEVE)
@@ -240,7 +242,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr.Address)
 
 			if sub != nil {
 
@@ -273,7 +275,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			err = subs_db.AddSubscription(sub)
+			err = subs_db.AddSubscription(ctx, sub)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_SUBSCRIPTION_ADD)
@@ -282,7 +284,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			err = conf_db.AddConfirmation(conf)
+			err = conf_db.AddConfirmation(ctx, conf)
 
 			if err != nil {
 
@@ -291,7 +293,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 				go func() {
 					defer wg.Done()
-					subs_db.RemoveSubscription(sub)
+					subs_db.RemoveSubscription(ctx, sub)
 				}()
 
 				app_err := NewApplicationError(err, E_CONFIRMATION_ADD)
@@ -311,8 +313,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 				go func() {
 					defer wg.Done()
-					subs_db.RemoveSubscription(sub)
-					conf_db.RemoveConfirmation(conf)
+					subs_db.RemoveSubscription(ctx, sub)
+					conf_db.RemoveConfirmation(ctx, conf)
 				}()
 
 				app_err := NewApplicationError(err, E_INVITATION_ACCEPT)
@@ -324,7 +326,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				return
 			}
 
-			err = invites_db.UpdateInvitation(invite)
+			err = invites_db.UpdateInvitation(ctx, invite)
 
 			if err != nil {
 
@@ -333,8 +335,8 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 
 				go func() {
 					defer wg.Done()
-					subs_db.RemoveSubscription(sub)
-					conf_db.RemoveConfirmation(conf)
+					subs_db.RemoveSubscription(ctx, sub)
+					conf_db.RemoveConfirmation(ctx, conf)
 				}()
 
 				app_err := NewApplicationError(err, E_INVITATION_UPDATE)
@@ -360,7 +362,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				Message: subscribe_event_message,
 			}
 
-			subscribe_event_err := opts.EventLogs.AddEventLog(subscribe_event)
+			subscribe_event_err := opts.EventLogs.AddEventLog(ctx, subscribe_event)
 
 			if subscribe_event_err != nil {
 				log.Println(subscribe_event_err)
@@ -396,7 +398,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				To:      to_addr,
 			}
 
-			send_err := message.SendMessage(msg, msg_opts)
+			send_err := message.SendMessage(ctx, msg_opts, msg)
 
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
@@ -420,7 +422,7 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 				Message: send_event_message,
 			}
 
-			send_event_err := opts.EventLogs.AddEventLog(send_event)
+			send_event_err := opts.EventLogs.AddEventLog(ctx, send_event)
 
 			if send_event_err != nil {
 				log.Println(send_event_err)
@@ -446,11 +448,11 @@ func InviteAcceptHandler(opts *InviteAcceptHandlerOptions) (gohttp.Handler, erro
 			// END please reconcile me with http/subscribe.go
 
 		default:
-			gohttp.Error(rsp, "Method not allowed", gohttp.StatusMethodNotAllowed)
+			http.Error(rsp, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 	}
 
-	h := gohttp.HandlerFunc(fn)
+	h := http.HandlerFunc(fn)
 	return h, nil
 }

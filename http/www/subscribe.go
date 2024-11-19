@@ -1,4 +1,4 @@
-package http
+package www
 
 // CSRF crumbs are handled by go-http-crumb middleware
 // Bootstrap stuff is handled by go-http-bootstrap middleware
@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	gohttp "net/http"
+	"net/http"
 	"net/mail"
 	"net/url"
 	"sync"
@@ -39,7 +39,7 @@ type SubscribeHandlerOptions struct {
 	Sender        gomail.Sender
 }
 
-func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
+func SubscribeHandler(opts *SubscribeHandlerOptions) (http.Handler, error) {
 
 	subscribe_t, err := LoadTemplate(opts.Templates, "subscribe")
 
@@ -59,7 +59,9 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	fn := func(rsp http.ResponseWriter, req *http.Request) {
+
+		ctx := req.Context()
 
 		vars := SubscribeTemplateVars{
 			SiteName: opts.Config.Name,
@@ -109,7 +111,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr.Address)
 
 			if err != nil {
 
@@ -149,7 +151,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			err = subs_db.AddSubscription(sub)
+			err = subs_db.AddSubscription(ctx, sub)
 
 			if err != nil {
 				app_err := NewApplicationError(err, E_SUBSCRIPTION_ADD)
@@ -158,7 +160,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				return
 			}
 
-			err = conf_db.AddConfirmation(conf)
+			err = conf_db.AddConfirmation(ctx, conf)
 
 			if err != nil {
 
@@ -167,7 +169,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 
 				go func() {
 					defer wg.Done()
-					subs_db.RemoveSubscription(sub)
+					subs_db.RemoveSubscription(ctx, sub)
 				}()
 
 				app_err := NewApplicationError(err, E_CONFIRMATION_ADD)
@@ -192,7 +194,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				Message: subscribe_event_message,
 			}
 
-			subscribe_event_err := opts.EventLogs.AddEventLog(subscribe_event)
+			subscribe_event_err := opts.EventLogs.AddEventLog(ctx, subscribe_event)
 
 			if subscribe_event_err != nil {
 				log.Println(subscribe_event_err)
@@ -228,7 +230,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				To:      to_addr,
 			}
 
-			send_err := message.SendMessage(msg, msg_opts)
+			send_err := message.SendMessage(ctx, msg_opts, msg)
 
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
@@ -251,7 +253,7 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 				Message: send_event_message,
 			}
 
-			send_event_err := opts.EventLogs.AddEventLog(send_event)
+			send_event_err := opts.EventLogs.AddEventLog(ctx, send_event)
 
 			if send_event_err != nil {
 				log.Println(send_event_err)
@@ -271,11 +273,11 @@ func SubscribeHandler(opts *SubscribeHandlerOptions) (gohttp.Handler, error) {
 			// END please reconcile me with http/invite_accept.go
 
 		default:
-			gohttp.Error(rsp, "Method not allowed", gohttp.StatusMethodNotAllowed)
+			http.Error(rsp, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 	}
 
-	h := gohttp.HandlerFunc(fn)
+	h := http.HandlerFunc(fn)
 	return h, nil
 }

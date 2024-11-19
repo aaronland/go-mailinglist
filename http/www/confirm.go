@@ -1,4 +1,4 @@
-package http
+package www
 
 // CSRF crumbs are handled by go-http-crumb middleware
 // Bootstrap stuff is handled by go-http-bootstrap middleware
@@ -7,7 +7,7 @@ package http
 import (
 	"html/template"
 	"log"
-	gohttp "net/http"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -33,7 +33,7 @@ type ConfirmTemplateVars struct {
 	Error    error
 }
 
-func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
+func ConfirmHandler(opts *ConfirmHandlerOptions) (http.Handler, error) {
 
 	confirm_t, err := LoadTemplate(opts.Templates, "confirm")
 
@@ -53,7 +53,7 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	fn := func(rsp http.ResponseWriter, req *http.Request) {
 
 		ctx := req.Context()
 
@@ -275,11 +275,11 @@ func ConfirmHandler(opts *ConfirmHandlerOptions) (gohttp.Handler, error) {
 			}
 
 		default:
-			gohttp.Error(rsp, "Method not allowed", gohttp.StatusMethodNotAllowed)
+			http.Error(rsp, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 	}
 
-	h := gohttp.HandlerFunc(fn)
+	h := http.HandlerFunc(fn)
 	return h, nil
 }

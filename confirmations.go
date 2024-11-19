@@ -1,11 +1,11 @@
 package mailinglist
 
 import (
-	"time"
 	"context"
+	"time"
 
-	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/confirmation"
+	"github.com/aaronland/go-mailinglist/v2/database"
 )
 
 func AddConfirmation(ctx context.Context, db database.ConfirmationsDatabase, c *confirmation.Confirmation) (*confirmation.Confirmation, error) {

@@ -1,4 +1,4 @@
-package http
+package www
 
 // CSRF crumbs are handled by go-http-crumb middleware
 // Bootstrap stuff is handled by go-http-bootstrap middleware
@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	gohttp "net/http"
+	"net/http"
 	"net/mail"
 	"net/url"
 	"time"
@@ -37,7 +37,7 @@ type UnsubscribeHandlerOptions struct {
 	Sender        gomail.Sender
 }
 
-func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error) {
+func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (http.Handler, error) {
 
 	unsubscribe_t, err := LoadTemplate(opts.Templates, "unsubscribe")
 
@@ -57,7 +57,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	fn := func(rsp http.ResponseWriter, req *http.Request) {
 
 		vars := UnsubscribeTemplateVars{
 			SiteName: opts.Config.Name,
@@ -70,6 +70,8 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			RenderTemplate(rsp, unsubscribe_t, vars)
 			return
 		}
+
+		ctx := req.Context()
 
 		switch req.Method {
 
@@ -101,7 +103,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			sub, err := subs_db.GetSubscriptionWithAddress(addr.Address)
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr.Address)
 
 			if err != nil {
 
@@ -136,7 +138,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				return
 			}
 
-			err = conf_db.AddConfirmation(conf)
+			err = conf_db.AddConfirmation(ctx, conf)
 
 			if err != nil {
 
@@ -159,7 +161,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				Message: unsubscribe_event_message,
 			}
 
-			unsubscribe_event_err := opts.EventLogs.AddEventLog(unsubscribe_event)
+			unsubscribe_event_err := opts.EventLogs.AddEventLog(ctx, unsubscribe_event)
 
 			if unsubscribe_event_err != nil {
 				log.Println(unsubscribe_event_err)
@@ -194,7 +196,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				To:      to_addr,
 			}
 
-			send_err := message.SendMessage(msg, msg_opts)
+			send_err := message.SendMessage(ctx, msg_opts, msg)
 
 			send_event_params := url.Values{}
 			send_event_params.Set("remote_addr", req.RemoteAddr)
@@ -217,7 +219,7 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 				Message: send_event_message,
 			}
 
-			send_event_err := opts.EventLogs.AddEventLog(send_event)
+			send_event_err := opts.EventLogs.AddEventLog(ctx, send_event)
 
 			if send_event_err != nil {
 				log.Println(send_event_err)
@@ -234,12 +236,12 @@ func UnsubscribeHandler(opts *UnsubscribeHandlerOptions) (gohttp.Handler, error)
 			return
 
 		default:
-			gohttp.Error(rsp, "Method not allowed", gohttp.StatusMethodNotAllowed)
+			http.Error(rsp, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 	}
 
-	h := gohttp.HandlerFunc(fn)
+	h := http.HandlerFunc(fn)
 	return h, nil
 }

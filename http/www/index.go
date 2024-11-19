@@ -1,11 +1,11 @@
-package http
+package www
 
 // Bootstrap stuff is handled by go-http-bootstrap middleware
 // see cmd/subscriptiond/main.go for details
 
 import (
 	"html/template"
-	gohttp "net/http"
+	"net/http"
 
 	"github.com/aaronland/go-mailinglist/v2"
 )
@@ -21,7 +21,7 @@ type IndexHandlerOptions struct {
 	Templates *template.Template
 }
 
-func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
+func IndexHandler(opts *IndexHandlerOptions) (http.Handler, error) {
 
 	index_t, err := LoadTemplate(opts.Templates, "index")
 
@@ -29,7 +29,7 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 		return nil, err
 	}
 
-	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
+	fn := func(rsp http.ResponseWriter, req *http.Request) {
 
 		vars := IndexTemplateVars{
 			SiteName: opts.Config.Name,
@@ -41,6 +41,6 @@ func IndexHandler(opts *IndexHandlerOptions) (gohttp.Handler, error) {
 		return
 	}
 
-	h := gohttp.HandlerFunc(fn)
+	h := http.HandlerFunc(fn)
 	return h, nil
 }

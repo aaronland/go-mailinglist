@@ -33,7 +33,7 @@ func main() {
 	m := gomail.NewMessage()
 	m.SetBody("text/html", "<p>hello world</p>")
 
-	err = message.SendMessage(m, opts)
+	err = message.SendMessage(ctx, opts, m)
 
 	if err != nil {
 		log.Fatal(err)
