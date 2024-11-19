@@ -10,7 +10,9 @@ require (
 	github.com/aaronland/gocloud-docstore v0.0.8
 	github.com/aaronland/gomail-sender v1.0.1
 	github.com/aaronland/gomail/v2 v2.0.8
+	github.com/aws/aws-sdk-go-v2 v1.30.4
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.34.5
+	github.com/sfomuseum/go-flags v0.10.0
 	gocloud.dev v0.40.0
 )
 
@@ -18,7 +20,6 @@ require (
 	github.com/aaronland/go-aws-auth v1.6.3 // indirect
 	github.com/aaronland/go-aws-session v0.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.55.5 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.30.4 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.27 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.27 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.11 // indirect

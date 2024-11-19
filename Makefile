@@ -1,8 +1,7 @@
 CWD=$(shell pwd)
 
-devel:
-	go run -mod vendor cmd/subscriptiond/main.go -devel -templates 'templates/html/*.html'
+GOMOD=$(shell test -f "go.work" && echo "readonly" || echo "vendor")
+LDFLAGS=-s -w
 
-tools:
-	go build -mod vendor -o bin/subscribe cmd/subscribe/main.go
-	go build -mod vendor -o bin/subscriptiond cmd/subscriptiond/main.go
+cli:
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/list-subscriptions cmd/list-subscriptions/main.go
