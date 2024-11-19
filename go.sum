@@ -17,10 +17,6 @@ github.com/aaronland/go-aws-dynamodb v0.3.0 h1:3JrhRXjl5un3+OdmqlI2fuwAaUDsp+G0p
 github.com/aaronland/go-aws-dynamodb v0.3.0/go.mod h1:PHvETpRXm7Z4d6SlHZf/ZzoffYZ/QKmKidmfGbYwcOw=
 github.com/aaronland/go-aws-session v0.2.1 h1:sNCuxR1w2ng8fxHsl08AFcAWvZqmN4hmnBbBRNRORd0=
 github.com/aaronland/go-aws-session v0.2.1/go.mod h1:M5imkutLPvwnI1Bb38minI3TCy1eSvwP6odMtCmBzqk=
-github.com/aaronland/go-http-crumb v1.1.5 h1:k+q4gztPXz7B2ly3woSi9hBQ1CAZezea2P9JrnW48ZA=
-github.com/aaronland/go-http-crumb v1.1.5/go.mod h1:nCVE2mH6atzt5mwiXmDSynllHk5/+LhcuTRS5DWIEcA=
-github.com/aaronland/go-http-rewrite v1.1.0 h1:HhsltNyYRnIz2FR+qANZLx2ykiRuNuNK1JgPonKBLHQ=
-github.com/aaronland/go-http-rewrite v1.1.0/go.mod h1:iA9jQBureJrzO6fTzmRLS+fkbAI1Fna71iTb1hP8n3k=
 github.com/aaronland/go-http-sanitize v0.0.8 h1:RRcwJwZtIb0J6xFPgW8a2OkQhMFG/uXkFFOFkCzMeKY=
 github.com/aaronland/go-http-sanitize v0.0.8/go.mod h1:qUi4rzUPcpMntpUFnHK00yQI5vd/Q7x9MFYwX91/ygI=
 github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
@@ -138,8 +134,6 @@ github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfC
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
-github.com/sfomuseum/go-http-fault/v2 v2.1.0 h1:pH0o0DDRDbx4WAKCwnha+Wx+2Qw0Uapa5zvsoy0NjZg=
-github.com/sfomuseum/go-http-fault/v2 v2.1.0/go.mod h1:tzkhs60tMYwf+CbcxeOpM8bfmR7Zi3wL2rA1jKgRh4U=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
