@@ -7,3 +7,4 @@ cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/list-subscriptions cmd/list-subscriptions/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/add-subscriptions cmd/add-subscriptions/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/remove-subscriptions cmd/remove-subscriptions/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/create-dynamodb-tables cmd/create-dynamodb-tables/main.go
