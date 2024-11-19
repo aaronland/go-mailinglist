@@ -11,8 +11,13 @@ import (
 
 func main() {
 
+	// var prefix string
+	
 	client_uri := flag.String("client-uri", "", "...")
 	refresh := flag.Bool("refresh", false, "...")
+
+	// flag.StringVar(&prefix, "prefix", "", "...")
+	
 	flag.Parse()
 
 	ctx := context.Background()
@@ -26,6 +31,7 @@ func main() {
 	opts := &aa_dynamodb.CreateTablesOptions{
 		Tables:  ml_dynamodb.DynamoDBTables,
 		Refresh: *refresh,
+		// Prefix: prefix,
 	}
 
 	err = aa_dynamodb.CreateTables(ctx, client, opts)

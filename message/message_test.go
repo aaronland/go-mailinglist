@@ -1,29 +1,28 @@
-package main
+package message
 
 import (
 	"context"
-	"log"
 	"net/mail"
+	"testing"
 
-	"github.com/aaronland/go-mailinglist/v2/message"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
 )
 
-func main() {
+func TestSendMessages(t *testing.T) {
 
 	ctx := context.Background()
 	s, err := sender.NewStdoutSender(ctx, "stdout://")
 
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("Failed to create sender, %v", err)
 	}
 
 	to, _ := mail.ParseAddress("to@example.com")
 	from, _ := mail.ParseAddress("from@example.com")
 	subject := "This is the subject"
 
-	opts := &message.SendMessageOptions{
+	opts := &SendMessageOptions{
 		Sender:  s,
 		Subject: subject,
 		From:    from,
@@ -33,10 +32,10 @@ func main() {
 	m := gomail.NewMessage()
 	m.SetBody("text/html", "<p>hello world</p>")
 
-	err = message.SendMessage(ctx, opts, m)
+	err = SendMessage(ctx, opts, m)
 
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("Failed to send message, %v", err)
 	}
 
 }
