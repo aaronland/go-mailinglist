@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	_ "log/slog"
-
+	"os"
+	"encoding/json"
+	
 	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
@@ -39,7 +41,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	defer subs_db.Close()
 
 	subs_cb := func(ctx context.Context, sub *subscription.Subscription) error {
-		fmt.Println(sub.Address)
+		enc := json.NewEncoder(os.Stdout)
+		return enc.Encode(sub)
 		return nil
 	}
 

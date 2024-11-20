@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
-
+	_ "log/slog"
+	
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 	aa_docstore "github.com/aaronland/gocloud-docstore"
 	"gocloud.dev/docstore"
@@ -103,6 +104,12 @@ func (db *SubscriptionsDocstoreDatabase) getSubscriptionWithQuery(ctx context.Co
 
 func (db *SubscriptionsDocstoreDatabase) getSubscriptionsWithCallback(ctx context.Context, q *docstore.Query, cb ListSubscriptionsFunc) error {
 
+	// Wut wut wut...
+	// https://github.com/google/go-cloud/issues/2426
+	// https://pkg.go.dev/gocloud.dev/docstore#FieldPath
+	// This only ever yields {"address":"","confirmed":0,"lastmodified":0}
+	// if field paths are "address,created,..."
+	
 	iter := q.Get(ctx)
 	defer iter.Stop()
 

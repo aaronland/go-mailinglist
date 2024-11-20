@@ -50,12 +50,13 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		if opts.Confirmed {
 			now := time.Now()
 			sub.Confirmed = now.Unix()
+			sub.Status = subscription.SUBSCRIPTION_STATUS_ENABLED
 		}
 
 		err = subs_db.AddSubscription(ctx, sub)
 
 		if err != nil {
-			return fmt.Errorf("Failed to add subscription for %s, %w", addr, err)
+			return fmt.Errorf("Failed to add subscription for %s (%s), %w", addr, sub.Address, err)
 		}
 
 		logger.Info("Subscription added", "address", addr)
