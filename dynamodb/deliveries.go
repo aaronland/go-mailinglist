@@ -9,21 +9,21 @@ import (
 var DynamoDBDeliveriesTable = &dynamodb.CreateTableInput{
 	AttributeDefinitions: []types.AttributeDefinition{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			AttributeType: "S",
 		},
 		{
-			AttributeName: aws.String("message_id"),
+			AttributeName: aws.String("MessageId"),
 			AttributeType: "S",
 		},
 	},
 	KeySchema: []types.KeySchemaElement{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			KeyType:       "HASH",
 		},
 		{
-			AttributeName: aws.String("message_id"),
+			AttributeName: aws.String("MessageId"),
 			KeyType:       "RANGE",
 		},
 	},
@@ -32,7 +32,7 @@ var DynamoDBDeliveriesTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("status"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("message_id"),
+					AttributeName: aws.String("MessageId"),
 					KeyType:       "HASH",
 				},
 			},

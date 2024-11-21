@@ -13,10 +13,10 @@ const SUBSCRIPTION_STATUS_BLOCKED int = 3
 
 type Subscription struct {
 	Address      string `json:"address"`
-	Created      int64  `json:"created,omitempty"`
+	Created      int64  `json:"created"`
 	Confirmed    int64  `json:"confirmed"`
 	LastModified int64  `json:"lastmodified"`
-	Status       int    `json:"status,omitempty"`
+	Status       int    `json:"status"`
 }
 
 func NewSubscription(str_addr string) (*Subscription, error) {

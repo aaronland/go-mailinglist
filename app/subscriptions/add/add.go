@@ -7,6 +7,9 @@ import (
 	"log/slog"
 	"time"
 
+	"encoding/json"
+	"os"
+
 	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
@@ -52,6 +55,9 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 			sub.Confirmed = now.Unix()
 			sub.Status = subscription.SUBSCRIPTION_STATUS_ENABLED
 		}
+
+		enc := json.NewEncoder(os.Stdout)
+		enc.Encode(sub)
 
 		err = subs_db.AddSubscription(ctx, sub)
 

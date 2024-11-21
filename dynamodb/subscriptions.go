@@ -9,17 +9,17 @@ import (
 var DynamoDBSubscriptionsTable = &dynamodb.CreateTableInput{
 	AttributeDefinitions: []types.AttributeDefinition{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			AttributeType: "S",
 		},
 		{
-			AttributeName: aws.String("status"),
+			AttributeName: aws.String("Status"),
 			AttributeType: "N",
 		},
 	},
 	KeySchema: []types.KeySchemaElement{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			KeyType:       "HASH",
 		},
 	},
@@ -28,7 +28,7 @@ var DynamoDBSubscriptionsTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("status"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("status"),
+					AttributeName: aws.String("Status"),
 					KeyType:       "HASH",
 				},
 			},

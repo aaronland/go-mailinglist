@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	_ "log/slog"
-	
+
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 	aa_docstore "github.com/aaronland/gocloud-docstore"
 	"gocloud.dev/docstore"
@@ -109,7 +109,7 @@ func (db *SubscriptionsDocstoreDatabase) getSubscriptionsWithCallback(ctx contex
 	// https://pkg.go.dev/gocloud.dev/docstore#FieldPath
 	// This only ever yields {"address":"","confirmed":0,"lastmodified":0}
 	// if field paths are "address,created,..."
-	
+
 	iter := q.Get(ctx)
 	defer iter.Stop()
 

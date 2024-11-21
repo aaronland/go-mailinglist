@@ -9,25 +9,25 @@ import (
 var DynamoDBEventLogsTable = &dynamodb.CreateTableInput{
 	AttributeDefinitions: []types.AttributeDefinition{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			AttributeType: "S",
 		},
 		{
-			AttributeName: aws.String("event"),
+			AttributeName: aws.String("Event"),
 			AttributeType: "N",
 		},
 		{
-			AttributeName: aws.String("created"),
+			AttributeName: aws.String("Created"),
 			AttributeType: "N",
 		},
 	},
 	KeySchema: []types.KeySchemaElement{
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			KeyType:       "HASH",
 		},
 		{
-			AttributeName: aws.String("created"),
+			AttributeName: aws.String("Created"),
 			KeyType:       "RANGE",
 		},
 	},
@@ -36,7 +36,7 @@ var DynamoDBEventLogsTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("address"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("address"),
+					AttributeName: aws.String("Address"),
 					KeyType:       "HASH",
 				},
 			},
@@ -49,7 +49,7 @@ var DynamoDBEventLogsTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("event"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("event"),
+					AttributeName: aws.String("Event"),
 					KeyType:       "HASH",
 				},
 			},

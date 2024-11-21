@@ -2,12 +2,12 @@ package list
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	_ "log/slog"
 	"os"
-	"encoding/json"
-	
+
 	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
 )

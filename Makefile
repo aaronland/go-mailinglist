@@ -18,6 +18,10 @@ local-tables:
 
 local-add:
 	go run -mod $(GOMOD) -ldflags="-s -w" cmd/add-subscriptions/main.go \
-		-subscriptions-database-uri 'awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true' \
+		-subscriptions-database-uri 'awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true' \
 		-address $(ADDRESS) \
 		-confirmed
+
+local-list:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/list-subscriptions/main.go \
+		-subscriptions-database-uri 'awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true'

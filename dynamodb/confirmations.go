@@ -9,21 +9,21 @@ import (
 var DynamoDBConfirmationsTable = &dynamodb.CreateTableInput{
 	AttributeDefinitions: []types.AttributeDefinition{
 		{
-			AttributeName: aws.String("code"),
+			AttributeName: aws.String("Code"),
 			AttributeType: "S",
 		},
 		{
-			AttributeName: aws.String("address"),
+			AttributeName: aws.String("Address"),
 			AttributeType: "S",
 		},
 		{
-			AttributeName: aws.String("created"),
+			AttributeName: aws.String("Created"),
 			AttributeType: "N",
 		},
 	},
 	KeySchema: []types.KeySchemaElement{
 		{
-			AttributeName: aws.String("code"),
+			AttributeName: aws.String("Code"),
 			KeyType:       "HASH",
 		},
 	},
@@ -32,7 +32,7 @@ var DynamoDBConfirmationsTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("address"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("address"),
+					AttributeName: aws.String("Address"),
 					KeyType:       "HASH",
 				},
 			},
@@ -44,7 +44,7 @@ var DynamoDBConfirmationsTable = &dynamodb.CreateTableInput{
 			IndexName: aws.String("created"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("created"),
+					AttributeName: aws.String("Created"),
 					KeyType:       "HASH",
 				},
 			},
