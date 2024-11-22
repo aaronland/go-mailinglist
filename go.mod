@@ -9,6 +9,7 @@ require (
 	github.com/aaronland/go-string v1.0.0
 	github.com/aaronland/gocloud-docstore v0.0.8
 	github.com/aaronland/gomail-sender v1.0.1
+	github.com/aaronland/gomail-sender-ses v1.1.2
 	github.com/aaronland/gomail/v2 v2.0.8
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.37.1
@@ -31,6 +32,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.10.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ses v1.25.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.2 // indirect

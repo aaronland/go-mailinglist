@@ -23,6 +23,9 @@ github.com/aaronland/gocloud-docstore
 # github.com/aaronland/gomail-sender v1.0.1
 ## explicit; go 1.18
 github.com/aaronland/gomail-sender
+# github.com/aaronland/gomail-sender-ses v1.1.2
+## explicit; go 1.22.1
+github.com/aaronland/gomail-sender-ses
 # github.com/aaronland/gomail/v2 v2.0.8
 ## explicit; go 1.16
 github.com/aaronland/gomail/v2
@@ -151,6 +154,11 @@ github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery
 # github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.2
 ## explicit; go 1.21
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url
+# github.com/aws/aws-sdk-go-v2/service/ses v1.25.3
+## explicit; go 1.21
+github.com/aws/aws-sdk-go-v2/service/ses
+github.com/aws/aws-sdk-go-v2/service/ses/internal/endpoints
+github.com/aws/aws-sdk-go-v2/service/ses/types
 # github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3
 ## explicit; go 1.21
 github.com/aws/aws-sdk-go-v2/service/ssm

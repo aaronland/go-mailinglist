@@ -32,3 +32,14 @@ local-status:
 local-list:
 	go run -mod $(GOMOD) -ldflags="-s -w" cmd/list-subscriptions/main.go \
 		-subscriptions-database-uri 'awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true'
+
+local-deliver:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/deliver-message/main.go \
+		-subscriptions-database-uri 'awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true' \
+		-deliveries-database-uri 'awsdynamodb://deliveries?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true' \
+		-eventlogs-database-uri 'awsdynamodb://eventlogs?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true' \
+		-sender-uri stdout:// \
+		-from do-not-reply@localhost \
+		-to $(TO) \
+		-subject $(SUBJECT) \
+		-body $(BODY)	

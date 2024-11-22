@@ -27,6 +27,8 @@ github.com/aaronland/gocloud-docstore v0.0.8 h1:3blGgx5V4XPHDXS80HP6kYPog9LRvK8D
 github.com/aaronland/gocloud-docstore v0.0.8/go.mod h1:JXzNfps81ELs1VIDwwGEx5T5yMZY5fRfDbp+7Jnd+VM=
 github.com/aaronland/gomail-sender v1.0.1 h1:SrXsZmorKgeWWf7O20063GjVQAw7x+/A3w97B4EePAI=
 github.com/aaronland/gomail-sender v1.0.1/go.mod h1:Cl0XMpTMcCKSxbUIlzj61allbbig+Qe3GO0YzLPgASg=
+github.com/aaronland/gomail-sender-ses v1.1.2 h1:n7YBJ31Nu8Sy2tjKjshyI5m7DCjw7f29dnwKv+1QUsw=
+github.com/aaronland/gomail-sender-ses v1.1.2/go.mod h1:cimGNMqtOI/iMChRQLgusktfk2c8UX9YpNDdmitD/u4=
 github.com/aaronland/gomail/v2 v2.0.8 h1:pTHK0/Q7Xctz2/HcG3pa3SH8DS9kNW/f/kmvPPTJmq0=
 github.com/aaronland/gomail/v2 v2.0.8/go.mod h1:EW4vlCrGmTlJm5vu6BJbkATC8xzqicURtJjoWSX0FWM=
 github.com/aws/aws-sdk-go v1.55.5 h1:KKUZBfBoyqy5d3swXyiC7Q76ic40rYcbqH7qjh59kzU=
@@ -57,6 +59,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.10.5 h1:3Y45
 github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.10.5/go.mod h1:CfwEHGkTjYZpkQ/5PvcbEtT7AJlG68KkEvmtwU8z3/U=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.2 h1:s7NA1SOw8q/5c0wr8477yOPp0z+uBaXBnLE0XYb0POA=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.2/go.mod h1:fnjjWyAW/Pj5HYOxl9LJqWtEwS7W2qgcRLWP+uWbss0=
+github.com/aws/aws-sdk-go-v2/service/ses v1.25.3 h1:wcfUsE2nqsXhEj68gxr7MnGXNPcBPKx0RW2DzBVgVlM=
+github.com/aws/aws-sdk-go-v2/service/ses v1.25.3/go.mod h1:6Ul/Ir8oOCsI3dFN0prULK9fvpxP+WTYmlHDkFzaAVA=
 github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3 h1:Ctzev3ppcc46m2FgrLEZhsHMEr1G1lrJcd9Cmoy/QJk=
 github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3/go.mod h1:qs3TBNpFEnVubl0WL3jruj7NJMF1RCAPEPQ1f+fLTBE=
 github.com/aws/aws-sdk-go-v2/service/sso v1.24.2 h1:bSYXVyUzoTHoKalBmwaZxs97HU9DWWI3ehHSAMa7xOk=
