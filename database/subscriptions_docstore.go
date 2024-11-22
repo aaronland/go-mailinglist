@@ -66,7 +66,7 @@ func (db *SubscriptionsDocstoreDatabase) UpdateSubscription(ctx context.Context,
 
 func (db *SubscriptionsDocstoreDatabase) GetSubscriptionWithAddress(ctx context.Context, addr string) (*subscription.Subscription, error) {
 	q := db.collection.Query()
-	q = q.Where("address", "=", addr)
+	q = q.Where("Address", "=", addr)
 	return db.getSubscriptionWithQuery(ctx, q)
 }
 
@@ -77,7 +77,7 @@ func (db *SubscriptionsDocstoreDatabase) ListSubscriptions(ctx context.Context, 
 
 func (db *SubscriptionsDocstoreDatabase) ListSubscriptionsWithStatus(ctx context.Context, status int, cb ListSubscriptionsFunc) error {
 	q := db.collection.Query()
-	q = q.Where("status", "=", status)
+	q = q.Where("Status", "=", status)
 	return db.getSubscriptionsWithCallback(ctx, q, cb)
 }
 

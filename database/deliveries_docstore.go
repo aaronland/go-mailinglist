@@ -61,10 +61,10 @@ func (db *DeliveriesDocstoreDatabase) ListDeliveries(ctx context.Context, cb Lis
 	return db.getDeliveriesWithCallback(ctx, q, cb)
 }
 
-func (db *DeliveriesDocstoreDatabase) GetDeliveryWithAddressAndMessageId(ctx context.Context, addr string, id string) (*delivery.Delivery, error) {
+func (db *DeliveriesDocstoreDatabase) GetDeliveryWithAddressAndMessageId(ctx context.Context, addr string, msg_id string) (*delivery.Delivery, error) {
 	q := db.collection.Query()
-	q.Where("address", "=", addr)
-	q.Where("id", "=", id)
+	q.Where("Address", "=", addr)
+	q.Where("MessageId", "=", msg_id)
 	return db.getDeliveryWithQuery(ctx, q)
 }
 

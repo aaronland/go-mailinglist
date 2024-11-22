@@ -67,7 +67,7 @@ func (db *InvitationsDocstoreDatabase) UpdateInvitation(ctx context.Context, iv 
 
 func (db *InvitationsDocstoreDatabase) GetInvitationWithCode(ctx context.Context, code string) (*invitation.Invitation, error) {
 	q := db.collection.Query()
-	q = q.Where("code", "=", code)
+	q = q.Where("Code", "=", code)
 
 	return db.getInvitationWithQuery(ctx, q)
 }
@@ -75,7 +75,7 @@ func (db *InvitationsDocstoreDatabase) GetInvitationWithCode(ctx context.Context
 func (db *InvitationsDocstoreDatabase) GetInvitationWithInvitee(ctx context.Context, iv string) (*invitation.Invitation, error) {
 
 	q := db.collection.Query()
-	q = q.Where("invitee", "=", iv)
+	q = q.Where("Invitee", "=", iv)
 
 	return db.getInvitationWithQuery(ctx, q)
 }
@@ -83,7 +83,7 @@ func (db *InvitationsDocstoreDatabase) GetInvitationWithInvitee(ctx context.Cont
 func (db *InvitationsDocstoreDatabase) ListInvitationsWithInviter(ctx context.Context, sub *subscription.Subscription, cb ListInvitationsFunc) error {
 
 	q := db.collection.Query()
-	q = q.Where("inviter", "=", sub.Address)
+	q = q.Where("Inviter", "=", sub.Address)
 
 	return db.getInvitationsWithCallback(ctx, q, cb)
 }

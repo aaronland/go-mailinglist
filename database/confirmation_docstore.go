@@ -63,7 +63,7 @@ func (db *ConfirmationsDocstoreDatabase) RemoveConfirmation(ctx context.Context,
 func (db *ConfirmationsDocstoreDatabase) GetConfirmationWithCode(ctx context.Context, code string) (*confirmation.Confirmation, error) {
 
 	q := db.collection.Query()
-	q = q.Where("code", "=", code)
+	q = q.Where("Code", "=", code)
 
 	return db.getConfirmationWithQuery(ctx, q)
 }
