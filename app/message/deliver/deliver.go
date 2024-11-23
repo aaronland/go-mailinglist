@@ -12,6 +12,7 @@ import (
 	"github.com/aaronland/go-mailinglist/v2/delivery"
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 	"github.com/aaronland/go-mailinglist/v2/message"
+	"github.com/aaronland/go-mailinglist/v2/subscription"
 	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
@@ -185,18 +186,45 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return err
 	}
 
-	for _, addr := range opts.To {
+	switch len(opts.To) {
+	case 0:
 
-		sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr)
+		subs_cb := func(ctx context.Context, sub *subscription.Subscription) error {
 
-		if err != nil {
-			return fmt.Errorf("Failed to retrieve subscription for %s, %w", addr, err)
+			err = deliver_message(ctx, sub.Address)
+
+			if err != nil {
+				return fmt.Errorf("Failed to deliver message to %s, %w", sub.Address, err)
+			}
+
+			return nil
 		}
 
-		err = deliver_message(ctx, sub.Address)
+		err := subs_db.ListSubscriptionsWithStatus(ctx, subscription.SUBSCRIPTION_STATUS_ENABLED, subs_cb)
 
 		if err != nil {
-			return fmt.Errorf("Failed to deliver message to %s, %w", sub.Address, err)
+			return fmt.Errorf("Failed to list subscriptions, %w", err)
+		}
+
+	default:
+
+		for _, addr := range opts.To {
+
+			sub, err := subs_db.GetSubscriptionWithAddress(ctx, addr)
+
+			if err != nil {
+				return fmt.Errorf("Failed to retrieve subscription for %s, %w", addr, err)
+			}
+
+			if sub.Status != subscription.SUBSCRIPTION_STATUS_ENABLED {
+				continue
+			}
+			
+			err = deliver_message(ctx, sub.Address)
+
+			if err != nil {
+				return fmt.Errorf("Failed to deliver message to %s, %w", sub.Address, err)
+			}
 		}
 	}
 

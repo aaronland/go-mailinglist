@@ -13,18 +13,30 @@ import (
 const STDIN string = "-"
 
 type RunOptions struct {
+	// A registered aaronland/go-mailinglist/v2/database.SubscriptionsDatabase URI.
 	SubscriptionsDatabaseURI string
-	DeliveriesDatabaseURI    string
-	EventLogsDatabaseURI     string
-	SenderURI                string
-	To                       []string
-	From                     string
-	Subject                  string
-	Body                     string
-	Verbose                  bool
-	ContentType              string
-	MessageId                string
-	Attachments              []string
+	// A registered aaronland/go-mailinglist/v2/database.DeliveriesDatabase URI.
+	DeliveriesDatabaseURI string
+	// A registered aaronland/go-mailinglist/v2/database.EventLogsDatabase URI.
+	EventLogsDatabaseURI string
+	// A registered aaronland/go-mail.Sender URI.
+	SenderURI string
+	// One or more addresses to deliver the message to.
+	To []string
+	// The address delivering the message. If empty then the message will be delivered to all subscribers whose status is "enabled".
+	From string
+	// The subject of the message being delivered.
+	Subject string
+	// The body of the message being delivered.
+	Body string
+	// The content-type of the message body.
+	ContentType string
+	// Optional custom message ID to assign to the message. If empty a unique key will be generated on delivery.
+	MessageId string
+	// Zero or more URIs referencing files to attach to the message. URIs are dereferenced using the aaronland/gocloud-blob/bucket.ParseURI method.
+	Attachments []string
+	// Enable verbose (debug) logging.
+	Verbose bool
 }
 
 func RunOptionsFromFlagSet(fs *flag.FlagSet) (*RunOptions, error) {

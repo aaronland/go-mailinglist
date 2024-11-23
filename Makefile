@@ -40,7 +40,6 @@ local-deliver:
 		-eventlogs-database-uri 'awsdynamodb://eventlogs?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true' \
 		-sender-uri stdout:// \
 		-from do-not-reply@localhost \
-		-to $(TO) \
 		-subject $(SUBJECT) \
 		-body $(BODY) \
 		-attachment file://$(CWD)/fixtures/hellokitty.jpg
