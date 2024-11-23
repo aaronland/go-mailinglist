@@ -42,4 +42,5 @@ local-deliver:
 		-from do-not-reply@localhost \
 		-to $(TO) \
 		-subject $(SUBJECT) \
-		-body $(BODY)	
+		-body $(BODY) \
+		-attachment $(CWD)/fixtures/hellokitty.jpg

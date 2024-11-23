@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/mail"
+	"os"
 	"time"
 
 	"github.com/aaronland/go-mailinglist/v2/database"
@@ -80,7 +81,18 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	msg.SetBody("text/plain", opts.Body)
 
-	// Something something something... attachment(s)
+	for _, uri := range opts.Attachments {
+
+		// Something something gocloud.dev/blob.Bucket...
+		r, err := os.Open(uri)
+
+		if err != nil {
+			return fmt.Errorf("Failed to open attachement (%s), %w", uri, err)
+		}
+
+		defer r.Close()
+		msg.EmbedReader(uri, r)
+	}
 
 	deliver_message := func(ctx context.Context, to string) error {
 

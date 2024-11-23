@@ -16,6 +16,7 @@ type RunOptions struct {
 	Subject                  string
 	Body                     string
 	Verbose                  bool
+	Attachments              []string
 }
 
 func RunOptionsFromFlagSet(fs *flag.FlagSet) (*RunOptions, error) {
@@ -32,6 +33,7 @@ func RunOptionsFromFlagSet(fs *flag.FlagSet) (*RunOptions, error) {
 		Subject:                  subject,
 		Body:                     body,
 		Verbose:                  verbose,
+		Attachments:              attachments,
 	}
 
 	return opts, nil

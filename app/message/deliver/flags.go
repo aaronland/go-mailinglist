@@ -19,6 +19,8 @@ var from string
 var subject string
 var body string
 
+var attachments multi.MultiString
+
 var verbose bool
 
 func DefaultFlagSet() *flag.FlagSet {
@@ -37,5 +39,6 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&subject, "subject", "", "The subject of the message being delivered.")
 	fs.StringVar(&body, "body", "", "The body of the message being delivered.")
 
+	fs.Var(&attachments, "attachment", "...")
 	return fs
 }
