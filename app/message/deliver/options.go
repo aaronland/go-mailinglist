@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/sfomuseum/go-flags/flagset"
 )
 
@@ -22,6 +23,7 @@ type RunOptions struct {
 	Body                     string
 	Verbose                  bool
 	ContentType              string
+	MessageId                string
 	Attachments              []string
 }
 
@@ -38,6 +40,7 @@ func RunOptionsFromFlagSet(fs *flag.FlagSet) (*RunOptions, error) {
 		From:                     from,
 		Subject:                  subject,
 		Body:                     body,
+		MessageId:                message_id,
 		ContentType:              content_type,
 		Attachments:              attachments,
 		Verbose:                  verbose,
@@ -52,6 +55,12 @@ func RunOptionsFromFlagSet(fs *flag.FlagSet) (*RunOptions, error) {
 		}
 
 		opts.Body = string(body)
+	}
+
+	if opts.MessageId == "" {
+
+		guid := uuid.New()
+		opts.MessageId = guid.String()
 	}
 
 	return opts, nil

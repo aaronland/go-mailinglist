@@ -19,6 +19,7 @@ var from string
 var subject string
 var body string
 var content_type string
+var message_id string
 
 var attachments multi.MultiString
 
@@ -40,6 +41,7 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&subject, "subject", "", "The subject of the message being delivered.")
 	fs.StringVar(&body, "body", "", "The body of the message being delivered.")
 	fs.StringVar(&content_type, "content-type", "text/plain", "The content-type of the message body.")
+	fs.StringVar(&message_id, "message-id", "", "Optional custom message ID to assign to the message. If empty a unique key will be generated on delivery.")
 
 	fs.Var(&attachments, "attachment", "Zero or more URIs referencing files to attach to the message.")
 	return fs

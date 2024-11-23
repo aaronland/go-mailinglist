@@ -2,15 +2,10 @@ package deliver
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"log/slog"
 	"net/mail"
-	"net/url"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/aaronland/go-mailinglist/v2/database"
@@ -39,8 +34,6 @@ func RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 }
 
 func RunWithOptions(ctx context.Context, opts *RunOptions) error {
-
-	logger := slog.Default()
 
 	subs_db, err := database.NewSubscriptionsDatabase(ctx, opts.SubscriptionsDatabaseURI)
 
@@ -78,76 +71,20 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Invalid from address, %w", err)
 	}
 
-	// TBD...
-
-	hash := sha256.Sum256([]byte(opts.Body))
-	msg_id := hex.EncodeToString(hash[:])
-
 	// https://pkg.go.dev/github.com/aaronland/gomail/v2#Message
 
 	msg := gomail.NewMessage()
-	msg.SetHeader("X-MailingList-Id", msg_id)
+	msg.SetHeader("X-MailingList-Id", opts.MessageId)
 
 	msg.SetBody(opts.ContentType, opts.Body)
 
 	for _, uri := range opts.Attachments {
 
-		// START OF put me in aaronland/gocloud-blob
-
-		u, err := url.Parse(uri)
+		bucket_uri, bucket_key, err := bucket.ParseURI(uri)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to derive bucket URI and key from attachment, %w", err)
 		}
-
-		var bucket_uri string
-		var bucket_key string
-
-		if u.Scheme == "" {
-
-			path := u.Path
-			abs_path, err := filepath.Abs(path)
-
-			if err != nil {
-				return err
-			}
-
-			root := filepath.Dir(abs_path)
-			base := filepath.Base(abs_path)
-
-			root = strings.Trim(root, "/")
-			root = fmt.Sprintf("%s/", root)
-
-			q := u.Query()
-			q.Set("prefix", root)
-
-			u.Scheme = "file"
-			u.Host = u.Host
-			u.Path = "/"
-
-			u.RawQuery = q.Encode()
-
-			bucket_uri = u.String()
-			bucket_key = base
-
-		} else {
-
-			path := u.Path
-			root := filepath.Dir(path)
-			base := filepath.Base(path)
-
-			root = strings.TrimRight(root, "/")
-			root = fmt.Sprintf("%s/", root)
-
-			u.Path = root
-
-			bucket_uri = u.String()
-			bucket_key = base
-		}
-
-		// logger.Debug("Parse attachment URI", "source", uri, "bucket", bucket_uri, "key", bucket_key)
-
-		// END OF put me in aaronland/gocloud-blob
 
 		b, err := bucket.OpenBucket(ctx, bucket_uri)
 
@@ -164,6 +101,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		}
 
 		defer r.Close()
+
 		msg.EmbedReader(uri, r)
 	}
 
@@ -171,7 +109,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 		logger := slog.Default()
 		logger = logger.With("to", to)
-		logger = logger.With("message id", msg_id)
+		logger = logger.With("message id", opts.MessageId)
 
 		to_addr, err := mail.ParseAddress(to)
 
@@ -200,12 +138,12 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 			}
 		}()
 
-		d, err := deliveries_db.GetDeliveryWithAddressAndMessageId(ctx, to, msg_id)
+		d, err := deliveries_db.GetDeliveryWithAddressAndMessageId(ctx, to, opts.MessageId)
 
 		if err != nil && !database.IsNotExist(err) {
 			event_status = eventlog.EVENTLOG_SEND_FAIL_EVENT
 			event_message = err.Error()
-			return fmt.Errorf("Failed to retrieve delivery for %s (%s), %w", to, msg_id, err)
+			return fmt.Errorf("Failed to retrieve delivery for %s (%s), %w", to, opts.MessageId, err)
 		}
 
 		if d != nil {
@@ -232,7 +170,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		now := time.Now()
 
 		new_d := &delivery.Delivery{
-			MessageId: msg_id,
+			MessageId: opts.MessageId,
 			Address:   to,
 			Delivered: now.Unix(),
 		}
