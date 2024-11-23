@@ -22,14 +22,10 @@ var DynamoDBDeliveriesTable = &dynamodb.CreateTableInput{
 			AttributeName: aws.String("Address"),
 			KeyType:       "HASH",
 		},
-		{
-			AttributeName: aws.String("MessageId"),
-			KeyType:       "RANGE",
-		},
 	},
 	GlobalSecondaryIndexes: []types.GlobalSecondaryIndex{
 		{
-			IndexName: aws.String("status"),
+			IndexName: aws.String("message_id"),
 			KeySchema: []types.KeySchemaElement{
 				{
 					AttributeName: aws.String("MessageId"),

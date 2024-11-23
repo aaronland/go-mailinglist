@@ -63,8 +63,8 @@ func (db *DeliveriesDocstoreDatabase) ListDeliveries(ctx context.Context, cb Lis
 
 func (db *DeliveriesDocstoreDatabase) GetDeliveryWithAddressAndMessageId(ctx context.Context, addr string, msg_id string) (*delivery.Delivery, error) {
 	q := db.collection.Query()
-	q.Where("Address", "=", addr)
 	q.Where("MessageId", "=", msg_id)
+	q.Where("Address", "=", addr)
 	return db.getDeliveryWithQuery(ctx, q)
 }
 
