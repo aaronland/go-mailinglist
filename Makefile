@@ -43,4 +43,4 @@ local-deliver:
 		-to $(TO) \
 		-subject $(SUBJECT) \
 		-body $(BODY) \
-		-attachment $(CWD)/fixtures/hellokitty.jpg
+		-attachment file://$(CWD)/fixtures/hellokitty.jpg

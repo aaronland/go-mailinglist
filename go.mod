@@ -7,6 +7,7 @@ require (
 	github.com/aaronland/go-http-sanitize v0.0.8
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/go-string v1.0.0
+	github.com/aaronland/gocloud-blob v0.3.1
 	github.com/aaronland/gocloud-docstore v0.0.8
 	github.com/aaronland/gomail-sender v1.0.1
 	github.com/aaronland/gomail-sender-ses v1.1.2
@@ -21,17 +22,23 @@ require (
 	github.com/aaronland/go-aws-auth v1.6.5 // indirect
 	github.com/aaronland/go-aws-session v0.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.55.5 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.4 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.39 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.41 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.17 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.24 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.24 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.1 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.26.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/iam v1.36.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.3.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.10.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.17.16 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.59.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ses v1.25.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.2 // indirect
@@ -44,6 +51,7 @@ require (
 	github.com/google/wire v0.6.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.28.0 // indirect

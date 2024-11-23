@@ -8,13 +8,16 @@ import (
 	"fmt"
 	"log/slog"
 	"net/mail"
-	"os"
+	"net/url"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/aaronland/go-mailinglist/v2/database"
 	"github.com/aaronland/go-mailinglist/v2/delivery"
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 	"github.com/aaronland/go-mailinglist/v2/message"
+	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
 )
@@ -36,6 +39,8 @@ func RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 }
 
 func RunWithOptions(ctx context.Context, opts *RunOptions) error {
+
+	logger := slog.Default()
 
 	subs_db, err := database.NewSubscriptionsDatabase(ctx, opts.SubscriptionsDatabaseURI)
 
@@ -73,18 +78,86 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Invalid from address, %w", err)
 	}
 
+	// TBD...
+
 	hash := sha256.Sum256([]byte(opts.Body))
 	msg_id := hex.EncodeToString(hash[:])
+
+	// https://pkg.go.dev/github.com/aaronland/gomail/v2#Message
 
 	msg := gomail.NewMessage()
 	msg.SetHeader("X-MailingList-Id", msg_id)
 
-	msg.SetBody("text/plain", opts.Body)
+	msg.SetBody(opts.ContentType, opts.Body)
 
 	for _, uri := range opts.Attachments {
 
-		// Something something gocloud.dev/blob.Bucket...
-		r, err := os.Open(uri)
+		// START OF put me in aaronland/gocloud-blob
+
+		u, err := url.Parse(uri)
+
+		if err != nil {
+			return err
+		}
+
+		var bucket_uri string
+		var bucket_key string
+
+		if u.Scheme == "" {
+
+			path := u.Path
+			abs_path, err := filepath.Abs(path)
+
+			if err != nil {
+				return err
+			}
+
+			root := filepath.Dir(abs_path)
+			base := filepath.Base(abs_path)
+
+			root = strings.Trim(root, "/")
+			root = fmt.Sprintf("%s/", root)
+
+			q := u.Query()
+			q.Set("prefix", root)
+
+			u.Scheme = "file"
+			u.Host = u.Host
+			u.Path = "/"
+
+			u.RawQuery = q.Encode()
+
+			bucket_uri = u.String()
+			bucket_key = base
+
+		} else {
+
+			path := u.Path
+			root := filepath.Dir(path)
+			base := filepath.Base(path)
+
+			root = strings.TrimRight(root, "/")
+			root = fmt.Sprintf("%s/", root)
+
+			u.Path = root
+
+			bucket_uri = u.String()
+			bucket_key = base
+		}
+
+		// logger.Debug("Parse attachment URI", "source", uri, "bucket", bucket_uri, "key", bucket_key)
+
+		// END OF put me in aaronland/gocloud-blob
+
+		b, err := bucket.OpenBucket(ctx, bucket_uri)
+
+		if err != nil {
+			return err
+		}
+
+		defer b.Close()
+
+		r, err := b.NewReader(ctx, bucket_key, nil)
 
 		if err != nil {
 			return fmt.Errorf("Failed to open attachement (%s), %w", uri, err)
