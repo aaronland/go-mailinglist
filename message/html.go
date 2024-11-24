@@ -3,8 +3,9 @@ package message
 import (
 	"bufio"
 	"bytes"
-	"github.com/aaronland/gomail"
 	html_template "html/template"
+
+	"github.com/aaronland/gomail/v2"
 )
 
 func NewMessageFromHTMLTemplate(t *html_template.Template, vars interface{}) (*gomail.Message, error) {

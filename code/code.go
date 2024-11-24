@@ -3,8 +3,9 @@ package code
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/aaronland/go-string/random"
 	"time"
+
+	"github.com/aaronland/go-string/random"
 )
 
 func NewSecretCode() (string, error) {

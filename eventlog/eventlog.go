@@ -1,8 +1,9 @@
 package eventlog
 
 import (
-	"github.com/aaronland/go-mailinglist/subscription"
 	"time"
+
+	"github.com/aaronland/go-mailinglist/v2/subscription"
 )
 
 const EVENTLOG_CUSTOM_EVENT int = 0
@@ -17,6 +18,7 @@ const EVENTLOG_SEND_FAIL_EVENT int = 8
 const EVENTLOG_CONFIRM_EVENT int = 9
 const EVENTLOG_INVITE_REQUEST_EVENT = 10
 const EVENTLOG_INVITE_ACCEPT_EVENT = 11
+const EVENTLOG_SEND_DUPLICATE_EVENT int = 12
 
 type EventLog struct {
 	Address string `json:"address"`

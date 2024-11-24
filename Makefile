@@ -1,27 +1,54 @@
 CWD=$(shell pwd)
 
-go-bindata:
-	mkdir -p cmd/go-bindata
-	mkdir -p cmd/go-bindata-assetfs
-	curl -s -o cmd/go-bindata/main.go https://raw.githubusercontent.com/whosonfirst/go-bindata/master/cmd/go-bindata/main.go
-	curl -s -o cmd/go-bindata-assetfs/main.go https://raw.githubusercontent.com/whosonfirst/go-bindata-assetfs/master/cmd/go-bindata-assetfs/main.go
+GOMOD=$(shell test -f "go.work" && echo "readonly" || echo "vendor")
+LDFLAGS=-s -w
 
-devel:
-	go run -mod vendor cmd/subscriptiond/main.go -devel -templates 'templates/html/*.html'
+LOCAL_SUBSCRIPTIONS_DATABASE_URI=awsdynamodb://subscriptions?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true
+LOCAL_DELIVERIES_DATABASE_URI=awsdynamodb://deliveries?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true
+LOCAL_EVENTLOGS_DATABASE_URI=awsdynamodb://eventlogs?region=localhost&credentials=anon:&local=true&partition_key=Address&allow_scans=true
 
-tools:
-	go build -mod vendor -o bin/subscribe cmd/subscribe/main.go
-	go build -mod vendor -o bin/subscriptiond cmd/subscriptiond/main.go
+LOCAL_SENDER_URI=stdout://
+LOCAL_DELIVER_FROM=do-not-reply@localhost
+LOCAL_ATTACHMENT=$(CWD)/fixtures/hellokitty.jpg
 
-bake: bake-static bake-templates
+cli:
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/list-subscriptions cmd/list-subscriptions/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/add-subscriptions cmd/add-subscriptions/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/remove-subscriptions cmd/remove-subscriptions/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/set-subscription-status cmd/set-subscription-status/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/create-dynamodb-tables cmd/create-dynamodb-tables/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/deliver-mail cmd/deliver-message/main.go
 
-bake-static:
-	go build -o bin/go-bindata cmd/go-bindata/main.go
-	go build -o bin/go-bindata-assetfs cmd/go-bindata-assetfs/main.go
-	rm -f www/static/*~ www/static/css/*~ www/static/javascript/*~
-	@PATH=$(PATH):$(CWD)/bin bin/go-bindata-assetfs -pkg http static/javascript static/css
+# docker run --rm -it -p 8000:8000 amazon/dynamodb-local
 
-bake-templates:
-	mv bindata.go http/assetfs.go
-	rm -rf templates/html/*~
-	bin/go-bindata -pkg templates -o assets/templates/html.go templates/html
+local-tables:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/create-dynamodb-tables/main.go \
+		-refresh \
+		-client-uri 'aws://?region=localhost&credentials=anon:&local=true'
+
+local-add:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/add-subscriptions/main.go \
+		-subscriptions-database-uri '$(LOCAL_SUBSCRIPTIONS_DATABASE_URI)' \
+		-address $(ADDRESS) \
+		-confirmed
+
+local-status:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/set-subscription-status/main.go \
+		-subscriptions-database-uri '$(LOCAL_SUBSCRIPTIONS_DATABASE_URI)' \
+		-address $(ADDRESS) \
+		-status $(STATUS)
+
+local-list:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/list-subscriptions/main.go \
+		-subscriptions-database-uri '$(LOCAL_SUBSCRIPTIONS_DATABASE_URI)'
+
+local-deliver:
+	go run -mod $(GOMOD) -ldflags="-s -w" cmd/deliver-message/main.go \
+		-subscriptions-database-uri '$(LOCAL_SUBSCRIPTIONS_DATABASE_URI)' \
+		-deliveries-database-uri '$(LOCAL_DELIVERIES_DATABASE_URI)' \
+		-eventlogs-database-uri '$(LOCAL_EVENTLOGS_DATABASE_URI)' \
+		-sender-uri $(LOCAL_SENDER_URI) \
+		-from $(LOCAL_DELIVER_FROM) \
+		-subject $(SUBJECT) \
+		-body $(BODY) \
+		-attachment $(LOCAL_ATTACHMENT)
