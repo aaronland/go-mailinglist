@@ -90,7 +90,7 @@ go run -mod vendor -ldflags="-s -w" cmd/deliver-message/main.go \
 		-from do-not-reply@localhost \
 		-subject  \
 		-body  \
-		-attachment /Users/asc/code/go-mailinglist/fixtures/hellokitty.jpg
+		-attachment /usr/local/go-mailinglist/fixtures/hellokitty.jpg
 Mime-Version: 1.0
 Date: Sun, 24 Nov 2024 09:44:11 -0800
 X-MailingList-Id: 057c4bf7-f8b1-41a4-be10-fbfd9ca85088
