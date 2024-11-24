@@ -10,7 +10,7 @@ require (
 	github.com/aaronland/gocloud-blob v0.4.0
 	github.com/aaronland/gocloud-docstore v0.0.8
 	github.com/aaronland/gomail-sender v1.0.1
-	github.com/aaronland/gomail-sender-ses v1.1.2
+	github.com/aaronland/gomail-sender-ses/v2 v2.0.0
 	github.com/aaronland/gomail/v2 v2.0.8
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.37.1
@@ -40,7 +40,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.68.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ses v1.25.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.38.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.55.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.4 // indirect
