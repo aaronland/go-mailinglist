@@ -34,7 +34,7 @@ So far this package has been tested with and enables support for loading attachm
 
 ## Example
 
-The following example assumes a [local instance of DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)  running from a [Docker](https://www.docker.com/) container and the command line tools described below. For examepl:
+The following example assumes a [local instance of DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)  running from a [Docker](https://www.docker.com/) container and the command line tools described below. For example:
 
 ```
 $> docker run --rm -it -p 8000:8000 amazon/dynamodb-local
