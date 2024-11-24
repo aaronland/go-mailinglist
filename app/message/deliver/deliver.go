@@ -219,7 +219,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 			if sub.Status != subscription.SUBSCRIPTION_STATUS_ENABLED {
 				continue
 			}
-			
+
 			err = deliver_message(ctx, sub.Address)
 
 			if err != nil {
