@@ -15,9 +15,9 @@ func main() {
 	var refresh bool
 	var prefix string
 
-	flag.StringVar(&client_uri, "client-uri", "aws://?region=localhost&credentials=anon:&local=true", "...")
-	flag.BoolVar(&refresh, "refresh", false, "...")
-	flag.StringVar(&prefix, "prefix", "", "Optional string to prepend to all table names")
+	flag.StringVar(&client_uri, "client-uri", "aws://?region=localhost&credentials=anon:&local=true", "A registered aaronland/go-aws-dynamodb URI.")
+	flag.BoolVar(&refresh, "refresh", false, "Refresh (delete and recreate) tables that have already been created.")
+	flag.StringVar(&prefix, "prefix", "", "Optional string to prepend to all table names.")
 
 	flag.Parse()
 

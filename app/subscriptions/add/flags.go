@@ -20,7 +20,7 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&subscriptions_database_uri, "subscriptions-database-uri", "", "A registered aaronland/go-mailinglist/v2/database.SubscriptionsDatabase URI.")
 	fs.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
 
-	fs.BoolVar(&confirmed, "confirmed", false, "...")
+	fs.BoolVar(&confirmed, "confirmed", false, "A boolean flag indicating whether the subscriber is confirmed.")
 	fs.Var(&addresses, "address", "One or more addresses to add as subscriptions")
 	return fs
 }

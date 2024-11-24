@@ -9,14 +9,15 @@ LOCAL_EVENTLOGS_DATABASE_URI=awsdynamodb://eventlogs?region=localhost&credential
 
 LOCAL_SENDER_URI=stdout://
 LOCAL_DELIVER_FROM=do-not-reply@localhost
-LOCAL_ATTACHMENT=file://$(CWD)/fixtures/hellokitty.jpg
+LOCAL_ATTACHMENT=$(CWD)/fixtures/hellokitty.jpg
 
 cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/list-subscriptions cmd/list-subscriptions/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/add-subscriptions cmd/add-subscriptions/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/remove-subscriptions cmd/remove-subscriptions/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/status-subscriptions cmd/set-subscription-status/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/set-subscription-status cmd/set-subscription-status/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/create-dynamodb-tables cmd/create-dynamodb-tables/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)"  -o bin/deliver-mail cmd/deliver-message/main.go
 
 # docker run --rm -it -p 8000:8000 amazon/dynamodb-local
 
