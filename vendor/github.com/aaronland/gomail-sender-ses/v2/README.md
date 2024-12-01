@@ -1,35 +1,18 @@
 # gomail-sender-ses
 
-<<<<<<< HEAD
 Go package to implement the `gomail.Sender` interface using the AWS Simple Email Service (SES).
 
 ## Documentation
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/aaronland/gomail-sender-ses.svg)](https://pkg.go.dev/github.com/aaronland/gomail-sender-ses)
-=======
-Go package to implement the `gomail.Sender` interface using the AWS Simple Email Service (sesv2).
-
-## Documentation
-
 Documentation is incomplete.
->>>>>>> 07006fef2d07036f0ea3fccd9d63e496fad95c73
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/aaronland/gomail-sender-ses.svg)](https://pkg.go.dev/github.com/aaronland/gomail-sender-ses)
 
 ## Example
 
 ```
-<<<<<<< HEAD
 package main
 
-import (
-	_ "github.com/aaronland/gomail-sender-ses"
-)
-
-import (
-	"github.com/aaronland/gomail-sender"
-	"github.com/aaronland/gomail/v2"
-	"flag"
-	"context"
-=======
 import(
 	"context"
 	"fmt"
@@ -38,12 +21,10 @@ import(
 	"github.com/aaronland/gomail-sender"
 	_ "github.com/aaronland/gomail-sender-ses/v2"	
 	"github.com/aaronland/gomail/v2"	
->>>>>>> 07006fef2d07036f0ea3fccd9d63e496fad95c73
 )
 
 func main() {
 
-<<<<<<< HEAD
 	sender_uri := flag.String("sender-uri", "", "A valid aaronland/gomail-sender URI")
 	from := flag.String("from", "", "A valid From: address (that has been registered with SES)")
 	to := flag.String("to", "", "A valid To: address")
@@ -156,4 +137,3 @@ aws:///us-east-1?credentials=iam:
 * https://github.com/aaronland/gomail-sender
 * https://github.com/aaronland/gomail/v2
 * https://github.com/aaronland/go-aws-auth
->>>>>>> 07006fef2d07036f0ea3fccd9d63e496fad95c73

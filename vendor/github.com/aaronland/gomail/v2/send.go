@@ -112,5 +112,7 @@ func parseAddress(field string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("gomail: invalid address %q: %v", field, err)
 	}
-	return addr.Address, nil
+	// This was the default but it strips the human-readable name from the header
+	// return addr.Address, nil
+	return addr.String(), nil
 }

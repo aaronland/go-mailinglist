@@ -10,8 +10,8 @@ require (
 	github.com/aaronland/gocloud-blob v0.4.0
 	github.com/aaronland/gocloud-docstore v0.0.8
 	github.com/aaronland/gomail-sender v1.0.1
-	github.com/aaronland/gomail-sender-ses/v2 v2.0.0
-	github.com/aaronland/gomail/v2 v2.0.8
+	github.com/aaronland/gomail-sender-ses/v2 v2.0.2
+	github.com/aaronland/gomail/v2 v2.0.9
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.37.1
 	github.com/google/uuid v1.6.0

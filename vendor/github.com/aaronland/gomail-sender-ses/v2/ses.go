@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	_ "fmt"
+	"fmt"
 	"io"
 	"net/url"
 
@@ -42,7 +42,25 @@ func NewSESSender(ctx context.Context, uri string) (gomail.Sender, error) {
 
 	q := u.Query()
 
-	config_uri := q.Get("config-uri")
+	var config_uri string
+
+	if q.Has("config-uri") {
+		config_uri = q.Get("config-uri")
+	} else if q.Has("region") && q.Has("credentials") {
+
+		cfg_q := url.Values{}
+		cfg_q.Set("region", q.Get("region"))
+		cfg_q.Set("credentials", q.Get("credentials"))
+
+		cfg_u := url.URL{}
+		cfg_u.Scheme = "aws"
+		cfg_u.RawQuery = cfg_q.Encode()
+
+		config_uri = cfg_u.String()
+
+	} else {
+		return nil, fmt.Errorf("Insufficient credential parameters")
+	}
 
 	cfg, err := auth.NewConfig(ctx, config_uri)
 
