@@ -16,20 +16,32 @@ var DynamoDBDeliveriesTable = &dynamodb.CreateTableInput{
 			AttributeName: aws.String("MessageId"),
 			AttributeType: "S",
 		},
+		{
+			AttributeName: aws.String("Delivered"),
+			AttributeType: "N",
+		},
 	},
 	KeySchema: []types.KeySchemaElement{
 		{
 			AttributeName: aws.String("Address"),
 			KeyType:       "HASH",
 		},
+		{
+			AttributeName: aws.String("Delivered"),
+			KeyType:       "RANGE",
+		},
 	},
 	GlobalSecondaryIndexes: []types.GlobalSecondaryIndex{
 		{
-			IndexName: aws.String("message_id"),
+			IndexName: aws.String("address_message"),
 			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("MessageId"),
+					AttributeName: aws.String("Address"),
 					KeyType:       "HASH",
+				},
+				{
+					AttributeName: aws.String("MessageId"),
+					KeyType:       "RANGE",
 				},
 			},
 			Projection: &types.Projection{
