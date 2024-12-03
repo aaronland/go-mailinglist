@@ -83,7 +83,7 @@ func (db *DeliveriesDocstoreDatabase) getDeliveryWithQuery(ctx context.Context, 
 	if err == io.EOF {
 		return nil, NoRecordError("")
 	} else if err != nil {
-		return nil, fmt.Errorf("Failed to interate, %w", err)
+		return nil, fmt.Errorf("Failed to iterate, %w", err)
 	} else {
 		return &d, nil
 	}
@@ -102,7 +102,7 @@ func (db *DeliveriesDocstoreDatabase) getDeliveriesWithCallback(ctx context.Cont
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return fmt.Errorf("Failed to interate, %w", err)
+			return fmt.Errorf("Failed to iterate, %w", err)
 		} else {
 
 			err := cb(ctx, &d)

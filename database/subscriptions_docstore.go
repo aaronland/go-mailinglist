@@ -96,7 +96,7 @@ func (db *SubscriptionsDocstoreDatabase) getSubscriptionWithQuery(ctx context.Co
 	if err == io.EOF {
 		return nil, NoRecordError("")
 	} else if err != nil {
-		return nil, fmt.Errorf("Failed to interate, %w", err)
+		return nil, fmt.Errorf("Failed to iterate, %w", err)
 	} else {
 		return &s, nil
 	}
@@ -121,7 +121,7 @@ func (db *SubscriptionsDocstoreDatabase) getSubscriptionsWithCallback(ctx contex
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return fmt.Errorf("Failed to interate, %w", err)
+			return fmt.Errorf("Failed to iterate, %w", err)
 		} else {
 
 			err := cb(ctx, &s)
