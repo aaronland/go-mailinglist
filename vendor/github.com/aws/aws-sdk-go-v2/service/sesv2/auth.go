@@ -12,10 +12,16 @@ import (
 	"github.com/aws/smithy-go/middleware"
 	"github.com/aws/smithy-go/tracing"
 	smithyhttp "github.com/aws/smithy-go/transport/http"
+	"slices"
+	"strings"
 )
 
 func bindAuthParamsRegion(_ interface{}, params *AuthResolverParameters, _ interface{}, options Options) {
 	params.Region = options.Region
+}
+
+func bindAuthEndpointParams(ctx context.Context, params *AuthResolverParameters, input interface{}, options Options) {
+	params.endpointParams = bindEndpointParams(ctx, input, options)
 }
 
 type setLegacyContextSigningOptionsMiddleware struct {
@@ -88,6 +94,10 @@ type AuthResolverParameters struct {
 	// The name of the operation being invoked.
 	Operation string
 
+	// The endpoint resolver parameters for this operation. This service's default
+	// resolver delegates to endpoint rules.
+	endpointParams *EndpointParameters
+
 	// The region in which the operation is being invoked.
 	Region string
 }
@@ -97,6 +107,7 @@ func bindAuthResolverParams(ctx context.Context, operation string, input interfa
 		Operation: operation,
 	}
 
+	bindAuthEndpointParams(ctx, params, input, options)
 	bindAuthParamsRegion(ctx, params, input, options)
 
 	return params
@@ -129,6 +140,16 @@ func serviceAuthOptions(params *AuthResolverParameters) []*smithyauth.Option {
 				var props smithy.Properties
 				smithyhttp.SetSigV4SigningName(&props, "ses")
 				smithyhttp.SetSigV4SigningRegion(&props, params.Region)
+				return props
+			}(),
+		},
+
+		{
+			SchemeID: smithyauth.SchemeIDSigV4A,
+			SignerProperties: func() smithy.Properties {
+				var props smithy.Properties
+				smithyhttp.SetSigV4ASigningName(&props, "ses")
+				smithyhttp.SetSigV4ASigningRegions(&props, []string{params.Region})
 				return props
 			}(),
 		},
@@ -169,7 +190,8 @@ func (m *resolveAuthSchemeMiddleware) HandleFinalize(ctx context.Context, in mid
 }
 
 func (m *resolveAuthSchemeMiddleware) selectScheme(options []*smithyauth.Option) (*resolvedAuthScheme, bool) {
-	for _, option := range options {
+	sorted := sortAuthOptions(options, m.options.AuthSchemePreference)
+	for _, option := range sorted {
 		if option.SchemeID == smithyauth.SchemeIDAnonymous {
 			return newResolvedAuthScheme(smithyhttp.NewAnonymousScheme(), option), true
 		}
@@ -186,6 +208,29 @@ func (m *resolveAuthSchemeMiddleware) selectScheme(options []*smithyauth.Option)
 	}
 
 	return nil, false
+}
+
+func sortAuthOptions(options []*smithyauth.Option, preferred []string) []*smithyauth.Option {
+	byPriority := make([]*smithyauth.Option, 0, len(options))
+	for _, prefName := range preferred {
+		for _, option := range options {
+			optName := option.SchemeID
+			if parts := strings.Split(option.SchemeID, "#"); len(parts) == 2 {
+				optName = parts[1]
+			}
+			if prefName == optName {
+				byPriority = append(byPriority, option)
+			}
+		}
+	}
+	for _, option := range options {
+		if !slices.ContainsFunc(byPriority, func(o *smithyauth.Option) bool {
+			return o.SchemeID == option.SchemeID
+		}) {
+			byPriority = append(byPriority, option)
+		}
+	}
+	return byPriority
 }
 
 type resolvedAuthSchemeKey struct{}

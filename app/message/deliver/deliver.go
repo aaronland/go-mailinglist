@@ -13,7 +13,7 @@ import (
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
 	"github.com/aaronland/go-mailinglist/v2/message"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
-	"github.com/aaronland/gocloud-blob/bucket"
+	"github.com/aaronland/gocloud/blob/bucket"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
 )
@@ -165,7 +165,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		if err != nil {
 			event_status = eventlog.EVENTLOG_SEND_FAIL_EVENT
 			event_message = err.Error()
-			return fmt.Errorf("Failed to deliver message to %s, %w", err)
+			return fmt.Errorf("Failed to deliver message to %s, %w", to_addr, err)
 		}
 
 		now := time.Now()

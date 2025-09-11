@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/aaronland/gocloud-docstore"
+	_ "github.com/aaronland/gocloud/blob/s3"
+	_ "github.com/aaronland/gocloud/docstore"
 	_ "github.com/aaronland/gomail-sender-ses/v2"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/s3blob"

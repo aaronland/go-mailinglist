@@ -10,17 +10,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/aaronland/go-http-bootstrap"
-	"github.com/aaronland/go-http-crumb"
-	"github.com/aaronland/go-mailinglist"
-	"github.com/aaronland/go-mailinglist/assets/templates"
-	"github.com/aaronland/go-mailinglist/http"
-	"github.com/aaronland/go-mailinglist/server"
-	"github.com/aaronland/go-string/random"
-	"github.com/aaronland/gocloud-runtimevar-string"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
-	_ "gocloud.dev/runtimevar/constantvar"
-	_ "gocloud.dev/runtimevar/filevar"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -30,6 +19,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	_ "gocloud.dev/runtimevar/constantvar"
+	_ "gocloud.dev/runtimevar/filevar"
+
+	"github.com/aaronland/go-http/v3/bootstrap"
+	"github.com/aaronland/go-http/v3/crumb"
+	"github.com/aaronland/go-mailinglist"
+	"github.com/aaronland/go-mailinglist/assets/templates"
+	"github.com/aaronland/go-mailinglist/http"
+	"github.com/aaronland/go-mailinglist/server"
+	"github.com/aaronland/go-string/random"
+	"github.com/aaronland/gocloud/runtimevar"
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 )
 
 func main() {

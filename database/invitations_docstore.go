@@ -7,7 +7,7 @@ import (
 
 	"github.com/aaronland/go-mailinglist/v2/invitation"
 	"github.com/aaronland/go-mailinglist/v2/subscription"
-	aa_docstore "github.com/aaronland/gocloud-docstore"
+	aa_docstore "github.com/aaronland/gocloud/docstore"
 	"gocloud.dev/docstore"
 )
 
