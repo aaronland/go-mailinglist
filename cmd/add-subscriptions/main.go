@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	_ "github.com/aaronland/gocloud-docstore"
+	_ "github.com/aaronland/gocloud/docstore"
 	_ "gocloud.dev/docstore/awsdynamodb"
 
 	"github.com/aaronland/go-mailinglist/v2/app/subscriptions/add"

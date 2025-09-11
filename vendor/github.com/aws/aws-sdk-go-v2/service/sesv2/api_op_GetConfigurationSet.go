@@ -49,6 +49,10 @@ type GetConfigurationSetInput struct {
 // Information about a configuration set.
 type GetConfigurationSetOutput struct {
 
+	// An object that defines the MailManager archive where sent emails are archived
+	// that you send using the configuration set.
+	ArchivingOptions *types.ArchivingOptions
+
 	// The name of the configuration set.
 	ConfigurationSetName *string
 
@@ -150,6 +154,9 @@ func (c *Client) addOperationGetConfigurationSetMiddlewares(stack *middleware.St
 	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
+	if err = addCredentialSource(stack, options); err != nil {
+		return err
+	}
 	if err = addOpGetConfigurationSetValidationMiddleware(stack); err != nil {
 		return err
 	}
@@ -169,6 +176,36 @@ func (c *Client) addOperationGetConfigurationSetMiddlewares(stack *middleware.St
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeRetryLoop(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAttempt(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptExecution(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptTransmit(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeDeserialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterDeserialization(stack, options); err != nil {
 		return err
 	}
 	if err = addSpanInitializeStart(stack); err != nil {

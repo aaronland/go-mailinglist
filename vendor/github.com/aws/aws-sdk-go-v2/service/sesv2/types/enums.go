@@ -2,6 +2,48 @@
 
 package types
 
+type AttachmentContentDisposition string
+
+// Enum values for AttachmentContentDisposition
+const (
+	AttachmentContentDispositionAttachment AttachmentContentDisposition = "ATTACHMENT"
+	AttachmentContentDispositionInline     AttachmentContentDisposition = "INLINE"
+)
+
+// Values returns all known values for AttachmentContentDisposition. Note that
+// this can be expanded in the future, and so it is only as up to date as the
+// client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (AttachmentContentDisposition) Values() []AttachmentContentDisposition {
+	return []AttachmentContentDisposition{
+		"ATTACHMENT",
+		"INLINE",
+	}
+}
+
+type AttachmentContentTransferEncoding string
+
+// Enum values for AttachmentContentTransferEncoding
+const (
+	AttachmentContentTransferEncodingBase64          AttachmentContentTransferEncoding = "BASE64"
+	AttachmentContentTransferEncodingQuotedPrintable AttachmentContentTransferEncoding = "QUOTED_PRINTABLE"
+	AttachmentContentTransferEncodingSevenBit        AttachmentContentTransferEncoding = "SEVEN_BIT"
+)
+
+// Values returns all known values for AttachmentContentTransferEncoding. Note
+// that this can be expanded in the future, and so it is only as up to date as the
+// client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (AttachmentContentTransferEncoding) Values() []AttachmentContentTransferEncoding {
+	return []AttachmentContentTransferEncoding{
+		"BASE64",
+		"QUOTED_PRINTABLE",
+		"SEVEN_BIT",
+	}
+}
+
 type BehaviorOnMxFailure string
 
 // Enum values for BehaviorOnMxFailure
@@ -235,8 +277,33 @@ type DkimSigningAttributesOrigin string
 
 // Enum values for DkimSigningAttributesOrigin
 const (
-	DkimSigningAttributesOriginAwsSes   DkimSigningAttributesOrigin = "AWS_SES"
-	DkimSigningAttributesOriginExternal DkimSigningAttributesOrigin = "EXTERNAL"
+	DkimSigningAttributesOriginAwsSes             DkimSigningAttributesOrigin = "AWS_SES"
+	DkimSigningAttributesOriginExternal           DkimSigningAttributesOrigin = "EXTERNAL"
+	DkimSigningAttributesOriginAwsSesAfSouth1     DkimSigningAttributesOrigin = "AWS_SES_AF_SOUTH_1"
+	DkimSigningAttributesOriginAwsSesEuNorth1     DkimSigningAttributesOrigin = "AWS_SES_EU_NORTH_1"
+	DkimSigningAttributesOriginAwsSesApSouth1     DkimSigningAttributesOrigin = "AWS_SES_AP_SOUTH_1"
+	DkimSigningAttributesOriginAwsSesEuWest3      DkimSigningAttributesOrigin = "AWS_SES_EU_WEST_3"
+	DkimSigningAttributesOriginAwsSesEuWest2      DkimSigningAttributesOrigin = "AWS_SES_EU_WEST_2"
+	DkimSigningAttributesOriginAwsSesEuSouth1     DkimSigningAttributesOrigin = "AWS_SES_EU_SOUTH_1"
+	DkimSigningAttributesOriginAwsSesEuWest1      DkimSigningAttributesOrigin = "AWS_SES_EU_WEST_1"
+	DkimSigningAttributesOriginAwsSesApNortheast3 DkimSigningAttributesOrigin = "AWS_SES_AP_NORTHEAST_3"
+	DkimSigningAttributesOriginAwsSesApNortheast2 DkimSigningAttributesOrigin = "AWS_SES_AP_NORTHEAST_2"
+	DkimSigningAttributesOriginAwsSesMeSouth1     DkimSigningAttributesOrigin = "AWS_SES_ME_SOUTH_1"
+	DkimSigningAttributesOriginAwsSesApNortheast1 DkimSigningAttributesOrigin = "AWS_SES_AP_NORTHEAST_1"
+	DkimSigningAttributesOriginAwsSesIlCentral1   DkimSigningAttributesOrigin = "AWS_SES_IL_CENTRAL_1"
+	DkimSigningAttributesOriginAwsSesSaEast1      DkimSigningAttributesOrigin = "AWS_SES_SA_EAST_1"
+	DkimSigningAttributesOriginAwsSesCaCentral1   DkimSigningAttributesOrigin = "AWS_SES_CA_CENTRAL_1"
+	DkimSigningAttributesOriginAwsSesApSoutheast1 DkimSigningAttributesOrigin = "AWS_SES_AP_SOUTHEAST_1"
+	DkimSigningAttributesOriginAwsSesApSoutheast2 DkimSigningAttributesOrigin = "AWS_SES_AP_SOUTHEAST_2"
+	DkimSigningAttributesOriginAwsSesApSoutheast3 DkimSigningAttributesOrigin = "AWS_SES_AP_SOUTHEAST_3"
+	DkimSigningAttributesOriginAwsSesEuCentral1   DkimSigningAttributesOrigin = "AWS_SES_EU_CENTRAL_1"
+	DkimSigningAttributesOriginAwsSesUsEast1      DkimSigningAttributesOrigin = "AWS_SES_US_EAST_1"
+	DkimSigningAttributesOriginAwsSesUsEast2      DkimSigningAttributesOrigin = "AWS_SES_US_EAST_2"
+	DkimSigningAttributesOriginAwsSesUsWest1      DkimSigningAttributesOrigin = "AWS_SES_US_WEST_1"
+	DkimSigningAttributesOriginAwsSesUsWest2      DkimSigningAttributesOrigin = "AWS_SES_US_WEST_2"
+	DkimSigningAttributesOriginAwsSesMeCentral1   DkimSigningAttributesOrigin = "AWS_SES_ME_CENTRAL_1"
+	DkimSigningAttributesOriginAwsSesApSouth2     DkimSigningAttributesOrigin = "AWS_SES_AP_SOUTH_2"
+	DkimSigningAttributesOriginAwsSesEuCentral2   DkimSigningAttributesOrigin = "AWS_SES_EU_CENTRAL_2"
 )
 
 // Values returns all known values for DkimSigningAttributesOrigin. Note that this
@@ -247,6 +314,31 @@ func (DkimSigningAttributesOrigin) Values() []DkimSigningAttributesOrigin {
 	return []DkimSigningAttributesOrigin{
 		"AWS_SES",
 		"EXTERNAL",
+		"AWS_SES_AF_SOUTH_1",
+		"AWS_SES_EU_NORTH_1",
+		"AWS_SES_AP_SOUTH_1",
+		"AWS_SES_EU_WEST_3",
+		"AWS_SES_EU_WEST_2",
+		"AWS_SES_EU_SOUTH_1",
+		"AWS_SES_EU_WEST_1",
+		"AWS_SES_AP_NORTHEAST_3",
+		"AWS_SES_AP_NORTHEAST_2",
+		"AWS_SES_ME_SOUTH_1",
+		"AWS_SES_AP_NORTHEAST_1",
+		"AWS_SES_IL_CENTRAL_1",
+		"AWS_SES_SA_EAST_1",
+		"AWS_SES_CA_CENTRAL_1",
+		"AWS_SES_AP_SOUTHEAST_1",
+		"AWS_SES_AP_SOUTHEAST_2",
+		"AWS_SES_AP_SOUTHEAST_3",
+		"AWS_SES_EU_CENTRAL_1",
+		"AWS_SES_US_EAST_1",
+		"AWS_SES_US_EAST_2",
+		"AWS_SES_US_WEST_1",
+		"AWS_SES_US_WEST_2",
+		"AWS_SES_ME_CENTRAL_1",
+		"AWS_SES_AP_SOUTH_2",
+		"AWS_SES_EU_CENTRAL_2",
 	}
 }
 
@@ -496,6 +588,24 @@ func (ListRecommendationsFilterKey) Values() []ListRecommendationsFilterKey {
 	}
 }
 
+type ListTenantResourcesFilterKey string
+
+// Enum values for ListTenantResourcesFilterKey
+const (
+	ListTenantResourcesFilterKeyResourceType ListTenantResourcesFilterKey = "RESOURCE_TYPE"
+)
+
+// Values returns all known values for ListTenantResourcesFilterKey. Note that
+// this can be expanded in the future, and so it is only as up to date as the
+// client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (ListTenantResourcesFilterKey) Values() []ListTenantResourcesFilterKey {
+	return []ListTenantResourcesFilterKey{
+		"RESOURCE_TYPE",
+	}
+}
+
 type MailFromDomainStatus string
 
 // Enum values for MailFromDomainStatus
@@ -691,10 +801,14 @@ type RecommendationType string
 
 // Enum values for RecommendationType
 const (
-	RecommendationTypeDkim  RecommendationType = "DKIM"
-	RecommendationTypeDmarc RecommendationType = "DMARC"
-	RecommendationTypeSpf   RecommendationType = "SPF"
-	RecommendationTypeBimi  RecommendationType = "BIMI"
+	RecommendationTypeDkim       RecommendationType = "DKIM"
+	RecommendationTypeDmarc      RecommendationType = "DMARC"
+	RecommendationTypeSpf        RecommendationType = "SPF"
+	RecommendationTypeBimi       RecommendationType = "BIMI"
+	RecommendationTypeComplaint  RecommendationType = "COMPLAINT"
+	RecommendationTypeBounce     RecommendationType = "BOUNCE"
+	RecommendationTypeFeedback3p RecommendationType = "FEEDBACK_3P"
+	RecommendationTypeIpListing  RecommendationType = "IP_LISTING"
 )
 
 // Values returns all known values for RecommendationType. Note that this can be
@@ -707,6 +821,71 @@ func (RecommendationType) Values() []RecommendationType {
 		"DMARC",
 		"SPF",
 		"BIMI",
+		"COMPLAINT",
+		"BOUNCE",
+		"FEEDBACK_3P",
+		"IP_LISTING",
+	}
+}
+
+type ReputationEntityFilterKey string
+
+// Enum values for ReputationEntityFilterKey
+const (
+	ReputationEntityFilterKeyEntityType            ReputationEntityFilterKey = "ENTITY_TYPE"
+	ReputationEntityFilterKeyReputationImpact      ReputationEntityFilterKey = "REPUTATION_IMPACT"
+	ReputationEntityFilterKeyStatus                ReputationEntityFilterKey = "SENDING_STATUS"
+	ReputationEntityFilterKeyEntityReferencePrefix ReputationEntityFilterKey = "ENTITY_REFERENCE_PREFIX"
+)
+
+// Values returns all known values for ReputationEntityFilterKey. Note that this
+// can be expanded in the future, and so it is only as up to date as the client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (ReputationEntityFilterKey) Values() []ReputationEntityFilterKey {
+	return []ReputationEntityFilterKey{
+		"ENTITY_TYPE",
+		"REPUTATION_IMPACT",
+		"SENDING_STATUS",
+		"ENTITY_REFERENCE_PREFIX",
+	}
+}
+
+type ReputationEntityType string
+
+// Enum values for ReputationEntityType
+const (
+	ReputationEntityTypeResource ReputationEntityType = "RESOURCE"
+)
+
+// Values returns all known values for ReputationEntityType. Note that this can be
+// expanded in the future, and so it is only as up to date as the client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (ReputationEntityType) Values() []ReputationEntityType {
+	return []ReputationEntityType{
+		"RESOURCE",
+	}
+}
+
+type ResourceType string
+
+// Enum values for ResourceType
+const (
+	ResourceTypeEmailIdentity    ResourceType = "EMAIL_IDENTITY"
+	ResourceTypeConfigurationSet ResourceType = "CONFIGURATION_SET"
+	ResourceTypeEmailTemplate    ResourceType = "EMAIL_TEMPLATE"
+)
+
+// Values returns all known values for ResourceType. Note that this can be
+// expanded in the future, and so it is only as up to date as the client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (ResourceType) Values() []ResourceType {
+	return []ResourceType{
+		"EMAIL_IDENTITY",
+		"CONFIGURATION_SET",
+		"EMAIL_TEMPLATE",
 	}
 }
 
@@ -749,6 +928,50 @@ func (ScalingMode) Values() []ScalingMode {
 	return []ScalingMode{
 		"STANDARD",
 		"MANAGED",
+	}
+}
+
+type SendingStatus string
+
+// Enum values for SendingStatus
+const (
+	SendingStatusEnabled    SendingStatus = "ENABLED"
+	SendingStatusReinstated SendingStatus = "REINSTATED"
+	SendingStatusDisabled   SendingStatus = "DISABLED"
+)
+
+// Values returns all known values for SendingStatus. Note that this can be
+// expanded in the future, and so it is only as up to date as the client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (SendingStatus) Values() []SendingStatus {
+	return []SendingStatus{
+		"ENABLED",
+		"REINSTATED",
+		"DISABLED",
+	}
+}
+
+type Status string
+
+// Enum values for Status
+const (
+	StatusCreating Status = "CREATING"
+	StatusReady    Status = "READY"
+	StatusFailed   Status = "FAILED"
+	StatusDeleting Status = "DELETING"
+)
+
+// Values returns all known values for Status. Note that this can be expanded in
+// the future, and so it is only as up to date as the client.
+//
+// The ordering of this slice is not guaranteed to be stable across updates.
+func (Status) Values() []Status {
+	return []Status{
+		"CREATING",
+		"READY",
+		"FAILED",
+		"DELETING",
 	}
 }
 
@@ -832,11 +1055,16 @@ type VerificationError string
 
 // Enum values for VerificationError
 const (
-	VerificationErrorServiceError   VerificationError = "SERVICE_ERROR"
-	VerificationErrorDnsServerError VerificationError = "DNS_SERVER_ERROR"
-	VerificationErrorHostNotFound   VerificationError = "HOST_NOT_FOUND"
-	VerificationErrorTypeNotFound   VerificationError = "TYPE_NOT_FOUND"
-	VerificationErrorInvalidValue   VerificationError = "INVALID_VALUE"
+	VerificationErrorServiceError                            VerificationError = "SERVICE_ERROR"
+	VerificationErrorDnsServerError                          VerificationError = "DNS_SERVER_ERROR"
+	VerificationErrorHostNotFound                            VerificationError = "HOST_NOT_FOUND"
+	VerificationErrorTypeNotFound                            VerificationError = "TYPE_NOT_FOUND"
+	VerificationErrorInvalidValue                            VerificationError = "INVALID_VALUE"
+	VerificationErrorReplicationAccessDenied                 VerificationError = "REPLICATION_ACCESS_DENIED"
+	VerificationErrorReplicationPrimaryNotFound              VerificationError = "REPLICATION_PRIMARY_NOT_FOUND"
+	VerificationErrorReplicationPrimaryByoDkimNotSupported   VerificationError = "REPLICATION_PRIMARY_BYO_DKIM_NOT_SUPPORTED"
+	VerificationErrorReplicationReplicaAsPrimaryNotSupported VerificationError = "REPLICATION_REPLICA_AS_PRIMARY_NOT_SUPPORTED"
+	VerificationErrorReplicationPrimaryInvalidRegion         VerificationError = "REPLICATION_PRIMARY_INVALID_REGION"
 )
 
 // Values returns all known values for VerificationError. Note that this can be
@@ -850,6 +1078,11 @@ func (VerificationError) Values() []VerificationError {
 		"HOST_NOT_FOUND",
 		"TYPE_NOT_FOUND",
 		"INVALID_VALUE",
+		"REPLICATION_ACCESS_DENIED",
+		"REPLICATION_PRIMARY_NOT_FOUND",
+		"REPLICATION_PRIMARY_BYO_DKIM_NOT_SUPPORTED",
+		"REPLICATION_REPLICA_AS_PRIMARY_NOT_SUPPORTED",
+		"REPLICATION_PRIMARY_INVALID_REGION",
 	}
 }
 
@@ -882,8 +1115,9 @@ type WarmupStatus string
 
 // Enum values for WarmupStatus
 const (
-	WarmupStatusInProgress WarmupStatus = "IN_PROGRESS"
-	WarmupStatusDone       WarmupStatus = "DONE"
+	WarmupStatusInProgress    WarmupStatus = "IN_PROGRESS"
+	WarmupStatusDone          WarmupStatus = "DONE"
+	WarmupStatusNotApplicable WarmupStatus = "NOT_APPLICABLE"
 )
 
 // Values returns all known values for WarmupStatus. Note that this can be
@@ -894,5 +1128,6 @@ func (WarmupStatus) Values() []WarmupStatus {
 	return []WarmupStatus{
 		"IN_PROGRESS",
 		"DONE",
+		"NOT_APPLICABLE",
 	}
 }

@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aaronland/go-http-sanitize"
+	"github.com/aaronland/go-http/v3/sanitize"
 	"github.com/aaronland/go-mailinglist/v2"
 	"github.com/aaronland/go-mailinglist/v2/confirmation"
 	"github.com/aaronland/go-mailinglist/v2/database"

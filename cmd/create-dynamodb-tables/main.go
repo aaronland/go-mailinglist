@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	aa_dynamodb "github.com/aaronland/go-aws-dynamodb"
+	aa_dynamodb "github.com/aaronland/go-aws/v3/dynamodb"
 	"github.com/aaronland/go-mailinglist/v2/dynamodb"
 )
 

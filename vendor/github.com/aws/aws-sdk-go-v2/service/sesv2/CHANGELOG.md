@@ -1,3 +1,149 @@
+# v1.53.3 (2025-09-10)
+
+* No change notes available for this release.
+
+# v1.53.2 (2025-09-08)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.53.1 (2025-08-29)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.53.0 (2025-08-28)
+
+* **Feature**: Remove incorrect endpoint tests
+
+# v1.52.2 (2025-08-27)
+
+* **Dependency Update**: Update to smithy-go v1.23.0.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.52.1 (2025-08-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.52.0 (2025-08-20)
+
+* **Feature**: Remove incorrect endpoint tests
+* **Bug Fix**: Remove unused deserialization code.
+
+# v1.51.0 (2025-08-11)
+
+* **Feature**: Add support for configuring per-service Options via callback on global config.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.50.0 (2025-08-04)
+
+* **Feature**: Support configurable auth scheme preferences in service clients via AWS_AUTH_SCHEME_PREFERENCE in the environment, auth_scheme_preference in the config file, and through in-code settings on LoadDefaultConfig and client constructor methods.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.49.0 (2025-07-31)
+
+* **Feature**: This release introduces support for Multi-tenant management
+
+# v1.48.1 (2025-07-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.48.0 (2025-07-28)
+
+* **Feature**: Add support for HTTP interceptors.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.47.1 (2025-07-19)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.47.0 (2025-07-18)
+
+* **Feature**: Added IP Visibility support for managed dedicated pools. Enhanced GetDedicatedIp and GetDedicatedIps APIs to return managed IP addresses.
+
+# v1.46.0 (2025-06-27)
+
+* **Feature**: Added support for new SES regions
+
+# v1.45.2 (2025-06-17)
+
+* **Dependency Update**: Update to smithy-go v1.22.4.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.45.1 (2025-06-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.45.0 (2025-04-03)
+
+* **Feature**: This release enables customers to provide attachments in the SESv2 SendEmail and SendBulkEmail APIs.
+
+# v1.44.0 (2025-03-31)
+
+* **Feature**: Add dual-stack support to global endpoints.
+
+# v1.43.1 (2025-03-04.2)
+
+* **Bug Fix**: Add assurance test for operation order.
+
+# v1.43.0 (2025-02-27)
+
+* **Feature**: Track credential providers via User-Agent Feature ids
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.42.0 (2025-02-19)
+
+* **Feature**: This release adds the ability for outbound email sent with SES to preserve emails to a Mail Manager archive.
+
+# v1.41.6 (2025-02-18)
+
+* **Bug Fix**: Bump go version to 1.22
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.41.5 (2025-02-05)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.41.4 (2025-01-31)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.41.3 (2025-01-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.41.2 (2025-01-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+* **Dependency Update**: Upgrade to smithy-go v1.22.2.
+
+# v1.41.1 (2025-01-17)
+
+* **Bug Fix**: Fix bug where credentials weren't refreshed during retry loop.
+
+# v1.41.0 (2025-01-15)
+
+* **Feature**: This release introduces a new recommendation in Virtual Deliverability Manager Advisor, which detects elevated complaint rates for customer sending identities.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.40.2 (2025-01-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.40.1 (2024-12-19)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.40.0 (2024-12-11)
+
+* **Feature**: Introduces support for multi-region endpoint.
+
+# v1.39.0 (2024-12-10)
+
+* **Feature**: Introduces support for creating DEED (Deterministic Easy-DKIM) identities.
+
+# v1.38.4 (2024-12-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.38.3 (2024-11-18)
 
 * **Dependency Update**: Update to smithy-go v1.22.1.

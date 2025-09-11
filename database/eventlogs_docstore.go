@@ -6,7 +6,7 @@ import (
 	"io"
 
 	"github.com/aaronland/go-mailinglist/v2/eventlog"
-	aa_docstore "github.com/aaronland/gocloud-docstore"
+	aa_docstore "github.com/aaronland/gocloud/docstore"
 	"gocloud.dev/docstore"
 )
 

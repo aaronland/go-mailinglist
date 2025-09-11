@@ -10,7 +10,7 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/aaronland/go-aws-auth"
+	"github.com/aaronland/go-aws/v3/auth"
 	"github.com/aaronland/gomail-sender"
 	"github.com/aaronland/gomail/v2"
 	"github.com/aws/aws-sdk-go-v2/aws"
